@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8B36AE60-BE22-41D9-8B32-8E1726104EFE}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VirtualDualHost</RootNamespace>
+    <AssemblyName>VirtualDualHost</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FitPars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\FitPars_DDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FitPars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\FitPars_NDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MessagePars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\MessagePars_DDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MessagePars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\MessagePars_NDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ScreenPars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\ScreenPars_DDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ScreenPars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\ScreenPars_NDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="StandardFeature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\StandardFeature.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StatePars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\StatePars_DDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="StatePars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\StatePars_NDC.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.2.2864.18696, Culture=neutral, PublicKeyToken=d481317c817cec47, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="XmlHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\XmlHelper.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseFunction.cs" />
+    <Compile Include="Form_COMviewList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_COMviewList.Designer.cs">
+      <DependentUpon>Form_COMviewList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_DDCServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_DDCServer.Designer.cs">
+      <DependentUpon>Form_DDCServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Main.Designer.cs">
+      <DependentUpon>Form_Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_MsgDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_MsgDebug.Designer.cs">
+      <DependentUpon>Form_MsgDebug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_DualHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_DualHost.Designer.cs">
+      <DependentUpon>Form_DualHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_NDCServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_NDCServer.Designer.cs">
+      <DependentUpon>Form_NDCServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Pars.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Pars.Designer.cs">
+      <DependentUpon>Form_Pars.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_ParsLeft.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_ParsLeft.Designer.cs">
+      <DependentUpon>Form_ParsLeft.cs</DependentUpon>
+    </Compile>
+    <Compile Include="From_Seeting_eCATPath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="From_Seeting_eCATPath.Designer.cs">
+      <DependentUpon>From_Seeting_eCATPath.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form_COMviewList.resx">
+      <DependentUpon>Form_COMviewList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_DDCServer.resx">
+      <DependentUpon>Form_DDCServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_DualHost.resx">
+      <DependentUpon>Form_DualHost.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Main.resx">
+      <DependentUpon>Form_Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_MsgDebug.resx">
+      <DependentUpon>Form_MsgDebug.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_NDCServer.resx">
+      <DependentUpon>Form_NDCServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Pars.resx">
+      <DependentUpon>Form_Pars.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_ParsLeft.resx">
+      <DependentUpon>Form_ParsLeft.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="From_Seeting_eCATPath.resx">
+      <DependentUpon>From_Seeting_eCATPath.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="images\refresh35.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
