@@ -24,6 +24,7 @@ namespace VirtualDualHost
         public event ParentFormDelegate ParentFormEvent;
         Form_MsgDebug form_MsgDebug;
         Form_COMviewList form_COMviewList;
+        Form_ParsLeft form_Left;
         private void Form_Pars_Load(object sender, EventArgs e)
         {
             ParentFormEvent += Form_Pars_ParentFormEvent;
@@ -32,7 +33,7 @@ namespace VirtualDualHost
 
             XDCUnity.eCATPath = node.Attributes["value"].InnerText;
             //左侧工具
-            Form_ParsLeft form_Left = new Form_ParsLeft();
+            form_Left = new Form_ParsLeft();
             form_Left.SubFormEvent += Form_Left_SubFormEvent;
             form_Left.Show(this.dockPanel1, DockState.DockLeftAutoHide);
 
@@ -72,5 +73,12 @@ namespace VirtualDualHost
             }
         }
 
+        private void Form_Pars_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            form_COMviewList.Dispose();
+            form_MsgDebug.Dispose();
+            form_Left.Dispose();
+            this.Dispose();
+        }
     }
 }
