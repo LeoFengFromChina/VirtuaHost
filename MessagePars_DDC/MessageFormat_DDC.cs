@@ -52,56 +52,58 @@ namespace MessagePars_DDC
 
             #region 5.判断消息类型
 
-            //switch (result.Identification)
-            //{
-            //    case "1":
-            //        {
-            //            if (result.MsgType == MessageType_DDC.TerminalCommand)
-            //                result.MsgCommandType = MessageCommandType.GoInService;
-            //        }
-            //        break;
-            //    case "2":
-            //        {
-            //            if (result.MsgType == MessageType_DDC.TerminalCommand)
-            //                result.MsgCommandType = MessageCommandType.GoOutOfService;
-            //        }
-            //        break;
-            //    case "9":
-            //        {
-            //            if (result.MsgType == MessageType_DDC.SolicitedMessage)
-            //                result.MsgCommandType = MessageCommandType.ReadyB;
-            //        }
-            //        break;
-            //    case "B":
-            //        {
-            //            if (result.MsgType == MessageType_DDC.UnSolicitedMessage)
-            //            {
-            //                if (msgFields[3].Equals("B0000"))
-            //                    result.MsgCommandType = MessageCommandType.FullDownLoad;
-            //                else
-            //                    result.MsgCommandType = MessageCommandType.NotFullDownLoad;
-            //                NeedSendToBothHost.Enqueue(result.MsgBase64String);
-            //            }
-            //        }
-            //        break;
-            //    case "E":
-            //        {
-            //            if (result.MsgType == MessageType_DDC.UnSolicitedMessage)
-            //            {
-            //                //cash handle
-            //                result.MsgCommandType = MessageCommandType.CashHandler;
-            //                NeedSendToBothHost.Enqueue(result.MsgBase64String);
-            //            }
-            //        }
-            //        break;
-            //    case "":
-            //        {
-            //            result.MsgCommandType = MessageCommandType.TransactionMessage;
-            //        }
-            //        break;
-            //    default:
-            //        break;
-            //}
+            switch (result.Identification)
+            {
+                case "1":
+                    {
+                        if (result.MsgType == MessageType.TerminalCommand)
+                            result.MsgCommandType = MessageCommandType.GoInService;
+                        else if (result.MsgType == MessageType.UnSolicitedMessage)
+                            result.MsgCommandType = MessageCommandType.PowerFailure;
+                    }
+                    break;
+                case "2":
+                    {
+                        if (result.MsgType == MessageType.TerminalCommand)
+                            result.MsgCommandType = MessageCommandType.GoOutOfService;
+                    }
+                    break;
+                case "9":
+                    {
+                        if (result.MsgType == MessageType.SolicitedMessage)
+                            result.MsgCommandType = MessageCommandType.ReadyB;
+                    }
+                    break;
+                case "B":
+                    {
+                        if (result.MsgType == MessageType.UnSolicitedMessage)
+                        {
+                            if (msgFields[3].Equals("B0000"))
+                                result.MsgCommandType = MessageCommandType.FullDownLoad;
+                            else
+                                result.MsgCommandType = MessageCommandType.NotFullDownLoad;
+                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                        }
+                    }
+                    break;
+                case "E":
+                    {
+                        if (result.MsgType == MessageType.UnSolicitedMessage)
+                        {
+                            //cash handle
+                            result.MsgCommandType = MessageCommandType.CashHandler;
+                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                        }
+                    }
+                    break;
+                case "":
+                    {
+                        result.MsgCommandType = MessageCommandType.TransactionMessage;
+                    }
+                    break;
+                default:
+                    break;
+            }
 
             #endregion
 

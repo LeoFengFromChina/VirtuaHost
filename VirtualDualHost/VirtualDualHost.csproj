@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseFunction.cs" />
+    <Compile Include="ControlsOperation.cs" />
     <Compile Include="Form_COMviewList.cs">
       <SubType>Form</SubType>
     </Compile>

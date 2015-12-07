@@ -76,7 +76,11 @@ namespace StandardFeature
         /// <summary>
         /// 硬件故障
         /// </summary>
-        HardwareError
+        HardwareError,
+        /// <summary>
+        /// PowerUp
+        /// </summary>
+        PowerFailure
     }
 
     public enum MessageType

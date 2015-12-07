@@ -191,5 +191,31 @@ namespace StandardFeature
             return text;
         }
 
+        private static Queue<string> _ddcFentchMessage = new Queue<string>();
+        public static Queue<string> DDCFentchMessage
+        {
+            get
+            {
+                return _ddcFentchMessage;
+            }
+            set
+            {
+                _ddcFentchMessage = value;
+            }
+        }
+
+
+        private static Queue<string> _ndcFentchMessage = new Queue<string>();
+        public static Queue<string> NDCFentchMessage
+        {
+            get
+            {
+                return _ndcFentchMessage;
+            }
+            set
+            {
+                _ndcFentchMessage = value;
+            }
+        }
     }
 }

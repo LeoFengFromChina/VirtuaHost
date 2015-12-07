@@ -458,7 +458,7 @@ namespace MessagePars_DDC
                     }
                     if (tvItem.FieldValue != null)
                     {
-                        if(string.IsNullOrEmpty(prv.FieldValue))
+                        if (string.IsNullOrEmpty(prv.FieldValue))
                         {
                             prv.FieldComment = "";
                         }
@@ -549,8 +549,15 @@ namespace MessagePars_DDC
                         DDCdeviceID.CheckDeviceID(vtDataItem, out deviceID);
                         for (int i = xmlIndex; i < TvList.Count; i++)
                         {
-                            if (vtDataItem.Length > 0 && (currentContextIndex > vtDataItem.Length - 1))
+                            if (vtDataItem.Length > 0 && (currentContextIndex > vtDataItem.Length - 1)
+                                && (TvList[i].FieldName.StartsWith("GS")
+                                || TvList[i].FieldName.StartsWith("RS")
+                                 || TvList[i].FieldName.StartsWith("VT")))
                             {
+                                if (!TvList[i].FieldName.StartsWith("GS"))
+                                {
+
+                                }
                                 if (isVTRepeat)
                                 {
                                     xmlIndex = xmlIndex - vtRepeatXMLnodeCount - 1;
@@ -569,7 +576,15 @@ namespace MessagePars_DDC
                             {
                                 //遇到GS开头，记录出现GS_
                                 occurGS = true;
-                                if (TvList[i].FieldName == "GS" + deviceID)
+                                if (TvList[i].FieldName == "GS**")
+                                {
+                                    isVTRepeat = true;
+                                    //如果匹配
+                                    isFoundGS = true;
+                                    //新建一行GS
+                                    rowViewList.Add(new ParsRowView("GS", "", ""));
+                                }
+                                else if (TvList[i].FieldName == "GS" + deviceID)
                                 {
                                     //如果匹配
                                     isFoundGS = true;
@@ -636,8 +651,14 @@ namespace MessagePars_DDC
                                 }
                                 else
                                 {
-                                    tempText = vtDataItem.Substring(currentContextIndex, vtDataItem.Length - currentContextIndex);
-                                    currentContextIndex += vtDataItem.Length - currentContextIndex;
+                                    try
+                                    {
+                                        tempText = vtDataItem.Substring(currentContextIndex, vtDataItem.Length - currentContextIndex);
+                                        currentContextIndex += vtDataItem.Length - currentContextIndex;
+                                    }
+                                    catch
+                                    {
+                                    }
                                 }
                                 string tempComment = "";
                                 if (TvList[i].FieldValue != null)
@@ -655,6 +676,12 @@ namespace MessagePars_DDC
                                     tempComment = "";
                                 }
                                 rowViewList.Add(new ParsRowView(TvList[i].FieldName, tempText, tempComment));
+                            }
+
+                            if (isVTRepeat && i == TvList.Count - 1)
+                            {
+                                xmlIndex = xmlIndex - vtRepeatXMLnodeCount - 1;
+                                isVTRepeat = false;
                             }
                         }
                     }
