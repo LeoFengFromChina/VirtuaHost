@@ -217,5 +217,40 @@ namespace StandardFeature
                 _ndcFentchMessage = value;
             }
         }
+
+
+        private static List<Host> _currentHosts = new List<Host>();
+        public static List<Host> CurrentHost
+        {
+            get
+            {
+                return _currentHosts;
+            }
+            set
+            {
+                _currentHosts = value;
+            }
+        }
+
+        /// <summary>
+        /// 打包消息
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static byte[] EnPackageMsg(string msg, Host currHost)
+        {
+            byte[] resultBytes = null;
+            string baseCountStr = Encoding.ASCII.GetByteCount(msg).ToString();
+            if (currHost.TCPHead == TcpHead.L2L1)
+            {
+                baseCountStr = baseCountStr.ToString().PadLeft(4, '0');
+                char char_1 = (char)(int.Parse(baseCountStr.Substring(0, 2)));
+                char char_2 = (char)(int.Parse(baseCountStr.Substring(2, 2)));
+                resultBytes = Encoding.ASCII.GetBytes(char_1.ToString() + char_2.ToString() + msg);
+            }
+            else
+                resultBytes = Encoding.ASCII.GetBytes(msg);
+            return resultBytes;
+        }
     }
 }

@@ -43,7 +43,7 @@ namespace VirtualDualHost
 
 
             //正文内容
-            form_MsgDebug = new Form_MsgDebug("");
+            form_MsgDebug = new Form_MsgDebug("", XDCProtocolType.NDC);
             form_MsgDebug.Show(this.dockPanel1, DockState.Document);
         }
 

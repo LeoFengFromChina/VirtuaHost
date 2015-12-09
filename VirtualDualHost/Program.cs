@@ -16,7 +16,7 @@ namespace VirtualDualHost
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form_MsgDebug(""));
-            Application.Run(new Form_DDCServer());
+            Application.Run(new Form_Main());
         }
     }
 }

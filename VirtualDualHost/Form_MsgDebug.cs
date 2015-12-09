@@ -16,12 +16,20 @@ namespace VirtualDualHost
     public partial class Form_MsgDebug : DockContent
     {
         public bool isAlreadyLoad = false;
-        public Form_MsgDebug(string msgText)
+        public Form_MsgDebug(string msgText, XDCProtocolType protocolType)
         {
             InitializeComponent();
             XDCUnity.Initial();
             rtb_Msg.Text = msgText;
             BeginPars();
+            if (protocolType == XDCProtocolType.DDC)
+            {
+                rb_DDC.Checked = true;
+            }
+            else
+            {
+                rb_NDC.Checked = true;
+            }
         }
         Form_Pars form_Pars;
         private DockPanel dp;
@@ -36,7 +44,7 @@ namespace VirtualDualHost
         {
             MessageBox.Show("path");
         }
-        public void ParsFromSubForm(object dataContext,XDCProtocolType protocolType, DataType dataType)
+        public void ParsFromSubForm(object dataContext, XDCProtocolType protocolType, DataType dataType)
         {
             #region 要格式化的内容
 

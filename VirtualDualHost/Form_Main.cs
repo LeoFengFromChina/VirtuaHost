@@ -16,6 +16,7 @@ namespace VirtualDualHost
         {
             InitializeComponent();
         }
+        //Form_NDCServer form_NDCServer;
         Form_NDCServer form_NDCServer;
         Form_DDCServer form_DDCServer;
         Form_DualHost form_DualHost;
@@ -23,7 +24,8 @@ namespace VirtualDualHost
         {
 
             //NDCserver
-            form_NDCServer = new Form_NDCServer();
+            //form_NDCServer = new Form_NDCServer();
+            form_NDCServer = new Form_NDCServer(); 
             form_NDCServer.Show(this.dockPanel1, DockState.Document);
 
             //DDCserver

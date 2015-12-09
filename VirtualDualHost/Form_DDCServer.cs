@@ -17,30 +17,54 @@ namespace VirtualDualHost
 {
     public partial class Form_DDCServer : DockContent
     {
-        public Form_DDCServer()
+        private static Host CurrentHostServer = new Host();
+        public Form_DDCServer(/*XDCProtocolType protocolType*/)
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
+            //CurrentHostServer.ProtocolType = protocolType;
+            #region Set Text
+
+            //if (protocolType == XDCProtocolType.DDC)
+            //{
+            //    this.Text = "DDC Server";
+            //    this.TabText = "DDC Server";
+            //}
+            //else
+            //{
+            //    this.Text = "NDC Server";
+            //    this.TabText = "NDC Server";
+            //    //this.txt_Port.Text = "4071";
+            //}
+            #endregion
         }
 
         static Thread eCATThread;
         static Socket socket_eCAT;
-        static private Queue<string> ddcFentch = new Queue<string>();
+        static private Queue<string> currentFentch = new Queue<string>();
         static int port_eCAT;
         static byte[] result_eCAT = new byte[2048];
 
-        public delegate void GMReceiveMst(string header, string msg);
-        public static event GMReceiveMst ReceiveMsg;
+        private delegate void GMReceiveMst(string header, string msg);
+        private static event GMReceiveMst ReceiveMsg;
+
+        string SendHead = "Send :";
+        string RecvHead = "Recv :";
 
         #region Event
 
-        private void Form_DDCServer_Load(object sender, EventArgs e)
+        private void Form_MainServer_Load(object sender, EventArgs e)
         {
+            CurrentHostServer.ProtocolType = XDCProtocolType.DDC;
+            CurrentHostServer.State = ServerState.OffLine;
+            cmb_Header.SelectedIndex = 0;
             ReceiveMsg += new GMReceiveMst(Form1_ReceiveMsg);
-            btn_Start.Click += Btn_Start_Click;
-            btn_FetchConfig.Click += Btn_Start_Click;
-            btn_FullDownLoad.Click += Btn_Start_Click;
-            btn_ManuSendData.Click += Btn_Start_Click;
+
+            this.btn_Start.Click += Btn_Start_Click;
+            this.btn_FetchConfig.Click += Btn_Start_Click;
+            this.btn_FullDownLoad.Click += Btn_Start_Click;
+            this.btn_ManuSendData.Click += Btn_Start_Click;
+            this.btn_ClearLog.Click += Btn_Start_Click;
             BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
         }
 
@@ -52,11 +76,25 @@ namespace VirtualDualHost
                 case "btn_Start":
                     {
                         int.TryParse(txt_Port.Text.Trim(), out port_eCAT);
-                        ControlsOperation.SetTextBoxEnable(txt_Port);
-                        btn_Start.Text = ControlsOperation.GetCurrentButtonText(curButton);
-                        if (!txt_Port.Enabled)
+                        if (txt_Port.Enabled)
                         {
+
+                            if (socket_eCAT != null && socket_eCAT.LocalEndPoint.ToString().Contains(port_eCAT.ToString()))
+                            {
+                                lsb_Log.Items.Add("Error : Already Listen to Port: " + port_eCAT);
+                                return;
+                            }
+
                             GetFentch();
+                            if (cmb_Header.SelectedIndex == 0)
+                            {
+                                CurrentHostServer.TCPHead = TcpHead.L2L1;
+                            }
+                            else
+                            {
+                                CurrentHostServer.TCPHead = TcpHead.NoHead;
+                            }
+                            lsb_Log.Items.Add("Start Server Port = " + txt_Port.Text);
                             //开启
                             ConnecteCAT();
                         }
@@ -66,13 +104,13 @@ namespace VirtualDualHost
                             DisConnecteCAT();
                         }
 
+                        ControlsOperation.SetTextBoxEnable(txt_Port);
+                        btn_Start.Text = ControlsOperation.GetCurrentButtonText(curButton);
                     }
                     break;
                 case "btn_FetchConfig":
                     {
-                        string temp = "OK";
-                        byte[] tempByte = Encoding.ASCII.GetBytes(temp);
-                        myClientSocket.Send(tempByte);
+
                     }
                     break;
                 case "btn_FullDownLoad":
@@ -85,6 +123,12 @@ namespace VirtualDualHost
 
                     }
                     break;
+                case "btn_ClearLog":
+                    {
+                        //rtb_Log.Clear();
+                        lsb_Log.Items.Clear();
+                    }
+                    break;
                 default:
                     break;
             }
@@ -92,26 +136,61 @@ namespace VirtualDualHost
 
         void Form1_ReceiveMsg(string header, string msg)
         {
+            if (txt_Port.Enabled)
+            {
+                return;
+            }
             try
             {
-                rtb_Log.Text += "\r\n" + header + " :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
-                //rtb_Log.Text += "Recv :" + msg + "\r\n";// Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+                this.lsb_Log.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + header + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2));
             }
             catch
             {
-                rtb_Log.Text += "\r\n" + header + " :" + msg;
+                this.lsb_Log.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + header + msg);
+            }
+            this.lsb_Log.TopIndex = lsb_Log.Items.Count - (int)(lsb_Log.Height / lsb_Log.ItemHeight);
+        }
+        private void lsb_Log_Leave(object sender, EventArgs e)
+        {
+            lsb_Log.ClearSelected();
+        }
+
+        private void lsb_Log_DoubleClick(object sender, EventArgs e)
+        {
+            if (lsb_Log.SelectedItem == null)
+                return;
+            string currentItemStr = lsb_Log.SelectedItem.ToString();
+            string msg = string.Empty;
+            int flagIndex = -1;
+            if ((flagIndex = currentItemStr.IndexOf(SendHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 6, currentItemStr.Length - flagIndex - 6);
+            }
+            else if ((flagIndex = currentItemStr.IndexOf(RecvHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 6, currentItemStr.Length - flagIndex - 6);
             }
 
+            Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.DDC);
+            msd.Show();
         }
+
         #endregion
 
         #region Receive/Send_Message
 
         static void ConnecteCAT()
         {
-
-            socket_eCAT = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket_eCAT.Bind(new IPEndPoint(IPAddress.Any, port_eCAT));
+            try
+            {
+                socket_eCAT = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                socket_eCAT.Bind(new IPEndPoint(IPAddress.Any, port_eCAT));
+            }
+            catch (Exception ex)
+            {
+                ReceiveMsg("", ex.Message);
+                return;
+            }
             socket_eCAT.Listen(50);
             eCATThread = new Thread(eCAT_ListenClientConnect);
             eCATThread.IsBackground = true;
@@ -148,7 +227,7 @@ namespace VirtualDualHost
                 socket_eCAT.Dispose();
                 socket_eCAT = null;
             }
-
+            CurrentHostServer.State = ServerState.OffLine;
         }
         static Socket clientSocket;
         static Thread receiveThread;
@@ -160,19 +239,19 @@ namespace VirtualDualHost
                 if (socket_eCAT == null)
                     break; ;
                 clientSocket = socket_eCAT.Accept();
+                CurrentHostServer.State = ServerState.OutOfService;
                 //有连接来了
-                ReceiveMsg("", clientSocket.RemoteEndPoint.ToString() + " is Connected.");
-                ddcFentch = XDCUnity.DDCFentchMessage;
-                //1.发送go-out-of-service消息
-                string out_of_service = ddcFentch.Dequeue();
-                //byte[] tempByte = Encoding.Default.GetBytes(out_of_service);
-                //XDCMessage msgContent = XDCUnity.MessageFormat.Format(tempByte, tempByte.Length);
-                //clientSocket.Send(Convert.FromBase64String(msgContent.MsgBase64String));
-                char headChar_1 = (char)0;
-                char headChar_2 = (char)12;
-                clientSocket.Send(Encoding.ASCII.GetBytes(headChar_1.ToString() + headChar_2.ToString() + out_of_service));
+                ReceiveMsg("", "New Connection " + clientSocket.RemoteEndPoint.ToString());
 
+                GetFentch();
+
+                //1.发送go-out-of-service消息
+                string out_of_service = currentFentch.Dequeue();
+
+                byte[] msgBytes = XDCUnity.EnPackageMsg(out_of_service, CurrentHostServer);
+                clientSocket.Send(msgBytes);
                 ReceiveMsg("Send :", out_of_service);
+
                 //2.心跳包
                 LoadTheTimer();
 
@@ -198,19 +277,28 @@ namespace VirtualDualHost
                     int receiveNumber = 0;
                     receiveNumber = myClientSocket.Receive(result_eCAT);
                     XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber);
-                    string msg = msgContent.MsgBase64String;//Encoding.ASCII.GetString(result_eCAT, 0, receiveNumber); // 
+                    string msg = msgContent.MsgBase64String;
 
-                    if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
+                    if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
                         ReceiveMsg("Recv :", msgContent.MsgBase64String);
                     }
-                    if (msgContent.MsgCommandType == MessageCommandType.ReadyB)
+                    string fencthMsg = string.Empty;
+                    if (currentFentch.Count >= 1)
                     {
-                        char headChar_1 = (char)0;
-                        char headChar_2 = (char)12;
-                        string fencthMsg = ddcFentch.Dequeue();
-                        myClientSocket.Send(Encoding.ASCII.GetBytes(headChar_1.ToString() + headChar_2.ToString() + fencthMsg));
+                        fencthMsg = currentFentch.Dequeue();
+                    }
+                    if (!string.IsNullOrEmpty(fencthMsg))
+                    {
+                        byte[] msgBytes = XDCUnity.EnPackageMsg(fencthMsg, CurrentHostServer);
+                        myClientSocket.Send(msgBytes);
                         ReceiveMsg("Send :", fencthMsg);
+                    }
+                    if (currentFentch.Count <= 0
+                        && CurrentHostServer.State == ServerState.OutOfService)
+                    {
+                        //已经是最后一条go-in-service了
+                        CurrentHostServer.State = ServerState.InService;
                     }
                 }
                 catch (Exception ex)
@@ -275,8 +363,11 @@ namespace VirtualDualHost
         #endregion
 
         #region Func
-        private void GetFentch()
+        private static void GetFentch()
         {
+
+            #region DDC
+
             if (XDCUnity.DDCFentchMessage.Count <= 0)
             {
                 string path = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\Raw\FentchConfig.txt";
@@ -291,8 +382,11 @@ namespace VirtualDualHost
                     }
                 }
             }
-            ddcFentch = XDCUnity.DDCFentchMessage;
+            currentFentch = XDCUnity.DDCFentchMessage;
+            #endregion
+
         }
         #endregion
+
     }
 }

@@ -96,7 +96,7 @@ namespace VirtualDualHost
             {
                 string msgText = string.Empty;
                 msgText = tb.SelectedText;
-                Form_MsgDebug debugForm = new Form_MsgDebug(msgText);
+                Form_MsgDebug debugForm = new Form_MsgDebug(msgText, XDCProtocolType.NDC);
                 debugForm.Show();
             }
         }
@@ -112,7 +112,7 @@ namespace VirtualDualHost
 
         private void MsgDebugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form debugForm = new Form_MsgDebug("");
+            Form debugForm = new Form_MsgDebug("", XDCProtocolType.NDC);
             debugForm.Show();
         }
 

@@ -253,6 +253,27 @@ namespace StandardFeature
         DDC = 2,
     }
 
+    public enum TcpHead
+    {
+        L2L1=0,
+        L1L2,
+        L4L3L2L1,
+        L1L2L3L4,
+        NoHead
+    }
+    /// <summary>
+    /// 五大模式
+    /// </summary>
+    public enum ServerState
+    {
+        PowerUp = 0,
+        OffLine,
+        OutOfService,
+        InService,
+        Maintance,
+
+    }
+
     public static class XDCSplictorChar
     {
         public static Char FS = '\u001C';
@@ -299,5 +320,16 @@ namespace StandardFeature
             }
             return false;
         }
+    }
+
+    public class Host
+    {
+        public int ID { get; set; }
+
+        public XDCProtocolType ProtocolType { get; set; }
+
+        public TcpHead TCPHead { get; set; }
+
+        public ServerState State { get; set; }
     }
 }
