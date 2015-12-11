@@ -80,7 +80,18 @@ namespace StandardFeature
         /// <summary>
         /// PowerUp
         /// </summary>
-        PowerFailure
+        PowerFailure,
+
+        #region NDC
+        /// <summary>
+        /// 3,NDC,新密码验证
+        /// </summary>
+        NewKeyVerification,
+        /// <summary>
+        /// F,NDC,终端状态
+        /// </summary>
+        TerminalState
+        #endregion
     }
 
     public enum MessageType

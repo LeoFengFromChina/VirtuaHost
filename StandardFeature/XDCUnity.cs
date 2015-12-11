@@ -203,7 +203,18 @@ namespace StandardFeature
                 _ddcFentchMessage = value;
             }
         }
-
+        private static Queue<string> _ddcFentchResponseMessage = new Queue<string>();
+        public static Queue<string> DDCFentchResponseMessage
+        {
+            get
+            {
+                return _ddcFentchResponseMessage;
+            }
+            set
+            {
+                _ddcFentchResponseMessage = value;
+            }
+        }
 
         private static Queue<string> _ndcFentchMessage = new Queue<string>();
         public static Queue<string> NDCFentchMessage
@@ -217,7 +228,18 @@ namespace StandardFeature
                 _ndcFentchMessage = value;
             }
         }
-
+        private static Queue<string> _ndcFentchResponseMessage = new Queue<string>();
+        public static Queue<string> NDCFentchResponseMessage
+        {
+            get
+            {
+                return _ndcFentchResponseMessage;
+            }
+            set
+            {
+                _ndcFentchResponseMessage = value;
+            }
+        }
 
         private static List<Host> _currentHosts = new List<Host>();
         public static List<Host> CurrentHost
@@ -237,16 +259,30 @@ namespace StandardFeature
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public static byte[] EnPackageMsg(string msg, Host currHost)
+        public static byte[] EnPackageMsg(string msg, Host currHost, ref string headContext)
         {
             byte[] resultBytes = null;
-            string baseCountStr = Encoding.ASCII.GetByteCount(msg).ToString();
+            int baseCount = Encoding.ASCII.GetByteCount(msg);
             if (currHost.TCPHead == TcpHead.L2L1)
             {
-                baseCountStr = baseCountStr.ToString().PadLeft(4, '0');
-                char char_1 = (char)(int.Parse(baseCountStr.Substring(0, 2)));
-                char char_2 = (char)(int.Parse(baseCountStr.Substring(2, 2)));
-                resultBytes = Encoding.ASCII.GetBytes(char_1.ToString() + char_2.ToString() + msg);
+                char char_1 = new char();
+                char char_2 = new char();
+                headContext = baseCount.ToString().PadLeft(4, '0');
+
+                //1.长度L右移8位，等到A，
+                int A = baseCount >> 8;
+                //2char_1=A,.A左移8位，得到B，L-B=C,char_2=C                
+                char_1 = (char)A;
+                int B = A << 8;
+                int C = baseCount - B;
+                char_2 = (char)C;
+
+                resultBytes = Encoding.ASCII.GetBytes(msg);
+                byte[] bigBytes = new byte[resultBytes.Length + 2];
+                bigBytes[0] = (byte)A;
+                bigBytes[1] = (byte)C;
+                resultBytes.CopyTo(bigBytes, 2);
+                resultBytes = bigBytes;
             }
             else
                 resultBytes = Encoding.ASCII.GetBytes(msg);

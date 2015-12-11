@@ -42,14 +42,20 @@ namespace VirtualDualHost
         static Thread eCATThread;
         static Socket socket_eCAT;
         static private Queue<string> currentFentch = new Queue<string>();
+        static private Queue<string> currentFentchResponse = new Queue<string>();
+        static private Queue<string> currentFullDownLoad = new Queue<string>();
         static int port_eCAT;
         static byte[] result_eCAT = new byte[2048];
 
+        private static bool isFullDownLoad = false;
+        private static bool isFencth = false;
+        private static bool FencthFoundUnknow = false;
         private delegate void GMReceiveMst(string header, string msg);
         private static event GMReceiveMst ReceiveMsg;
 
-        string SendHead = "Send :";
-        string RecvHead = "Recv :";
+        static string CurrentFencthResponse = string.Empty;
+        string SendHead = "Send(";
+        string RecvHead = "Recv(";
 
         #region Event
 
@@ -65,7 +71,7 @@ namespace VirtualDualHost
             this.btn_FullDownLoad.Click += Btn_Start_Click;
             this.btn_ManuSendData.Click += Btn_Start_Click;
             this.btn_ClearLog.Click += Btn_Start_Click;
-            BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
+            //BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
         }
 
         private void Btn_Start_Click(object sender, EventArgs e)
@@ -75,6 +81,8 @@ namespace VirtualDualHost
             {
                 case "btn_Start":
                     {
+                        isFullDownLoad = false;
+                        isFencth = false;
                         int.TryParse(txt_Port.Text.Trim(), out port_eCAT);
                         if (txt_Port.Enabled)
                         {
@@ -84,7 +92,7 @@ namespace VirtualDualHost
                                 lsb_Log.Items.Add("Error : Already Listen to Port: " + port_eCAT);
                                 return;
                             }
-
+                            currentFentch.Clear();
                             GetFentch();
                             if (cmb_Header.SelectedIndex == 0)
                             {
@@ -97,11 +105,13 @@ namespace VirtualDualHost
                             lsb_Log.Items.Add("Start Server Port = " + txt_Port.Text);
                             //开启
                             ConnecteCAT();
+                            BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
                         }
                         else
                         {
                             //关闭
                             DisConnecteCAT();
+                            lsb_Log.Items.Add("Close DisConnect.");
                         }
 
                         ControlsOperation.SetTextBoxEnable(txt_Port);
@@ -115,7 +125,21 @@ namespace VirtualDualHost
                     break;
                 case "btn_FullDownLoad":
                     {
+                        #region FullDownLoad
+                        if (clientSocket != null && clientSocket.Connected && !FencthFoundUnknow)
+                        {
+                            currentFullDownLoad.Clear();
+                            GetFullDownLoad();
+                            isFullDownLoad = true;
+                            //1.发送go-out-of-service消息
+                            string out_of_service = currentFullDownLoad.Dequeue();
+                            string headContext = string.Empty;
+                            byte[] msgBytes = XDCUnity.EnPackageMsg(out_of_service, CurrentHostServer, ref headContext);
+                            clientSocket.Send(msgBytes);
+                            ReceiveMsg("Send(" + headContext + ") : ", out_of_service);
+                        }
 
+                        #endregion
                     }
                     break;
                 case "btn_ManuSendData":
@@ -125,7 +149,6 @@ namespace VirtualDualHost
                     break;
                 case "btn_ClearLog":
                     {
-                        //rtb_Log.Clear();
                         lsb_Log.Items.Clear();
                     }
                     break;
@@ -148,7 +171,8 @@ namespace VirtualDualHost
             {
                 this.lsb_Log.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + header + msg);
             }
-            this.lsb_Log.TopIndex = lsb_Log.Items.Count - (int)(lsb_Log.Height / lsb_Log.ItemHeight);
+            this.lsb_Log.TopIndex = lsb_Log.Items.Count - (int)((lsb_Log.Height) / lsb_Log.ItemHeight);
+
         }
         private void lsb_Log_Leave(object sender, EventArgs e)
         {
@@ -164,11 +188,11 @@ namespace VirtualDualHost
             int flagIndex = -1;
             if ((flagIndex = currentItemStr.IndexOf(SendHead)) >= 0)
             {
-                msg = currentItemStr.Substring(flagIndex + 6, currentItemStr.Length - flagIndex - 6);
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
             }
             else if ((flagIndex = currentItemStr.IndexOf(RecvHead)) >= 0)
             {
-                msg = currentItemStr.Substring(flagIndex + 6, currentItemStr.Length - flagIndex - 6);
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
             }
 
             Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.DDC);
@@ -247,10 +271,12 @@ namespace VirtualDualHost
 
                 //1.发送go-out-of-service消息
                 string out_of_service = currentFentch.Dequeue();
-
-                byte[] msgBytes = XDCUnity.EnPackageMsg(out_of_service, CurrentHostServer);
+                CurrentFencthResponse = currentFentchResponse.Dequeue();
+                string headContext = string.Empty;
+                byte[] msgBytes = XDCUnity.EnPackageMsg(out_of_service, CurrentHostServer, ref headContext);
                 clientSocket.Send(msgBytes);
-                ReceiveMsg("Send :", out_of_service);
+                ReceiveMsg("Send(" + headContext + ") : ", out_of_service);
+                isFencth = true;
 
                 //2.心跳包
                 LoadTheTimer();
@@ -281,24 +307,75 @@ namespace VirtualDualHost
 
                     if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
-                        ReceiveMsg("Recv :", msgContent.MsgBase64String);
+                        ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgBase64String);
                     }
-                    string fencthMsg = string.Empty;
-                    if (currentFentch.Count >= 1)
+                    if (msgContent.MsgCommandType == MessageCommandType.FullDownLoad)
                     {
-                        fencthMsg = currentFentch.Dequeue();
+                        isFullDownLoad = true;
                     }
-                    if (!string.IsNullOrEmpty(fencthMsg))
+                    string headContext = string.Empty;
+                    if (isFullDownLoad)
                     {
-                        byte[] msgBytes = XDCUnity.EnPackageMsg(fencthMsg, CurrentHostServer);
-                        myClientSocket.Send(msgBytes);
-                        ReceiveMsg("Send :", fencthMsg);
+                        if (msgContent.MsgCommandType != MessageCommandType.ReadyB)
+                            continue;
+                        #region FullDownLoad
+                        if (currentFullDownLoad.Count == 0)
+                        {
+                            string inservicemsg = "10A210001";
+                            byte[] msgBytes = XDCUnity.EnPackageMsg(inservicemsg, CurrentHostServer, ref headContext);
+                            myClientSocket.Send(msgBytes);
+                            ReceiveMsg("Send(" + headContext + "): ", inservicemsg);
+                            isFullDownLoad = false;
+                            Thread.Sleep(100);
+                        }
+                        else
+                        {
+                            string FulldownLoadMsg = string.Empty;
+                            if (currentFullDownLoad.Count >= 1)
+                            {
+                                FulldownLoadMsg = currentFullDownLoad.Dequeue();
+                            }
+                            if (!string.IsNullOrEmpty(FulldownLoadMsg))
+                            {
+                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
+                                myClientSocket.Send(msgBytes);
+                                ReceiveMsg("Send(" + headContext + ") : ", FulldownLoadMsg);
+                            }
+                        }
+                        #endregion
                     }
-                    if (currentFentch.Count <= 0
-                        && CurrentHostServer.State == ServerState.OutOfService)
+                    else if (isFencth)
                     {
-                        //已经是最后一条go-in-service了
-                        CurrentHostServer.State = ServerState.InService;
+                        if (msgContent.Identification == CurrentFencthResponse)
+                        {
+                            #region Fencth
+
+                            string fencthMsg = string.Empty;
+                            if (currentFentch.Count >= 1)
+                            {
+                                fencthMsg = currentFentch.Dequeue();
+                                CurrentFencthResponse = currentFentchResponse.Dequeue();
+                            }
+                            if (!string.IsNullOrEmpty(fencthMsg))
+                            {
+                                byte[] msgBytes = XDCUnity.EnPackageMsg(fencthMsg, CurrentHostServer, ref headContext);
+                                myClientSocket.Send(msgBytes);
+                                ReceiveMsg("Send(" + headContext + ") : ", fencthMsg);
+                                Thread.Sleep(100);
+                            }
+                            if (currentFentch.Count <= 0
+                                && CurrentHostServer.State == ServerState.OutOfService)
+                            {
+                                //已经是最后一条go-in-service了
+                                CurrentHostServer.State = ServerState.InService;
+                                isFencth = false;
+                            }
+                            #endregion}
+                        }
+                        else
+                        {
+                            FencthFoundUnknow = true;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -363,6 +440,7 @@ namespace VirtualDualHost
         #endregion
 
         #region Func
+        static string[] FieldspliterStr = new string[] { "[FIELD]" };
         private static void GetFentch()
         {
 
@@ -378,13 +456,32 @@ namespace VirtualDualHost
                 {
                     if (!string.IsNullOrEmpty(line))
                     {
-                        XDCUnity.DDCFentchMessage.Enqueue(line);
+                        string[] FencthArray = line.Split(FieldspliterStr, StringSplitOptions.None);
+                        XDCUnity.DDCFentchResponseMessage.Enqueue(FencthArray[0]);
+                        XDCUnity.DDCFentchMessage.Enqueue(FencthArray[1]);
                     }
                 }
             }
             currentFentch = XDCUnity.DDCFentchMessage;
+            currentFentchResponse = XDCUnity.DDCFentchResponseMessage;
             #endregion
 
+        }
+
+
+        public static void GetFullDownLoad()
+        {
+            if (currentFullDownLoad.Count <= 0)
+            {
+                string path = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\FullDownData\EnhanceFullDownData.txt";
+                string fulldownLoadData = XDCUnity.GetTxtFileText(path);
+                string[] dataArray = fulldownLoadData.Split(FieldspliterStr, StringSplitOptions.None);
+                foreach (string dataItem in dataArray)
+                {
+                    if (!string.IsNullOrEmpty(dataItem))
+                        currentFullDownLoad.Enqueue(dataItem);
+                }
+            }
         }
         #endregion
 

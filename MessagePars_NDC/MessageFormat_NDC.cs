@@ -66,6 +66,14 @@ namespace MessagePars_NDC
                             result.MsgCommandType = MessageCommandType.GoOutOfService;
                     }
                     break;
+                case "3":
+                    {
+                        //NDC
+                        if (result.MsgType == MessageType.SolicitedMessage)
+                            result.MsgCommandType = MessageCommandType.NewKeyVerification;
+                        NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                    }
+                    break;
                 case "9":
                     {
                         if (result.MsgType == MessageType.SolicitedMessage)
@@ -90,6 +98,17 @@ namespace MessagePars_NDC
                         {
                             //cash handle
                             result.MsgCommandType = MessageCommandType.CashHandler;
+                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                        }
+                    }
+                    break;
+                case "F":
+                    {
+                        //NDC
+                        if (result.MsgType == MessageType.SolicitedMessage)
+                        {
+                            //TerminalState
+                            result.MsgCommandType = MessageCommandType.TerminalState;
                             NeedSendToBothHost.Enqueue(result.MsgBase64String);
                         }
                     }

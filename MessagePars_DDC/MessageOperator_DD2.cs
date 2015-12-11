@@ -255,7 +255,8 @@ namespace MessagePars_DDC
             bool isFoundFS_x = false;
             bool isOccurFS_x = false;
             int tempIndex = currXmlNodeIndex;
-            //foreach (XmlNode item in CurrentNode.ChildNodes)
+            if (CurrentNode == null)
+                return rowViewList;
             for (int i = tempIndex; i < CurrentNode.ChildNodes.Count; i++)
             {
                 if (!isFSrepeat)
