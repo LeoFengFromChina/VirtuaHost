@@ -21,7 +21,7 @@ namespace MessagePars_NDC
             }
         }
 
-        public XDCMessage Format(byte[] msgByte, int msgLength)
+        public XDCMessage Format(byte[] msgByte, int msgLength, TcpHead HeadType = TcpHead.NoHead)
         {
             XDCMessage result = new XDCMessage();
 
@@ -29,10 +29,16 @@ namespace MessagePars_NDC
             result.MsgByteArray = msgByte;
 
             //1.Base64字符串
-            result.MsgBase64String = Convert.ToBase64String(msgByte, 0, msgLength);
+            if (HeadType == TcpHead.L2L1)
+                result.MsgBase64String = Convert.ToBase64String(msgByte, 2, msgLength - 2);
+            else
+                result.MsgBase64String = Convert.ToBase64String(msgByte, 0, msgLength);
 
             //2.ASCII字符串
-            result.MsgASCIIString = Encoding.ASCII.GetString(msgByte, 0, msgLength);
+            if (HeadType == TcpHead.L2L1)
+                result.MsgASCIIString = Encoding.ASCII.GetString(msgByte, 2, msgLength - 2);
+            else
+                result.MsgASCIIString = Encoding.ASCII.GetString(msgByte, 0, msgLength);
 
             char MsgFS = '\u001C';//域分隔符
             string[] msgFields = result.MsgASCIIString.Split(MsgFS);
@@ -46,6 +52,18 @@ namespace MessagePars_NDC
             //5.消息类别
             string tempField_0 = msgFields[0].Length > 3 ? msgFields[0].Substring(2, msgFields[0].Length - 2) : msgFields[0];
             result.MsgType = FormatHelper.ParsMessageClass(tempField_0);
+
+            if (result.MsgType == MessageType.UnSolicitedMessage
+                && msgFields.Length > 7 && msgFields[7].Length > 0)
+            {
+                //操作码
+                result.OperationCode = msgFields[7].Replace(" ", "_");
+                //金额域
+                result.AmountField = msgFields[8];
+                //pan
+                if (msgFields[5].IndexOf('=') > 0)
+                    result.PAN = msgFields[5].Substring(1, msgFields[5].IndexOf('=') - 1);
+            }
 
             string msgResult = string.Empty;
             result.MsgCommandType = MessageCommandType.Unknow;

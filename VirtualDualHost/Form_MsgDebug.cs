@@ -21,7 +21,6 @@ namespace VirtualDualHost
             InitializeComponent();
             XDCUnity.Initial();
             rtb_Msg.Text = msgText;
-            BeginPars();
             if (protocolType == XDCProtocolType.DDC)
             {
                 rb_DDC.Checked = true;
@@ -30,6 +29,7 @@ namespace VirtualDualHost
             {
                 rb_NDC.Checked = true;
             }
+            BeginPars();
         }
         Form_Pars form_Pars;
         private DockPanel dp;

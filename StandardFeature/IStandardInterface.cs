@@ -15,7 +15,7 @@ namespace StandardFeature
             get;
             set;
         }
-        XDCMessage Format(byte[] msgByte, int msgLength);
+        XDCMessage Format(byte[] msgByte, int msgLength, TcpHead Head = TcpHead.NoHead);
     }
 
     public interface IMessageOperator

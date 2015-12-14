@@ -21,7 +21,7 @@ namespace MessagePars_DDC
             }
         }
 
-        public XDCMessage Format(byte[] msgByte, int msgLength)
+        public XDCMessage Format(byte[] msgByte, int msgLength, TcpHead Head = TcpHead.NoHead)
         {
             XDCMessage result = new XDCMessage();
 

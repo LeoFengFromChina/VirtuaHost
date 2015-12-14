@@ -81,7 +81,6 @@ namespace StatePars_DDC
                                 isFindComment = true;
                                 break;
                             }
-
                         }
                         if (!isFindComment)
                         {

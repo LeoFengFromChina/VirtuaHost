@@ -39,11 +39,11 @@
             this.rb_State = new System.Windows.Forms.RadioButton();
             this.rtb_Msg = new System.Windows.Forms.RichTextBox();
             this.dgv_Fileds = new System.Windows.Forms.DataGridView();
+            this.button_Paras = new System.Windows.Forms.Button();
+            this.button_Go = new System.Windows.Forms.Button();
             this.FieldName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button_Paras = new System.Windows.Forms.Button();
-            this.button_Go = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).BeginInit();
@@ -170,29 +170,6 @@
             this.dgv_Fileds.TabIndex = 3;
             this.dgv_Fileds.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Fileds_RowPostPaint);
             // 
-            // FieldName
-            // 
-            this.FieldName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.FieldName.DataPropertyName = "FieldName";
-            this.FieldName.HeaderText = "Name";
-            this.FieldName.Name = "FieldName";
-            // 
-            // FieldValue
-            // 
-            this.FieldValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.FieldValue.DataPropertyName = "FieldValue";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle1;
-            this.FieldValue.HeaderText = "Value";
-            this.FieldValue.Name = "FieldValue";
-            // 
-            // FieldComment
-            // 
-            this.FieldComment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.FieldComment.DataPropertyName = "FieldComment";
-            this.FieldComment.HeaderText = "Comment";
-            this.FieldComment.Name = "FieldComment";
-            // 
             // button_Paras
             // 
             this.button_Paras.Location = new System.Drawing.Point(409, 18);
@@ -211,6 +188,29 @@
             this.button_Go.TabIndex = 5;
             this.button_Go.Text = "Go";
             this.button_Go.UseVisualStyleBackColor = true;
+            // 
+            // FieldName
+            // 
+            this.FieldName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.FieldName.DataPropertyName = "FieldName";
+            this.FieldName.HeaderText = "Name";
+            this.FieldName.Name = "FieldName";
+            // 
+            // FieldValue
+            // 
+            this.FieldValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.FieldValue.DataPropertyName = "FieldValue";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle1;
+            this.FieldValue.HeaderText = "Value";
+            this.FieldValue.Name = "FieldValue";
+            // 
+            // FieldComment
+            // 
+            this.FieldComment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.FieldComment.DataPropertyName = "FieldComment";
+            this.FieldComment.HeaderText = "Comment";
+            this.FieldComment.Name = "FieldComment";
             // 
             // Form_MsgDebug
             // 

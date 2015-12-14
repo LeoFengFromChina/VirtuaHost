@@ -37,9 +37,8 @@
             this.Cassette = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Denomination = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LoadCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Dispense = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Remain = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Severity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.chb_ReceiveMsgDebug = new System.Windows.Forms.CheckBox();
             this.chb_SendMsgDebug = new System.Windows.Forms.CheckBox();
             this.gb_Debug = new System.Windows.Forms.GroupBox();
@@ -112,21 +111,25 @@
             this.Cassette,
             this.Denomination,
             this.LoadCount,
-            this.Dispense,
-            this.Remain,
-            this.Status});
+            this.CStatus,
+            this.Severity});
             this.dgv_Cassette.Location = new System.Drawing.Point(232, 21);
             this.dgv_Cassette.Name = "dgv_Cassette";
             this.dgv_Cassette.ReadOnly = true;
             this.dgv_Cassette.RowHeadersVisible = false;
-            this.dgv_Cassette.RowTemplate.Height = 23;
+            this.dgv_Cassette.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.dgv_Cassette.RowTemplate.Height = 20;
+            this.dgv_Cassette.RowTemplate.ReadOnly = true;
+            this.dgv_Cassette.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgv_Cassette.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgv_Cassette.Size = new System.Drawing.Size(540, 157);
             this.dgv_Cassette.TabIndex = 1;
+            this.dgv_Cassette.Leave += new System.EventHandler(this.dgv_Cassette_Leave);
             // 
             // Cassette
             // 
             this.Cassette.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Cassette.DataPropertyName = "Cassette";
             this.Cassette.HeaderText = "Cassette";
             this.Cassette.Name = "Cassette";
             this.Cassette.ReadOnly = true;
@@ -134,6 +137,7 @@
             // Denomination
             // 
             this.Denomination.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Denomination.DataPropertyName = "Denomination";
             this.Denomination.HeaderText = "Denomination";
             this.Denomination.Name = "Denomination";
             this.Denomination.ReadOnly = true;
@@ -141,30 +145,25 @@
             // LoadCount
             // 
             this.LoadCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.LoadCount.DataPropertyName = "LoadCount";
             this.LoadCount.HeaderText = "LoadCount";
             this.LoadCount.Name = "LoadCount";
             this.LoadCount.ReadOnly = true;
             // 
-            // Dispense
+            // CStatus
             // 
-            this.Dispense.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Dispense.HeaderText = "Dispense";
-            this.Dispense.Name = "Dispense";
-            this.Dispense.ReadOnly = true;
+            this.CStatus.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.CStatus.DataPropertyName = "Status";
+            this.CStatus.HeaderText = "Status";
+            this.CStatus.Name = "CStatus";
+            this.CStatus.ReadOnly = true;
             // 
-            // Remain
+            // Severity
             // 
-            this.Remain.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Remain.HeaderText = "Remain";
-            this.Remain.Name = "Remain";
-            this.Remain.ReadOnly = true;
-            // 
-            // Status
-            // 
-            this.Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
+            this.Severity.DataPropertyName = "Severity";
+            this.Severity.HeaderText = "Severity";
+            this.Severity.Name = "Severity";
+            this.Severity.ReadOnly = true;
             // 
             // chb_ReceiveMsgDebug
             // 
@@ -287,14 +286,13 @@
         private System.Windows.Forms.Button btn_ManuSendData;
         private System.Windows.Forms.Button btn_FetchConfig;
         private System.Windows.Forms.Button btn_FullDownLoad;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Cassette;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Denomination;
-        private System.Windows.Forms.DataGridViewTextBoxColumn LoadCount;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Dispense;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Remain;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button btn_ClearLog;
         private System.Windows.Forms.ComboBox cmb_Header;
         private System.Windows.Forms.ListBox lsb_Log;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Cassette;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Denomination;
+        private System.Windows.Forms.DataGridViewTextBoxColumn LoadCount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Severity;
     }
 }
