@@ -46,13 +46,17 @@ namespace VirtualDualHost
         static private Queue<string> currentFullDownLoad = new Queue<string>();
         static int port_eCAT;
         static byte[] result_eCAT = new byte[2048];
-
+        static OperationCode CurrentOperationCode = new OperationCode();
         private static bool isFullDownLoad = false;
         private static bool isFencth = false;
         private static bool FencthFoundUnknow = false;
         private delegate void GMReceiveMst(string header, string msg);
         private static event GMReceiveMst ReceiveMsg;
 
+        public delegate void ReBingCassetteStatus();
+        public static event ReBingCassetteStatus ReBingCassette;
+
+        public static List<NDCCassetteView> NDCCVList = new List<NDCCassetteView>();
         static string CurrentFencthResponse = string.Empty;
         string SendHead = "Send(";
         string RecvHead = "Recv(";
@@ -65,13 +69,20 @@ namespace VirtualDualHost
             CurrentHostServer.State = ServerState.OffLine;
             cmb_Header.SelectedIndex = 0;
             ReceiveMsg += new GMReceiveMst(Form1_ReceiveMsg);
-
+            ReBingCassette += Form_NDCServer_ReBingCassette;
             this.btn_Start.Click += Btn_Start_Click;
             this.btn_FetchConfig.Click += Btn_Start_Click;
             this.btn_FullDownLoad.Click += Btn_Start_Click;
             this.btn_ManuSendData.Click += Btn_Start_Click;
             this.btn_ClearLog.Click += Btn_Start_Click;
             //BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
+        }
+        private void Form_NDCServer_ReBingCassette()
+        {
+            if (dgv_Cassette.DataSource == null)
+                dgv_Cassette.DataSource = NDCCVList;
+            dgv_Cassette.Refresh();
+
         }
 
         private void Btn_Start_Click(object sender, EventArgs e)
@@ -83,6 +94,7 @@ namespace VirtualDualHost
                     {
                         isFullDownLoad = false;
                         isFencth = false;
+                        FencthFoundUnknow = false;
                         int.TryParse(txt_Port.Text.Trim(), out port_eCAT);
                         if (txt_Port.Enabled)
                         {
@@ -92,7 +104,9 @@ namespace VirtualDualHost
                                 lsb_Log.Items.Add("Error : Already Listen to Port: " + port_eCAT);
                                 return;
                             }
+                            //先清空
                             currentFentch.Clear();
+                            currentFentchResponse.Clear();
                             GetFentch();
                             if (cmb_Header.SelectedIndex == 0)
                             {
@@ -165,7 +179,7 @@ namespace VirtualDualHost
             }
             try
             {
-                this.lsb_Log.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + header + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2));
+                this.lsb_Log.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + header + Encoding.ASCII.GetString(Convert.FromBase64String(msg)));
             }
             catch
             {
@@ -181,7 +195,7 @@ namespace VirtualDualHost
 
         private void lsb_Log_DoubleClick(object sender, EventArgs e)
         {
-            if (lsb_Log.SelectedItem == null)
+            if (lsb_Log == null || lsb_Log.SelectedItem == null)
                 return;
             string currentItemStr = lsb_Log.SelectedItem.ToString();
             string msg = string.Empty;
@@ -266,17 +280,17 @@ namespace VirtualDualHost
                 CurrentHostServer.State = ServerState.OutOfService;
                 //有连接来了
                 ReceiveMsg("", "New Connection " + clientSocket.RemoteEndPoint.ToString());
-
+                //InitialCassette();
                 GetFentch();
 
                 //1.发送go-out-of-service消息
+                isFencth = true;
                 string out_of_service = currentFentch.Dequeue();
                 CurrentFencthResponse = currentFentchResponse.Dequeue();
                 string headContext = string.Empty;
                 byte[] msgBytes = XDCUnity.EnPackageMsg(out_of_service, CurrentHostServer, ref headContext);
                 clientSocket.Send(msgBytes);
                 ReceiveMsg("Send(" + headContext + ") : ", out_of_service);
-                isFencth = true;
 
                 //2.心跳包
                 LoadTheTimer();
@@ -302,9 +316,15 @@ namespace VirtualDualHost
                     result_eCAT = new byte[2048];
                     int receiveNumber = 0;
                     receiveNumber = myClientSocket.Receive(result_eCAT);
-                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber);
+                    CurrentOperationCode = new OperationCode();
+                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
                     string msg = msgContent.MsgBase64String;
-
+                    if (msgContent.MsgCommandType == MessageCommandType.DeviceFault)
+                    {
+                        //查看是否需要更新钱箱数据
+                        //CheckCassetteStatus(msgContent);
+                        //ReBingCassette();
+                    }
                     if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
                         ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgBase64String);
@@ -369,12 +389,24 @@ namespace VirtualDualHost
                                 //已经是最后一条go-in-service了
                                 CurrentHostServer.State = ServerState.InService;
                                 isFencth = false;
+
                             }
                             #endregion}
                         }
                         else
                         {
                             FencthFoundUnknow = true;
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(msgContent.OperationCode))
+                    {
+                        string replyMsg = ProcessOperationCode(msgContent);
+                        if (!string.IsNullOrEmpty(replyMsg))
+                        {
+                            byte[] msgBytes = XDCUnity.EnPackageMsg(replyMsg, CurrentHostServer, ref headContext);
+                            myClientSocket.Send(msgBytes);
+                            ReceiveMsg("Send(" + headContext + ") : ", replyMsg);
+                            Thread.Sleep(100);
                         }
                     }
                 }
@@ -404,10 +436,16 @@ namespace VirtualDualHost
         //启动监视"已登录用户通信情况"的线程
         public static void watchTheLoginUser(object o)
         {
-            //UserPassport up=new UserPassport();
-            checktheloginuser = new Thread(new ThreadStart(iAmAWatcher));
-            checktheloginuser.IsBackground = true;
-            checktheloginuser.Start();
+            try
+            {
+                checktheloginuser = new Thread(new ThreadStart(iAmAWatcher));
+                checktheloginuser.IsBackground = true;
+                checktheloginuser.Start();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         /// <summary>
@@ -461,6 +499,8 @@ namespace VirtualDualHost
                         XDCUnity.DDCFentchMessage.Enqueue(FencthArray[1]);
                     }
                 }
+                sr.Close();
+                sr.Dispose();
             }
             currentFentch = XDCUnity.DDCFentchMessage;
             currentFentchResponse = XDCUnity.DDCFentchResponseMessage;
@@ -473,7 +513,7 @@ namespace VirtualDualHost
         {
             if (currentFullDownLoad.Count <= 0)
             {
-                string path = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\FullDownData\EnhanceFullDownData.txt";
+                string path = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\FullDownData\FullDownData.txt";
                 string fulldownLoadData = XDCUnity.GetTxtFileText(path);
                 string[] dataArray = fulldownLoadData.Split(FieldspliterStr, StringSplitOptions.None);
                 foreach (string dataItem in dataArray)
@@ -483,7 +523,259 @@ namespace VirtualDualHost
                 }
             }
         }
+        public static string ProcessOperationCode(XDCMessage msgContent)
+        {
+            int resultIndex = 0;
+            string msgTemplate = string.Empty;
+            string path = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\OperationCodeConfig.ini";
+
+            CurrentOperationCode.Comment = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.Comment, string.Empty, path);
+            if (!string.IsNullOrEmpty(CurrentOperationCode.Comment))
+            {
+                CurrentOperationCode.CheckPin = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.CheckPin, string.Empty, path);
+
+                //获取消息模板
+                string RPpath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\TransactionReply.ini";
+                msgTemplate = XDCUnity.ReadIniData("Template", "Msg", string.Empty, RPpath);
+
+                if (CurrentOperationCode.Comment.ToLower() == "pinentry" && !CheckUserInfo(msgContent))
+                {
+                    //当前为输入密码，但是用户信息又不匹配，退出
+                    resultIndex = 1;
+                }
+
+                CurrentOperationCode.InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InteractiveReply, string.Empty, path);
+
+                CurrentOperationCode.NextState = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.NextState, string.Empty, path).Split(';');
+                CurrentOperationCode.FunctionIdentifier = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FunctionIdentifier, string.Empty, path).Split(';');
+                CurrentOperationCode.FunctionScreenNumber = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FunctionScreenNumber, string.Empty, path).Split(';');
+                CurrentOperationCode.ScreenDisplayUpdate = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.ScreenDisplayUpdate, string.Empty, path).Split(';');
+                CurrentOperationCode.CardReturnFlag = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.CardReturnFlag, string.Empty, path).Split(';');
+                CurrentOperationCode.PrintData = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.PrintData, string.Empty, path).Split(';');
+                CurrentOperationCode.InterResponseDisplayFlag = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InterResponseDisplayFlag, string.Empty, path).Split(';');
+                CurrentOperationCode.InterResponseActiveKeys = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InterResponseActiveKeys, string.Empty, path).Split(';');
+                CurrentOperationCode.InterResponseScreenTimer = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InterResponseScreenTimer, string.Empty, path).Split(';');
+                CurrentOperationCode.InterResponseScreenData = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InterResponseScreenData, string.Empty, path).Split(';');
+                CurrentOperationCode.GroupFunctionIdentifier = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.GroupFunctionIdentifier, string.Empty, path).Split(';');
+                CurrentOperationCode.OptionPrintData = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.OptionPrintData, string.Empty, path).Split(';');
+                CurrentOperationCode.EnhancedFunction = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.EnhancedFunction, string.Empty, path).Split(';');
+
+                string printDataPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\PrintData\";
+                string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\ScreenUpdate\";
+                string groupFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\GroupFunctionIdentifier\";
+                string EnhancedFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\EnhancedFunction\";
+
+
+                string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
+
+                string NotesToDispense = "0000000000000000";
+
+                string mcoo = "0";//= new string(new char[] { newMcc });
+
+                mcoo = new string(new char[] { msgContent.MsgCoodinationNumber });
+                if (CurrentOperationCode.Comment.ToLower().Contains("withdraw"))
+                {
+                    //取款配钞
+                    NotesToDispense = GetNotesToDispense(msgContent);
+
+                }
+                else if (CurrentOperationCode.Comment.ToLower().Contains("deposit"))
+                {
+                    int amout = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
+                    XDCUnity.RecordLastTransaction(msgContent, amout);
+                }
+
+                string updateDataStr = XDCUnity.GetTxtFileText(screenDisplayUpdatePath + CurrentOperationCode.ScreenDisplayUpdate[resultIndex]);
+                UpdateUserDataReplyToTerminal(msgContent, ref updateDataStr);
+                string printData = XDCUnity.GetTxtFileText(printDataPath + CurrentOperationCode.PrintData[resultIndex]);
+                string groupFunctionId = XDCUnity.GetTxtFileText(groupFunctionPath + CurrentOperationCode.GroupFunctionIdentifier[resultIndex]);
+                string enhanceFunction = XDCUnity.GetTxtFileText(EnhancedFunctionPath + CurrentOperationCode.EnhancedFunction[resultIndex]);
+                if (!string.IsNullOrEmpty(enhanceFunction))
+                {
+                    CurrentOperationCode.FunctionIdentifier[resultIndex] = ";";
+                    msgTemplate += enhanceFunction;
+                }
+
+                msgTemplate = msgTemplate.Replace("[MsgClass]", "4")
+                    .Replace("[ResponseFlag]", "")
+                    .Replace("[LUNO]", "000")
+                    .Replace("[MSN]", "1200")
+                    .Replace("[NextStateID]", CurrentOperationCode.NextState[resultIndex])
+                    .Replace("[NotesToDispense]", NotesToDispense)
+                    .Replace("[TSN]", TSN)
+                    .Replace("[FunctionId]", CurrentOperationCode.FunctionIdentifier[resultIndex])
+                    .Replace("[ScreenNumber]", CurrentOperationCode.FunctionScreenNumber[resultIndex])
+                    .Replace("[ScreenUpdateData]", updateDataStr)
+                    .Replace("[GroupFunctionIdentifier]", groupFunctionId)
+                    .Replace("[Msg-Co-Number]", mcoo)
+                    .Replace("[CardFlag]", CurrentOperationCode.CardReturnFlag[resultIndex])
+                    .Replace("[PrintFlat]", "3")
+                    .Replace("[PrintData]", printData);
+            }
+            return msgTemplate;
+        }
+
+        /// <summary>
+        /// 配钞
+        /// </summary>
+        /// <param name="amountField"></param>
+        /// <returns></returns>
+        public static string GetNotesToDispense(XDCMessage msgContent)
+        {
+            string result = string.Empty;
+
+            string tempAmount = string.Empty;
+
+            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
+
+            int noteCount = amount / 100;
+
+            #region 暂时先所有都从第一个钞箱出，日后完善配钞算法
+            if (noteCount < 100)
+                result = noteCount.ToString().PadLeft(2, '0');
+            else
+            {
+                result = noteCount.ToString().Substring(0, 2);
+            }
+            result = result.PadRight(16, '0');
+
+            //暂时注释
+            //NDCCVList[0].LoadCount = (int.Parse(NDCCVList[0].LoadCount) - noteCount).ToString();
+            ReBingCassette();
+            #endregion
+
+            //RecordUserInfo(msgContent, -amount);
+            XDCUnity.RecordLastTransaction(msgContent, -amount);
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// 验证用户信息
+        /// </summary>
+        /// <param name="msgContent"></param>
+        /// <returns></returns>
+        public static bool CheckUserInfo(XDCMessage msgContent)
+        {
+            bool result = false;
+
+            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
+            result = string.IsNullOrEmpty(UserName) ? false : true;
+
+            return result;
+        }
+
+        /// <summary>
+        /// 更新回复消息中的用户信息（不写入本地）
+        /// </summary>
+        /// <param name="msgContent"></param>
+        /// <param name="replyData"></param>
+        public static void UpdateUserDataReplyToTerminal(XDCMessage msgContent, ref string replyData)
+        {
+            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
+            string Pan = XDCUnity.ReadIniData(msgContent.PAN, "Pan", string.Empty, XDCUnity.UserInfoPath);
+            string Currency = XDCUnity.ReadIniData(msgContent.PAN, "Currency", string.Empty, XDCUnity.UserInfoPath);
+            string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
+            replyData = replyData.Replace("[USERNAME]", UserName)
+                                                .Replace("[CURRENCY]", Currency)
+                                                .Replace("[AVAILABLEBAL]", availableBanlance);
+
+        }
+
+
+        //public static void RecordUserInfo(XDCMessage msgContent, int changeAmount)
+        //{
+        //    string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
+
+        //    double newBalance = double.Parse(availableBanlance);
+        //    newBalance += changeAmount;
+        //    XDCUnity.WriteIniData(msgContent.PAN, "AvailableBalance", newBalance.ToString(), XDCUnity.UserInfoPath);
+
+        //}
+
+        public static void InitialCassette()
+        {
+            NDCCVList.Clear();
+            NDCCVList.Add(new NDCCassetteView("TypeA", "100", "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeB", "100", "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeC", "100", "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeD", "100", "", "", ""));
+
+            ReBingCassette();
+        }
+
+        public static void CheckCassetteStatus(XDCMessage msgContent)
+        {
+            List<ParsRowView> view = XDCUnity.MessageOperator.GetView(msgContent);
+
+            foreach (ParsRowView item in view)
+            {
+                #region LoadCout
+
+                if (item.FieldName.StartsWith("Total bills loaded - position 1"))
+                {
+                    NDCCVList[0].LoadCount = int.Parse(item.FieldValue).ToString();
+                }
+                else if (item.FieldName.StartsWith("Total bills loaded - position 2"))
+                {
+                    NDCCVList[1].LoadCount = int.Parse(item.FieldValue).ToString();
+                }
+                else if (item.FieldName.StartsWith("Total bills loaded - position 3"))
+                {
+                    NDCCVList[2].LoadCount = int.Parse(item.FieldValue).ToString();
+                }
+                else if (item.FieldName.StartsWith("Total bills loaded - position 4"))
+                {
+                    NDCCVList[3].LoadCount = int.Parse(item.FieldValue).ToString();
+                }
+                #endregion
+
+                #region Status
+                //Type 1 Currency Cassettes   1 
+                else if (item.FieldName.StartsWith("Type 1 Currency Cassettes"))
+                {
+                    NDCCVList[0].Status = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Type 2 Currency Cassettes"))
+                {
+                    NDCCVList[1].Status = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Type 3 Currency Cassettes"))
+                {
+                    NDCCVList[2].Status = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Type 4 Currency Cassettes"))
+                {
+                    NDCCVList[3].Status = item.FieldComment;
+                }
+                #endregion
+
+                #region Severity
+                else if (item.FieldName.StartsWith("Cassette type 1"))
+                {
+                    NDCCVList[0].Severity = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Cassette type 2"))
+                {
+                    NDCCVList[1].Severity = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Cassette type 3"))
+                {
+                    NDCCVList[2].Severity = item.FieldComment;
+                }
+                else if (item.FieldName.StartsWith("Cassette type 4"))
+                {
+                    NDCCVList[3].Severity = item.FieldComment;
+                }
+                #endregion
+            }
+        }
         #endregion
 
+        private void dgv_Cassette_Leave(object sender, EventArgs e)
+        {
+            dgv_Cassette.ClearSelection();
+        }
     }
 }

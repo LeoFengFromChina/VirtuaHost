@@ -380,7 +380,6 @@ namespace VirtualDualHost
                                 CurrentHostServer.State = ServerState.InService;
                                 isFencth = false;
 
-                                ReBingCassette();
                             }
                             #endregion}
                         }

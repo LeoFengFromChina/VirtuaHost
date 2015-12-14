@@ -90,7 +90,11 @@ namespace StandardFeature
         /// <summary>
         /// F,NDC,终端状态
         /// </summary>
-        TerminalState
+        TerminalState,
+        /// <summary>
+        /// 配置信息
+        /// </summary>
+        DeviceFault
         #endregion
     }
 
@@ -176,6 +180,8 @@ namespace StandardFeature
         /// 标识[消息的第4个分隔符内容]
         /// </summary>
         public string Identification { get; set; }
+
+        public char MsgCoodinationNumber { get; set; }
 
         /// <summary>
         /// 消息类型
@@ -498,7 +504,7 @@ namespace StandardFeature
         {
 
         }
-        public NDCCassetteView(string _cassette, string _denomination, string _loadCount,string _status,string _severity)
+        public NDCCassetteView(string _cassette, string _denomination, string _loadCount, string _status, string _severity)
         {
             Cassette = _cassette;
             Denomination = _denomination;

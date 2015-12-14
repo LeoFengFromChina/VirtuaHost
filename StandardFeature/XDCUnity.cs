@@ -291,7 +291,7 @@ namespace StandardFeature
             return resultBytes;
         }
 
-        public static  string UserInfoPath = System.Environment.CurrentDirectory + @"\Config\Server\UserInfo.ini";
+        public static string UserInfoPath = System.Environment.CurrentDirectory + @"\Config\Server\UserInfo.ini";
 
         #region ini文件操作
 
@@ -351,5 +351,25 @@ namespace StandardFeature
         #endregion
 
         #endregion
+
+        public static void RecordLastTransaction(XDCMessage msgContent, int changeAmount)
+        {
+            string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
+
+            double newBalance = double.Parse(availableBanlance);
+            newBalance += changeAmount;
+            XDCUnity.WriteIniData(msgContent.PAN, "AvailableBalance", newBalance.ToString(), XDCUnity.UserInfoPath);
+
+            //记录账号
+            XDCUnity.WriteIniData("LastTransactionNotesDispensed", "Pan", msgContent.PAN, XDCUnity.UserInfoPath);
+            //记录金额
+            XDCUnity.WriteIniData("LastTransactionNotesDispensed", "Amount", changeAmount.ToString(), XDCUnity.UserInfoPath);
+
+            //记录序列号
+            string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
+            string newTSN = (int.Parse(TSN) + 1).ToString();
+            XDCUnity.WriteIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", newTSN.ToString(), XDCUnity.UserInfoPath);
+
+        }
     }
 }
