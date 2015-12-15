@@ -109,12 +109,12 @@ namespace VirtualDualHost
         private void Form_MsgDebug_Load(object sender, EventArgs e)
         {
             dgv_Fileds.ClearSelection();
-            rb_DDC.Click += Rb_DDC_Click;
-            rb_NDC.Click += Rb_DDC_Click;
-            rb_State.Click += Rb_DDC_Click;
-            rb_Screen.Click += Rb_DDC_Click;
-            rb_Fit.Click += Rb_DDC_Click;
-            rb_Message.Click += Rb_DDC_Click;
+            rb_DDC.MouseClick += Rb_DDC_Click;
+            rb_NDC.MouseClick += Rb_DDC_Click;
+            rb_State.MouseClick += Rb_DDC_Click;
+            rb_Screen.MouseClick += Rb_DDC_Click;
+            rb_Fit.MouseClick += Rb_DDC_Click;
+            rb_Message.MouseClick += Rb_DDC_Click;
         }
 
         private void Rb_DDC_Click(object sender, EventArgs e)

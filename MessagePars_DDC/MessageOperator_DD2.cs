@@ -541,7 +541,11 @@ namespace MessagePars_DDC
                 {
                     vtRepeatXMLnodeCount = 0;
                     isVTRepeat = false;
-                    string[] vtDataArray = rsData.Split(XDCSplictorChar.VT);
+                    string[] vtDataArray;
+                    if (rsData.Contains(XDCSplictorChar.VT2))
+                        vtDataArray = rsData.Split(XDCSplictorChar.VT2);
+                    else
+                        vtDataArray = rsData.Split(XDCSplictorChar.VT);
                     foreach (string vtDataItem in vtDataArray)
                     {
                         vtRepeatXMLnodeCount = 0;

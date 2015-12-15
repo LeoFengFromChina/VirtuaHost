@@ -89,6 +89,15 @@ namespace MessagePars_DDC
                             result.MsgCommandType = MessageCommandType.GoOutOfService;
                     }
                     break;
+                case "3":
+                    {
+                        if (result.MsgType == MessageType.UnSolicitedMessage)
+                        {
+                            if (msgFields[3].Length > 2 && "00" == msgFields[3].Substring(1, 2))
+                                result.MsgCommandType = MessageCommandType.SupervisorAndSupplySwitchOFF;
+                        }
+                    }
+                    break;
                 case "8":
                     {
                         if (result.MsgType == MessageType.SolicitedMessage)

@@ -81,7 +81,12 @@ namespace StandardFeature
         /// PowerUp
         /// </summary>
         PowerFailure,
-
+        #region DDC
+        /// <summary>
+        /// 双屏操作
+        /// </summary>
+        SupervisorAndSupplySwitchOFF,
+        #endregion
         #region NDC
         /// <summary>
         /// 3,NDC,新密码验证
@@ -364,6 +369,7 @@ namespace StandardFeature
         public static Char BlankRow_1 = '\u000D';
         public static Char BlankRow_2 = '\u000A';
         public static Char VT = '\n';
+        public static Char VT2 = '\u000B';
     }
 
     public static class DDCdeviceID

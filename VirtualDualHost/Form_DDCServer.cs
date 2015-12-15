@@ -56,7 +56,7 @@ namespace VirtualDualHost
         public delegate void ReBingCassetteStatus();
         public static event ReBingCassetteStatus ReBingCassette;
 
-        public static List<NDCCassetteView> NDCCVList = new List<NDCCassetteView>();
+        public static List<NDCCassetteView> DDCCVList = new List<NDCCassetteView>();
         static string CurrentFencthResponse = string.Empty;
         string SendHead = "Send(";
         string RecvHead = "Recv(";
@@ -69,7 +69,7 @@ namespace VirtualDualHost
             CurrentHostServer.State = ServerState.OffLine;
             cmb_Header.SelectedIndex = 0;
             ReceiveMsg += new GMReceiveMst(Form1_ReceiveMsg);
-            ReBingCassette += Form_NDCServer_ReBingCassette;
+            ReBingCassette += Form_DDCServer_ReBingCassette;
             this.btn_Start.Click += Btn_Start_Click;
             this.btn_FetchConfig.Click += Btn_Start_Click;
             this.btn_FullDownLoad.Click += Btn_Start_Click;
@@ -77,12 +77,12 @@ namespace VirtualDualHost
             this.btn_ClearLog.Click += Btn_Start_Click;
             //BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
         }
-        private void Form_NDCServer_ReBingCassette()
+
+        private void Form_DDCServer_ReBingCassette()
         {
             if (dgv_Cassette.DataSource == null)
-                dgv_Cassette.DataSource = NDCCVList;
+                dgv_Cassette.DataSource = DDCCVList;
             dgv_Cassette.Refresh();
-
         }
 
         private void Btn_Start_Click(object sender, EventArgs e)
@@ -280,7 +280,7 @@ namespace VirtualDualHost
                 CurrentHostServer.State = ServerState.OutOfService;
                 //有连接来了
                 ReceiveMsg("", "New Connection " + clientSocket.RemoteEndPoint.ToString());
-                //InitialCassette();
+                InitialCassette();
                 GetFentch();
 
                 //1.发送go-out-of-service消息
@@ -322,8 +322,13 @@ namespace VirtualDualHost
                     if (msgContent.MsgCommandType == MessageCommandType.DeviceFault)
                     {
                         //查看是否需要更新钱箱数据
-                        //CheckCassetteStatus(msgContent);
-                        //ReBingCassette();
+                        CheckCassetteStatus(msgContent);
+                        ReBingCassette();
+                    }
+                    if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
+                    {
+                        isFencth = true;
+                        GetFentch();
                     }
                     if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
@@ -366,7 +371,8 @@ namespace VirtualDualHost
                     }
                     else if (isFencth)
                     {
-                        if (msgContent.Identification == CurrentFencthResponse)
+                        if ((msgContent.Identification == CurrentFencthResponse)
+                            || msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
                         {
                             #region Fencth
 
@@ -389,6 +395,7 @@ namespace VirtualDualHost
                                 //已经是最后一条go-in-service了
                                 CurrentHostServer.State = ServerState.InService;
                                 isFencth = false;
+                                ReBingCassette();
 
                             }
                             #endregion}
@@ -640,7 +647,7 @@ namespace VirtualDualHost
             result = result.PadRight(16, '0');
 
             //暂时注释
-            //NDCCVList[0].LoadCount = (int.Parse(NDCCVList[0].LoadCount) - noteCount).ToString();
+            DDCCVList[0].LoadCount = (int.Parse(DDCCVList[0].LoadCount) - noteCount).ToString();
             ReBingCassette();
             #endregion
 
@@ -683,24 +690,15 @@ namespace VirtualDualHost
 
         }
 
-
-        //public static void RecordUserInfo(XDCMessage msgContent, int changeAmount)
-        //{
-        //    string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
-
-        //    double newBalance = double.Parse(availableBanlance);
-        //    newBalance += changeAmount;
-        //    XDCUnity.WriteIniData(msgContent.PAN, "AvailableBalance", newBalance.ToString(), XDCUnity.UserInfoPath);
-
-        //}
-
         public static void InitialCassette()
         {
-            NDCCVList.Clear();
-            NDCCVList.Add(new NDCCassetteView("TypeA", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeB", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeC", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeD", "100", "", "", ""));
+            DDCCVList.Clear();
+            DDCCVList.Add(new NDCCassetteView("TypeA", "", "", "", ""));
+            DDCCVList.Add(new NDCCassetteView("TypeB", "", "", "", ""));
+            DDCCVList.Add(new NDCCassetteView("TypeC", "", "", "", ""));
+            DDCCVList.Add(new NDCCassetteView("TypeD", "", "", "", ""));
+            DDCCVList.Add(new NDCCassetteView("TypeE", "", "", "", ""));
+            DDCCVList.Add(new NDCCassetteView("TypeF", "", "", "", ""));
 
             ReBingCassette();
         }
@@ -711,63 +709,129 @@ namespace VirtualDualHost
 
             foreach (ParsRowView item in view)
             {
+
+
                 #region LoadCout
 
                 if (item.FieldName.StartsWith("Total bills loaded - position 1"))
                 {
-                    NDCCVList[0].LoadCount = int.Parse(item.FieldValue).ToString();
+                    DDCCVList[0].LoadCount = int.Parse(item.FieldValue).ToString();
                 }
                 else if (item.FieldName.StartsWith("Total bills loaded - position 2"))
                 {
-                    NDCCVList[1].LoadCount = int.Parse(item.FieldValue).ToString();
+                    DDCCVList[1].LoadCount = int.Parse(item.FieldValue).ToString();
                 }
                 else if (item.FieldName.StartsWith("Total bills loaded - position 3"))
                 {
-                    NDCCVList[2].LoadCount = int.Parse(item.FieldValue).ToString();
+                    DDCCVList[2].LoadCount = int.Parse(item.FieldValue).ToString();
                 }
                 else if (item.FieldName.StartsWith("Total bills loaded - position 4"))
                 {
-                    NDCCVList[3].LoadCount = int.Parse(item.FieldValue).ToString();
+                    DDCCVList[3].LoadCount = int.Parse(item.FieldValue).ToString();
                 }
                 #endregion
 
+
+                #region Denomination
+                //Bill Values	000001000000000100000000010000000000500000000050000000005000	
+                else if (item.FieldName.StartsWith("Bill Values"))
+                {
+                    string valuesStr = item.FieldValue.ToString();
+                    string leftStr = valuesStr;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (string.IsNullOrEmpty(leftStr))
+                            break;
+                        string singleBill = leftStr.Substring(0, 10);
+                        leftStr = leftStr.Substring(10, leftStr.Length - 10);
+                        singleBill = singleBill.Substring(0, singleBill.Length - 2);
+                        DDCCVList[i].Denomination = int.Parse(singleBill).ToString();
+                    }
+                }
+
+                #endregion
+
                 #region Status
-                //Type 1 Currency Cassettes   1 
-                else if (item.FieldName.StartsWith("Type 1 Currency Cassettes"))
+                //Cassette status, position 1 
+                else if (item.FieldName.StartsWith("Cassette status, position 1"))
                 {
-                    NDCCVList[0].Status = item.FieldComment;
+                    if (item.FieldValue == "<1")
+                    {
+                        DDCCVList[0].Status = "Good";
+                    }
+                    else if (item.FieldValue == ">1")
+                    {
+                        DDCCVList[0].Status = "Low";
+                    }
+                    else if (item.FieldValue == "=?")
+                    {
+                        DDCCVList[0].Status = "Not Present";
+                    }
                 }
-                else if (item.FieldName.StartsWith("Type 2 Currency Cassettes"))
+                else if (item.FieldName.StartsWith("Cassette status, position 2"))
                 {
-                    NDCCVList[1].Status = item.FieldComment;
+                    if (item.FieldValue == "<2")
+                    {
+                        DDCCVList[1].Status = "Good";
+                    }
+                    else if (item.FieldValue == ">2")
+                    {
+                        DDCCVList[1].Status = "Low";
+                    }
+                    else if (item.FieldValue == "=?")
+                    {
+                        DDCCVList[1].Status = "Not Present";
+                    }
                 }
-                else if (item.FieldName.StartsWith("Type 3 Currency Cassettes"))
+                else if (item.FieldName.StartsWith("Cassette status, position 3"))
                 {
-                    NDCCVList[2].Status = item.FieldComment;
+                    if (item.FieldValue == "<3")
+                    {
+                        DDCCVList[2].Status = "Good";
+                    }
+                    else if (item.FieldValue == ">3")
+                    {
+                        DDCCVList[2].Status = "Low";
+                    }
+                    else if (item.FieldValue == "=?")
+                    {
+                        DDCCVList[2].Status = "Not Present";
+                    }
                 }
-                else if (item.FieldName.StartsWith("Type 4 Currency Cassettes"))
+                else if (item.FieldName.StartsWith("Cassette status, position 4"))
                 {
-                    NDCCVList[3].Status = item.FieldComment;
+                    if (item.FieldValue == "<4")
+                    {
+                        DDCCVList[3].Status = "Good";
+                    }
+                    else if (item.FieldValue == ">4")
+                    {
+                        DDCCVList[3].Status = "Low";
+                    }
+                    else if (item.FieldValue == "=?")
+                    {
+                        DDCCVList[3].Status = "Not Present";
+                    }
                 }
                 #endregion
 
                 #region Severity
-                else if (item.FieldName.StartsWith("Cassette type 1"))
-                {
-                    NDCCVList[0].Severity = item.FieldComment;
-                }
-                else if (item.FieldName.StartsWith("Cassette type 2"))
-                {
-                    NDCCVList[1].Severity = item.FieldComment;
-                }
-                else if (item.FieldName.StartsWith("Cassette type 3"))
-                {
-                    NDCCVList[2].Severity = item.FieldComment;
-                }
-                else if (item.FieldName.StartsWith("Cassette type 4"))
-                {
-                    NDCCVList[3].Severity = item.FieldComment;
-                }
+                //else if (item.FieldName.StartsWith("Cassette type 1"))
+                //{
+                //    NDCCVList[0].Severity = item.FieldComment;
+                //}
+                //else if (item.FieldName.StartsWith("Cassette type 2"))
+                //{
+                //    NDCCVList[1].Severity = item.FieldComment;
+                //}
+                //else if (item.FieldName.StartsWith("Cassette type 3"))
+                //{
+                //    NDCCVList[2].Severity = item.FieldComment;
+                //}
+                //else if (item.FieldName.StartsWith("Cassette type 4"))
+                //{
+                //    NDCCVList[3].Severity = item.FieldComment;
+                //}
                 #endregion
             }
         }
