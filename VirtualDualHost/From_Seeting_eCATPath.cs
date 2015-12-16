@@ -30,7 +30,7 @@ namespace VirtualDualHost
             XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
             node.Attributes["value"].InnerText = folderDlg.SelectedPath;
             doc.Save(Environment.CurrentDirectory + @"\Config\BaseConfig.xml");
-
+            MessageBox.Show("Save.");
         }
 
         private void From_Seeting_eCATPath_Load(object sender, EventArgs e)
