@@ -15,12 +15,12 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace VirtualDualHost
 {
-    public partial class Form_NDCServer : DockContent
+    public partial class Form_NDCServer_2 : DockContent
     {
         #region Field
 
         private static Host CurrentHostServer = new Host();
-        public Form_NDCServer()
+        public Form_NDCServer_2()
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -552,9 +552,9 @@ namespace VirtualDualHost
 
             #region NDC
 
-            if (XDCUnity.NDCFentchMessage.Count <= 0)
+            if (XDCUnity.NDC_2FentchMessage.Count <= 0)
             {
-                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\Raw\FentchConfig.txt";
+                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\Raw\FentchConfig.txt";
 
                 StreamReader sr = new StreamReader(path, Encoding.Default);
                 string line;
@@ -563,15 +563,15 @@ namespace VirtualDualHost
                     if (!string.IsNullOrEmpty(line))
                     {
                         string[] FencthArray = line.Split(FieldspliterStr, StringSplitOptions.None);
-                        XDCUnity.NDCFentchResponseMessage.Enqueue(FencthArray[0]);
-                        XDCUnity.NDCFentchMessage.Enqueue(FencthArray[1]);
+                        XDCUnity.NDC_2FentchResponseMessage.Enqueue(FencthArray[0]);
+                        XDCUnity.NDC_2FentchMessage.Enqueue(FencthArray[1]);
                     }
                 }
                 sr.Close();
                 sr.Dispose();
             }
-            currentFentch = XDCUnity.NDCFentchMessage;
-            currentFentchResponse = XDCUnity.NDCFentchResponseMessage;
+            currentFentch = XDCUnity.NDC_2FentchMessage;
+            currentFentchResponse = XDCUnity.NDC_2FentchResponseMessage;
             #endregion
 
         }
@@ -583,7 +583,7 @@ namespace VirtualDualHost
         {
             if (currentFullDownLoad.Count <= 0)
             {
-                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\FullDownData\Cust.data";
+                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\FullDownData\Cust.data";
                 string fulldownLoadData = XDCUnity.GetTxtFileText(path);
                 string[] dataArray = fulldownLoadData.Split(FieldspliterStr, StringSplitOptions.None);
                 foreach (string dataItem in dataArray)
@@ -603,7 +603,7 @@ namespace VirtualDualHost
         {
             int resultIndex = 0;
             string msgTemplate = string.Empty;
-            string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\OperationCodeConfig.ini";
+            string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\OperationCodeConfig.ini";
 
             CurrentOperationCode.Comment = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.Comment, string.Empty, path);
             if (!string.IsNullOrEmpty(CurrentOperationCode.Comment))
@@ -611,7 +611,7 @@ namespace VirtualDualHost
                 CurrentOperationCode.CheckPin = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.CheckPin, string.Empty, path);
 
                 //获取消息模板
-                string RPpath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\TransactionReply.ini";
+                string RPpath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\TransactionReply.ini";
                 msgTemplate = XDCUnity.ReadIniData("Template", "Msg", string.Empty, RPpath);
 
                 if (CurrentOperationCode.Comment.ToLower() == "pinentry" && !CheckUserInfo(msgContent))
@@ -636,9 +636,9 @@ namespace VirtualDualHost
                 CurrentOperationCode.OptionPrintData = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.OptionPrintData, string.Empty, path).Split(';');
                 CurrentOperationCode.EnhancedFunction = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.EnhancedFunction, string.Empty, path).Split(';');
 
-                string printDataPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\PrintData\";
-                string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\ScreenUpdate\";
-                string commonConfigPath= System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\CommonConfig.ini";
+                string printDataPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\PrintData\";
+                string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\ScreenUpdate\";
+                string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\CommonConfig.ini";
 
                 string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
                 string NotesToDispense = "00000000";
@@ -655,7 +655,6 @@ namespace VirtualDualHost
                 string updateDataStr = XDCUnity.GetTxtFileText(screenDisplayUpdatePath + CurrentOperationCode.ScreenDisplayUpdate[resultIndex]);
 
                 string printData = XDCUnity.GetTxtFileText(printDataPath + CurrentOperationCode.PrintData[resultIndex]);
-
                 UpdateUserDataReplyToTerminal(msgContent, ref updateDataStr, resultIndex);
                 UpdateUserDataReplyToTerminal(msgContent, ref printData, resultIndex);
                 msgTemplate = msgTemplate.Replace("[MsgClass]", "4")
@@ -725,7 +724,7 @@ namespace VirtualDualHost
         /// </summary>
         /// <param name="msgContent"></param>
         /// <param name="replyData"></param>
-        public static void UpdateUserDataReplyToTerminal(XDCMessage msgContent, ref string replyData,int status)
+        public static void UpdateUserDataReplyToTerminal(XDCMessage msgContent, ref string replyData, int status)
         {
             string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
             string Pan = XDCUnity.ReadIniData(msgContent.PAN, "Pan", string.Empty, XDCUnity.UserInfoPath);

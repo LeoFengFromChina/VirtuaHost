@@ -25,7 +25,7 @@ namespace VirtualDualHost
 
         #region Base
 
-        public delegate void SendMsgToeCAT(object socket, string msg);
+        public delegate void SendMsgToeCAT(object socket, XDCMessage msg);
         public static event SendMsgToeCAT SendMsgToeCATEvent;
         public static event SendMsgToeCAT SendMsgToeCATEvent_2;
 
@@ -35,10 +35,13 @@ namespace VirtualDualHost
         public static event SendMsgToGM SendMsgToGM01_Event;
         public static event SendMsgToGM SendMsgToGM02_Event;
 
-        public delegate void GMReceiveMst(string msg);
+        public delegate void GMReceiveMst(XDCMessage msg);
         public static event GMReceiveMst ReceiveMsg_GM01;
         public static event GMReceiveMst ReceiveMsg_GM02;
-        public static event GMReceiveMst ReceiveMsg_Unknow;
+
+
+        public delegate void GMReceivePureMst(string msg);
+        public static event GMReceivePureMst ReceiveMsg_Unknow;
 
 
         static Socket socket_eCAT;
@@ -49,7 +52,6 @@ namespace VirtualDualHost
         static byte[] result_GM01 = new byte[2048];
         static byte[] result_GM02 = new byte[2048];
 
-        static IPAddress ip_eCAT = IPAddress.Parse("127.0.0.1");
         static int port_eCAT = 4070;
         static string LUNO_eCATBase = "";
 
@@ -63,21 +65,22 @@ namespace VirtualDualHost
         static string LUNO_GM02 = "";
         static HostState GM02_HostState = HostState.Unknow;
 
-
+        string SendHead = "Send(";
+        string RecvHead = "Recv(";
         #endregion
 
 
         #region Control Event
 
-        RichTextBox tb;
+        //RichTextBox tb;
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            contextMenuStrip1.Items.Add("Clear");
-            contextMenuStrip1.Items.Add("Pars");
-            contextMenuStrip1.ItemClicked += new ToolStripItemClickedEventHandler(contextMenuStrip1_ItemClicked);
-            contextMenuStrip1.Items[0].Click += Form_DualHost_Click;
-            contextMenuStrip1.Items[1].Click += Form_DualHost_Click1;
+            //contextMenuStrip1.Items.Add("Clear");
+            //contextMenuStrip1.Items.Add("Pars");
+            //contextMenuStrip1.ItemClicked += new ToolStripItemClickedEventHandler(contextMenuStrip1_ItemClicked);
+            //contextMenuStrip1.Items[0].Click += Form_DualHost_Click;
+            //contextMenuStrip1.Items[1].Click += Form_DualHost_Click1;
             //msgDebugToolStripMenuItem.Click += MsgDebugToolStripMenuItem_Click;
 
             SendMsgToeCATEvent += new SendMsgToeCAT(Program_SendMsgToeCATEvent);
@@ -87,28 +90,30 @@ namespace VirtualDualHost
 
             ReceiveMsg_GM01 += new GMReceiveMst(Form1_ReceiveMsg_GM01);
             ReceiveMsg_GM02 += new GMReceiveMst(Form1_ReceiveMsg_GM02);
-            ReceiveMsg_Unknow += new GMReceiveMst(Form_Main_ReceiveMsg_Unknow);
+            ReceiveMsg_Unknow += new GMReceivePureMst(Form_Main_ReceiveMsg_Unknow);
+
+            lsb_Log_GM02.MouseDoubleClick += lsb_Log_GM01_MouseDoubleClick;
         }
 
-        private void Form_DualHost_Click1(object sender, EventArgs e)
-        {
-            if (null != tb)
-            {
-                string msgText = string.Empty;
-                msgText = tb.SelectedText;
-                Form_MsgDebug debugForm = new Form_MsgDebug(msgText, XDCProtocolType.NDC);
-                debugForm.Show();
-            }
-        }
+        //private void Form_DualHost_Click1(object sender, EventArgs e)
+        //{
+        //    if (null != tb)
+        //    {
+        //        string msgText = string.Empty;
+        //        msgText = tb.SelectedText;
+        //        Form_MsgDebug debugForm = new Form_MsgDebug(msgText, XDCProtocolType.NDC);
+        //        debugForm.Show();
+        //    }
+        //}
 
-        private void Form_DualHost_Click(object sender, EventArgs e)
-        {
-            //throw new NotImplementedException();
-            if (null != tb)
-            {
-                tb.Clear();
-            }
-        }
+        //private void Form_DualHost_Click(object sender, EventArgs e)
+        //{
+        //    //throw new NotImplementedException();
+        //    if (null != tb)
+        //    {
+        //        tb.Clear();
+        //    }
+        //}
 
         private void MsgDebugToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -126,10 +131,10 @@ namespace VirtualDualHost
         {
             if (!iseCATStart)
             {
-                ip_eCAT = IPAddress.Parse(txt_eCAT_IP.Text.Trim());
+                //ip_eCAT = IPAddress.Parse(txt_eCAT_IP.Text.Trim());
                 port_eCAT = int.Parse(txt_eCAT_Port.Text.Trim());
                 LUNO_eCATBase = txt_eCAT_BaseLUNO.Text.Trim();
-                txt_eCAT_IP.Enabled = false;
+                //txt_eCAT_IP.Enabled = false;
                 txt_eCAT_Port.Enabled = false;
                 txt_eCAT_BaseLUNO.Enabled = false;
                 btn_eCAT_Start.Text = "Stop";
@@ -140,18 +145,16 @@ namespace VirtualDualHost
             else
             {
                 btn_eCAT_Start.Text = "Start";
-                txt_eCAT_IP.Enabled = true;
+                //txt_eCAT_IP.Enabled = true;
                 txt_eCAT_Port.Enabled = true;
                 txt_eCAT_BaseLUNO.Enabled = true;
                 iseCATStart = false;
                 eCATThread.Suspend();
-                eCATThread.Abort();
                 eCATThread = null;
 
                 if (receiveThread != null)
                 {
                     receiveThread.Suspend();
-                    receiveThread.Abort();
                     receiveThread = null;
                 }
 
@@ -241,28 +244,32 @@ namespace VirtualDualHost
             }
         }
 
-        private void rtb_GM01_Msg_TextChanged(object sender, EventArgs e)
-        {
-            rtb_GM01_Msg.SelectionStart = rtb_GM01_Msg.Text.Length;
-            rtb_GM01_Msg.ScrollToCaret();
-        }
+        //private void rtb_GM01_Msg_TextChanged(object sender, EventArgs e)
+        //{
+        //    rtb_GM01_Msg.SelectionStart = rtb_GM01_Msg.Text.Length;
+        //    rtb_GM01_Msg.ScrollToCaret();
+        //}
 
-        private void rtb_GM02_Msg_TextChanged(object sender, EventArgs e)
-        {
-            rtb_GM02_Msg.SelectionStart = rtb_GM02_Msg.Text.Length;
-            rtb_GM02_Msg.ScrollToCaret();
-        }
+        //private void rtb_GM02_Msg_TextChanged(object sender, EventArgs e)
+        //{
+        //    rtb_GM02_Msg.SelectionStart = rtb_GM02_Msg.Text.Length;
+        //    rtb_GM02_Msg.ScrollToCaret();
+        //}
 
-        void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            tb = ((RichTextBox)((ContextMenuStrip)sender).SourceControl);
-        }
+        //void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        //{
+        //    tb = ((RichTextBox)((ContextMenuStrip)sender).SourceControl);
+        //}
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Process.GetCurrentProcess().Kill();
         }
 
+        private void seteCATPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new From_Seeting_eCATPath().Show();
+        }
         #endregion
 
         #region Send Event
@@ -285,34 +292,45 @@ namespace VirtualDualHost
             }
         }
 
-        void Program_SendMsgToeCATEvent(object socket, string msg)
+        void Program_SendMsgToeCATEvent(object socket, XDCMessage msg)
         {
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg));
-                rtb_GM01_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+                tempSock.Send(Convert.FromBase64String(msg.MsgBase64String));
+                //rtb_GM01_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+
+                this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
             }
+            this.lsb_Log_GM01.TopIndex = lsb_Log_GM01.Items.Count - (int)(lsb_Log_GM01.Height / lsb_Log_GM01.ItemHeight);
         }
 
-        void Program_SendMsgToeCATEvent_2(object socket, string msg)
+        void Program_SendMsgToeCATEvent_2(object socket, XDCMessage msg)
         {
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg));
-                rtb_GM02_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+                tempSock.Send(Convert.FromBase64String(msg.MsgBase64String));
+                //rtb_GM02_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+
+                this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
             }
+
+            this.lsb_Log_GM02.TopIndex = lsb_Log_GM02.Items.Count - (int)(lsb_Log_GM02.Height / lsb_Log_GM02.ItemHeight);
         }
 
-        void Form1_ReceiveMsg_GM02(string msg)
+        void Form1_ReceiveMsg_GM02(XDCMessage msg)
         {
-            rtb_GM02_Msg.Text += "Recv :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+            this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+
+            this.lsb_Log_GM02.TopIndex = lsb_Log_GM02.Items.Count - (int)(lsb_Log_GM02.Height / lsb_Log_GM02.ItemHeight);
         }
 
-        void Form1_ReceiveMsg_GM01(string msg)
+        void Form1_ReceiveMsg_GM01(XDCMessage msg)
         {
-            rtb_GM01_Msg.Text += "Recv :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+            this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+
+            this.lsb_Log_GM01.TopIndex = lsb_Log_GM01.Items.Count - (int)(lsb_Log_GM01.Height / lsb_Log_GM01.ItemHeight);
         }
 
         #endregion
@@ -323,10 +341,11 @@ namespace VirtualDualHost
         {
 
             socket_eCAT = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket_eCAT.Bind(new IPEndPoint(ip_eCAT, port_eCAT));
+            socket_eCAT.Bind(new IPEndPoint(IPAddress.Any, port_eCAT));
             socket_eCAT.Listen(10);
             Console.WriteLine("启动监听eCAT...");
             eCATThread = new Thread(eCAT_ListenClientConnect);
+            eCATThread.IsBackground = true;
             eCATThread.Start();
         }
 
@@ -339,6 +358,7 @@ namespace VirtualDualHost
             {
                 clientSocket = socket_eCAT.Accept();
                 receiveThread = new Thread(ReceiveMessage);
+                receiveThread.IsBackground = true;
                 receiveThread.Start(clientSocket);
 
             }
@@ -370,7 +390,7 @@ namespace VirtualDualHost
                                 //签到消息，分别发送给GM01和GM02
                                 if (socket_GM01.Connected)
                                 {
-                                    ReceiveMsg_GM01(msg);
+                                    ReceiveMsg_GM01(msgContent);
                                     SendMsgToGM01_Event(socket_GM01, msg);
                                 }
 
@@ -384,21 +404,21 @@ namespace VirtualDualHost
                                 //发送给GM02
                                 if (socket_GM02.Connected)
                                 {
-                                    if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
-                                    {
-                                        string QueueMsg = "";
-                                        for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
-                                        {
-                                            //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
-                                            QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
-                                            if (!string.IsNullOrEmpty(QueueMsg))
-                                            {
-                                                ReceiveMsg_GM02(QueueMsg);
-                                                SendMsgToGM02_Event(socket_GM02, QueueMsg);
-                                            }
-                                        }
-                                    }
-                                    ReceiveMsg_GM02(msg);
+                                    //if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
+                                    //{
+                                    //    string QueueMsg = "";
+                                    //    for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
+                                    //    {
+                                    //        //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
+                                    //        QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
+                                    //        if (!string.IsNullOrEmpty(QueueMsg))
+                                    //        {
+                                    //            ReceiveMsg_GM02(QueueMsg);
+                                    //            SendMsgToGM02_Event(socket_GM02, QueueMsg);
+                                    //        }
+                                    //    }
+                                    //}
+                                    ReceiveMsg_GM02(msgContent);
                                     SendMsgToGM02_Event(socket_GM02, msg);
                                 }
                             }
@@ -406,12 +426,12 @@ namespace VirtualDualHost
                         }
                         else if (msgContent.LUNO.Equals(LUNO_GM01))
                         {
-                            ReceiveMsg_GM01(msg);
+                            ReceiveMsg_GM01(msgContent);
                             SendMsgToGM01_Event(socket_GM01, msg);
                         }
                         else if (msgContent.LUNO.Equals(LUNO_GM02))
                         {
-                            ReceiveMsg_GM02(msg);
+                            ReceiveMsg_GM02(msgContent);
                             SendMsgToGM02_Event(socket_GM02, msg);
                         }
                         else
@@ -476,7 +496,7 @@ namespace VirtualDualHost
                                 //这条1消息代表GM01要进入服务了，但是此时不能进入，要等GM02就位了才能进入。
                                 GM01_HostState = HostState.WaitForReadyToInservice;
                             }
-                            SendMsgToeCATEvent(myClientSocket, msg);
+                            SendMsgToeCATEvent(myClientSocket, msgContent);
                             break;
                         }
                         else
@@ -533,7 +553,7 @@ namespace VirtualDualHost
                         //与eCAT连接了，并且，GM01已经进入服务了 
                         if (myClientSocket != null && GM01_HostState == HostState.InService)
                         {
-                            SendMsgToeCATEvent_2(myClientSocket, msg);
+                            SendMsgToeCATEvent_2(myClientSocket, msgContent);
                             break;
                         }
                         else
@@ -549,9 +569,24 @@ namespace VirtualDualHost
 
         #endregion
 
-        private void seteCATPathToolStripMenuItem_Click(object sender, EventArgs e)
+        private void lsb_Log_GM01_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            new From_Seeting_eCATPath().Show();
+            if (((ListBox)sender) == null || ((ListBox)sender).SelectedItem == null)
+                return;
+            string currentItemStr = ((ListBox)sender).SelectedItem.ToString();
+            string msg = string.Empty;
+            int flagIndex = -1;
+            if ((flagIndex = currentItemStr.IndexOf(SendHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
+            }
+            else if ((flagIndex = currentItemStr.IndexOf(RecvHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
+            }
+
+            Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.NDC);
+            msd.Show();
         }
     }
 

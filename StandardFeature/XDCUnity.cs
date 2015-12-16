@@ -268,6 +268,35 @@ namespace StandardFeature
             }
         }
 
+        #region NDC-host-2
+        private static Queue<string> _ndc_2FentchMessage = new Queue<string>();
+        public static Queue<string> NDC_2FentchMessage
+        {
+            get
+            {
+                return _ndc_2FentchMessage;
+            }
+            set
+            {
+                _ndc_2FentchMessage = value;
+            }
+        }
+        private static Queue<string> _ndc_2FentchResponseMessage = new Queue<string>();
+        public static Queue<string> NDC_2FentchResponseMessage
+        {
+            get
+            {
+                return _ndc_2FentchResponseMessage;
+            }
+            set
+            {
+                _ndc_2FentchResponseMessage = value;
+            }
+        }
+        #endregion
+
+
+
         private static List<Host> _currentHosts = new List<Host>();
         public static List<Host> CurrentHost
         {

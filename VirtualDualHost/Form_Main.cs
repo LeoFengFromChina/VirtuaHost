@@ -16,24 +16,26 @@ namespace VirtualDualHost
         {
             InitializeComponent();
         }
+        ////Form_NDCServer form_NDCServer;
         //Form_NDCServer form_NDCServer;
-        Form_NDCServer form_NDCServer;
-        Form_DDCServer form_DDCServer;
-        Form_DualHost form_DualHost;
+        //Form_NDCServer_2 form_NDCServer_2;
+        //Form_DDCServer form_DDCServer;
+        //Form_DualHost form_DualHost;
         private void Form_Main_Load(object sender, EventArgs e)
         {
 
             //NDCserver
             //form_NDCServer = new Form_NDCServer();
-            form_NDCServer = new Form_NDCServer(); 
+
+            Form_NDCServer form_NDCServer = new Form_NDCServer();
             form_NDCServer.Show(this.dockPanel1, DockState.Document);
 
             //DDCserver
-            form_DDCServer = new Form_DDCServer();
+            Form_DDCServer form_DDCServer = new Form_DDCServer();
             form_DDCServer.Show(this.dockPanel1, DockState.Document);
 
             //双主机
-            form_DualHost = new Form_DualHost();
+            Form_DualHost form_DualHost = new Form_DualHost();
             form_DualHost.Show(this.dockPanel1, DockState.Document);
 
             form_NDCServer.Activate();
@@ -45,6 +47,7 @@ namespace VirtualDualHost
             screenParseToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             errorCodeToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             eCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            aboutToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
 
         }
         private void DDCServerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -52,22 +55,22 @@ namespace VirtualDualHost
             ToolStripMenuItem tmi = sender as ToolStripMenuItem;
             switch (tmi.Text)
             {
-                case "DDCServer":
+                case "DDCServer_2":
                     {
                         //DDCserver
-                        form_DDCServer = new Form_DDCServer();
+                        Form_DDCServer form_DDCServer = new Form_DDCServer();
                         form_DDCServer.Show(this.dockPanel1, DockState.Document);
                     }
                     break;
-                case "NDCServer":
+                case "NDCServer_2":
                     {
-                        form_NDCServer = new Form_NDCServer();
+                        Form_NDCServer_2 form_NDCServer = new Form_NDCServer_2();
                         form_NDCServer.Show(this.dockPanel1, DockState.Document);
                     }
                     break;
                 case "VirtualDualHost":
                     {
-                        form_DualHost = new Form_DualHost();
+                        Form_DualHost form_DualHost = new Form_DualHost();
                         form_DualHost.Show(this.dockPanel1, DockState.Document);
                     }
                     break;
@@ -83,9 +86,15 @@ namespace VirtualDualHost
                         form_eCAT.Show();
                     }
                     break;
+                case "About":
+                    {
+                        new Form_About().ShowDialog();
+                    }
+                    break;
                 default:
                     break;
             }
         }
+
     }
 }

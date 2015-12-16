@@ -38,7 +38,7 @@ namespace VirtualDualHost
         private void Form_ParsLeft_Load(object sender, EventArgs e)
         {
             BuildTreeEvent += Form_ParsLeft_BuildTreeEvent;
-            
+
             buildTreeThread = new System.Threading.Thread(StartGeteCATFile);
             buildTreeThread.IsBackground = true;
             buildTreeThread.Start();
@@ -147,6 +147,8 @@ namespace VirtualDualHost
         private static void GetFilesList(ref TreeNode currentNode, string dirctoryPath)
         {
             DirectoryInfo folder = new DirectoryInfo(XDCUnity.eCATPath + dirctoryPath);
+            if (!folder.Exists)
+                return;
             foreach (FileInfo fileItem in folder.GetFiles("*.txt"))
             {
                 if (!string.IsNullOrEmpty(onlyNode)
@@ -162,6 +164,8 @@ namespace VirtualDualHost
         private static void GetComLogFile(ref TreeNode currentNode, string dirctoryPath)
         {
             DirectoryInfo folder = new DirectoryInfo(XDCUnity.eCATPath + dirctoryPath);
+            if (!folder.Exists)
+                return;
             foreach (FileInfo fileItem in folder.GetFiles("*.txt"))
             {
                 if (!fileItem.Name.StartsWith("COM"))

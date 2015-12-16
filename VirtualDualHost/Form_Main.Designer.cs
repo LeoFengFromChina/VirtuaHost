@@ -48,7 +48,7 @@
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.rQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,13 +124,13 @@
             // 
             this.dDCServerToolStripMenuItem.Name = "dDCServerToolStripMenuItem";
             this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.dDCServerToolStripMenuItem.Text = "DDCServer";
+            this.dDCServerToolStripMenuItem.Text = "DDCServer_2";
             // 
             // nDCServerToolStripMenuItem
             // 
             this.nDCServerToolStripMenuItem.Name = "nDCServerToolStripMenuItem";
             this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.nDCServerToolStripMenuItem.Text = "NDCServer";
+            this.nDCServerToolStripMenuItem.Text = "NDCServer_2";
             // 
             // virtualDualHostToolStripMenuItem
             // 
@@ -202,18 +202,18 @@
             // 
             this.toolStripDropDownButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton4.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.rQToolStripMenuItem});
+            this.aboutToolStripMenuItem});
             this.toolStripDropDownButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton4.Image")));
             this.toolStripDropDownButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
             this.toolStripDropDownButton4.Size = new System.Drawing.Size(47, 22);
             this.toolStripDropDownButton4.Text = "Help";
             // 
-            // rQToolStripMenuItem
+            // aboutToolStripMenuItem
             // 
-            this.rQToolStripMenuItem.Name = "rQToolStripMenuItem";
-            this.rQToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.rQToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "About";
             // 
             // Form_Main
             // 
@@ -226,7 +226,7 @@
             this.Name = "Form_Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.TabText = "Form_Main";
-            this.Text = "Form_Main";
+            this.Text = "XDCHost";
             this.Load += new System.EventHandler(this.Form_Main_Load);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -254,7 +254,7 @@
         private System.Windows.Forms.ToolStripMenuItem cryptToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton4;
-        private System.Windows.Forms.ToolStripMenuItem rQToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton5;
         private System.Windows.Forms.ToolStripMenuItem eCATToolStripMenuItem;
     }
