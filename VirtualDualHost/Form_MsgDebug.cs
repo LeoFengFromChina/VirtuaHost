@@ -16,6 +16,9 @@ namespace VirtualDualHost
     public partial class Form_MsgDebug : DockContent
     {
         public bool isAlreadyLoad = false;
+        public delegate void SubForm(object dataContent);
+        public event SubForm SubFormEvent;
+        public string currentFilePath = string.Empty;
         public Form_MsgDebug(string msgText, XDCProtocolType protocolType)
         {
             InitializeComponent();
@@ -33,22 +36,27 @@ namespace VirtualDualHost
         }
         Form_Pars form_Pars;
         private DockPanel dp;
+        bool IsSendBack = false;
         public Form_MsgDebug(Form_Pars formMain)
         {
-            form_Pars = formMain;
-            dp = (DockPanel)formMain.Controls["dockPanel1"];
-            form_Pars.ParentFormEvent += Form_Pars_ParentFormEvent;
+            if (null != formMain)
+            {
+                form_Pars = formMain;
+                dp = (DockPanel)formMain.Controls["dockPanel1"];
+                form_Pars.ParentFormEvent += Form_Pars_ParentFormEvent;
+            }
         }
 
         private void Form_Pars_ParentFormEvent(object path, DataType dataType)
         {
             MessageBox.Show("path");
         }
-        public void ParsFromSubForm(object dataContext, XDCProtocolType protocolType, DataType dataType)
+        public void ParsFromSubForm(object dataContext, XDCProtocolType protocolType, DataType dataType, string filePath)
         {
             #region 要格式化的内容
 
             rtb_Msg.Text = dataContext.ToString();
+            currentFilePath = filePath;
             #endregion
             #region 协议选择
             switch (protocolType)
@@ -108,6 +116,7 @@ namespace VirtualDualHost
 
         private void Form_MsgDebug_Load(object sender, EventArgs e)
         {
+            IsSendBack = false;
             dgv_Fileds.ClearSelection();
             rb_DDC.MouseClick += Rb_DDC_Click;
             rb_NDC.MouseClick += Rb_DDC_Click;
@@ -115,6 +124,27 @@ namespace VirtualDualHost
             rb_Screen.MouseClick += Rb_DDC_Click;
             rb_Fit.MouseClick += Rb_DDC_Click;
             rb_Message.MouseClick += Rb_DDC_Click;
+            saveToolStripMenuItem.Click += SaveToolStripMenuItem_Click;
+        }
+
+        /// <summary>
+        /// 保存内容
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.OK == MessageBox.Show("Sure to Save?", "XDC Virtual Host", MessageBoxButtons.OKCancel))
+            {
+                if (XDCUnity.WriteTextFileText(currentFilePath, rtb_Msg.Text.Trim()))
+                {
+                    MessageBox.Show("Save Successed.");
+                }
+                else
+                {
+                    MessageBox.Show("Save Failed.");
+                }
+            }
         }
 
         private void Rb_DDC_Click(object sender, EventArgs e)
@@ -238,6 +268,61 @@ namespace VirtualDualHost
                 ResetFields();
             }
             dgv_Fileds.ClearSelection();
+        }
+
+        private void button_Go_Click(object sender, EventArgs e)
+        {
+            if (SubFormEvent != null)
+            {
+                SubFormEvent(rtb_Msg.Text.Trim());
+                IsSendBack = true;
+                this.Close();
+            }
+        }
+
+        private void Form_MsgDebug_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (SubFormEvent != null && !IsSendBack)
+            {
+                SubFormEvent(rtb_Msg.Text.Trim());
+                IsSendBack = true;
+            }
+        }
+
+        private void dgv_Fileds_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (e.ColumnIndex == 2
+                || e.ColumnIndex == 0)  // 代表第一、三列
+            {
+                e.Cancel = true;
+            }
+        }
+
+        /// <summary>
+        /// 编辑内容
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dgv_Fileds_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            List<ParsRowView> viewList = dgv_Fileds.DataSource as List<ParsRowView>;
+
+            string MsgContent = string.Empty;
+            foreach (ParsRowView prv in viewList)
+            {
+                if (prv.FieldName == "FS")
+                    MsgContent += XDCSplictorChar.FS;
+                else if (prv.FieldName == "GS")
+                    MsgContent += XDCSplictorChar.GS;
+                else if (prv.FieldName == "RS")
+                    MsgContent += XDCSplictorChar.RS;
+                else if (prv.FieldName == "VT")
+                    MsgContent += XDCSplictorChar.VT2;
+                else
+                    MsgContent += prv.FieldValue;
+            }
+
+            rtb_Msg.Text = MsgContent;
         }
     }
 }

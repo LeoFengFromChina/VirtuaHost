@@ -49,7 +49,7 @@ namespace VirtualDualHost
 
         private void Form_COMviewList_SubFormEvent(object dataContext, XDCProtocolType protocolType, DataType dataType)
         {
-            form_MsgDebug.ParsFromSubForm(dataContext.ToString(), protocolType, dataType);
+            form_MsgDebug.ParsFromSubForm(dataContext.ToString(), protocolType, dataType, "");
         }
 
         private void Form_Pars_ParentFormEvent(object path, DataType dataType)
@@ -69,7 +69,7 @@ namespace VirtualDualHost
             {
                 //双击树节点，将数据传至主窗体并格式化显示
                 string text = XDCUnity.GetTxtFileText(subControl.ToString());
-                form_MsgDebug.ParsFromSubForm(text, protocolType, dataType);
+                form_MsgDebug.ParsFromSubForm(text, protocolType, dataType, subControl.ToString());
             }
         }
 

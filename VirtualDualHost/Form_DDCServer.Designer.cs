@@ -120,7 +120,7 @@
             this.dgv_Cassette.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dgv_Cassette.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgv_Cassette.Size = new System.Drawing.Size(540, 157);
-            this.dgv_Cassette.TabIndex = 1;
+            this.dgv_Cassette.TabIndex = 6;
             // 
             // Cassette
             // 

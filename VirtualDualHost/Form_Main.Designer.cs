@@ -39,6 +39,8 @@
             this.dDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.virtualDualHostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.eCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
             this.parseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,8 +49,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.rQToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.eCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,13 +93,13 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolStripSeparator1
@@ -138,6 +138,23 @@
             this.virtualDualHostToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.virtualDualHostToolStripMenuItem.Text = "VirtualDualHost";
             // 
+            // toolStripDropDownButton5
+            // 
+            this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.eCATToolStripMenuItem});
+            this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
+            this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
+            this.toolStripDropDownButton5.Size = new System.Drawing.Size(58, 22);
+            this.toolStripDropDownButton5.Text = "Config";
+            // 
+            // eCATToolStripMenuItem
+            // 
+            this.eCATToolStripMenuItem.Name = "eCATToolStripMenuItem";
+            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.eCATToolStripMenuItem.Text = "eCAT";
+            // 
             // toolStripDropDownButton3
             // 
             this.toolStripDropDownButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -155,25 +172,25 @@
             // parseToolStripMenuItem
             // 
             this.parseToolStripMenuItem.Name = "parseToolStripMenuItem";
-            this.parseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.parseToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.parseToolStripMenuItem.Text = "SuperParse";
             // 
             // screenParseToolStripMenuItem
             // 
             this.screenParseToolStripMenuItem.Name = "screenParseToolStripMenuItem";
-            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.screenParseToolStripMenuItem.Text = "ScreenParse";
             // 
             // errorCodeToolStripMenuItem
             // 
             this.errorCodeToolStripMenuItem.Name = "errorCodeToolStripMenuItem";
-            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.errorCodeToolStripMenuItem.Text = "ErrorCode";
             // 
             // cryptToolToolStripMenuItem
             // 
             this.cryptToolToolStripMenuItem.Name = "cryptToolToolStripMenuItem";
-            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.cryptToolToolStripMenuItem.Text = "CryptTool";
             // 
             // toolStripSeparator2
@@ -198,23 +215,6 @@
             this.rQToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.rQToolStripMenuItem.Text = "About";
             // 
-            // toolStripDropDownButton5
-            // 
-            this.toolStripDropDownButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.eCATToolStripMenuItem});
-            this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
-            this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
-            this.toolStripDropDownButton5.Size = new System.Drawing.Size(58, 22);
-            this.toolStripDropDownButton5.Text = "Config";
-            // 
-            // eCATToolStripMenuItem
-            // 
-            this.eCATToolStripMenuItem.Name = "eCATToolStripMenuItem";
-            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.eCATToolStripMenuItem.Text = "eCAT";
-            // 
             // Form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -224,6 +224,7 @@
             this.Controls.Add(this.dockPanel1);
             this.IsMdiContainer = true;
             this.Name = "Form_Main";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.TabText = "Form_Main";
             this.Text = "Form_Main";
             this.Load += new System.EventHandler(this.Form_Main_Load);

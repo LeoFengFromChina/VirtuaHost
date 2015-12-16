@@ -192,7 +192,32 @@ namespace StandardFeature
 
             return text;
         }
+        public static bool WriteTextFileText(string path, string content)
+        {
+            if (!File.Exists(path))
+                return false;
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream(path, FileMode.Open);
+                //获得字节数组
+                byte[] data = System.Text.Encoding.Default.GetBytes(content);
+                //开始写入
+                fs.Write(data, 0, data.Length);
+                //清空缓冲区、关闭流
 
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                fs.Flush();
+                fs.Close();
+            }
+        }
         private static Queue<string> _ddcFentchMessage = new Queue<string>();
         public static Queue<string> DDCFentchMessage
         {

@@ -528,4 +528,25 @@ namespace StandardFeature
 
         public string Severity { get; set; }
     }
+    public class DDCCassetteView
+    {
+        public DDCCassetteView()
+        {
+
+        }
+        public DDCCassetteView(string _cassette, string _denomination, string _loadCount, string _status)
+        {
+            Cassette = _cassette;
+            Denomination = _denomination;
+            LoadCount = _loadCount;
+            Status = _status;
+        }
+        public string Cassette { get; set; }
+
+        public string Denomination { get; set; }
+
+        public string LoadCount { get; set; }
+
+        public string Status { get; set; }
+    }
 }
