@@ -52,47 +52,47 @@
   <ItemGroup>
     <Reference Include="FitPars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\FitPars_DDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\FitPars_DDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FitPars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\FitPars_NDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\FitPars_NDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MessagePars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\MessagePars_DDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\MessagePars_DDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MessagePars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\MessagePars_NDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\MessagePars_NDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ScreenPars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\ScreenPars_DDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\ScreenPars_DDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ScreenPars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\ScreenPars_NDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\ScreenPars_NDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="StandardFeature, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\StandardFeature.dll</HintPath>
+      <HintPath>bin\Debug\dll\StandardFeature.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StatePars_DDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\StatePars_DDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\StatePars_DDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="StatePars_NDC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\StatePars_NDC.dll</HintPath>
+      <HintPath>bin\Debug\dll\StatePars_NDC.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

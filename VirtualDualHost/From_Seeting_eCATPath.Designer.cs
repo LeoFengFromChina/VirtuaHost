@@ -47,7 +47,7 @@
             this.textBox1.Location = new System.Drawing.Point(89, 43);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(213, 21);
-            this.textBox1.TabIndex = 1;
+            this.textBox1.TabIndex = 2;
             // 
             // button1
             // 
@@ -70,6 +70,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "From_Seeting_eCATPath";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "eCAT Setting";
             this.Load += new System.EventHandler(this.From_Seeting_eCATPath_Load);
             this.ResumeLayout(false);
