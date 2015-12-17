@@ -175,10 +175,12 @@ namespace VirtualDualHost
                 case "btn_ManuSendData":
                     {
                         #region ManuSendData
-                        Form_MsgDebug form_debug = new Form_MsgDebug("", XDCProtocolType.DDC);
-                        form_debug.SubFormEvent += Form_debug_SubFormEvent;
+
                         isManuSend = true;
-                        form_debug.Show();
+                        //Form_MsgDebug form_debug = new Form_MsgDebug("", XDCProtocolType.DDC);
+                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                        //form_debug.Show();
+                        ShowDebugWindows("", XDCProtocolType.DDC);
                         #endregion
                     }
                     break;
@@ -200,9 +202,11 @@ namespace VirtualDualHost
         {
             isBack = true;
             FencthFoundUnknow = false;
-            BackMsg = dataContent.ToString();
             if (currentSendDebug || isManuSend)
             {
+                BackMsg = dataContent.ToString();
+                if (string.IsNullOrEmpty(BackMsg))
+                    return;
                 if (isManuSend)
                     isManuSend = false;
                 SingalSendMsg(BackMsg);
@@ -251,8 +255,9 @@ namespace VirtualDualHost
                 msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
             }
 
-            Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.DDC);
-            msd.Show();
+            //Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.NDC);
+            //msd.Show();
+            ShowDebugWindows(msg, XDCProtocolType.DDC);
         }
 
         private void dgv_Cassette_Leave(object sender, EventArgs e)
@@ -376,9 +381,10 @@ namespace VirtualDualHost
                     if (IsDebugRecvMsg && !isBack)
                     {
                         currentRecvDebug = true;
-                        Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC);
-                        form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                        form_debug.ShowDialog();
+                        //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC);
+                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                        //form_debug.ShowDialog();
+                        ShowDebugWindows(msgContent.MsgASCIIString, XDCProtocolType.DDC);
                     }
                     if (!string.IsNullOrEmpty(BackMsg))
                     {
@@ -445,7 +451,7 @@ namespace VirtualDualHost
                             || msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
                         {
                             #region Fencth
-
+                            FencthFoundUnknow = false;
                             string fencthMsg = string.Empty;
                             if (currentFentch.Count >= 1)
                             {
@@ -463,7 +469,7 @@ namespace VirtualDualHost
                                 //已经是最后一条go-in-service了
                                 CurrentHostServer.State = ServerState.InService;
                                 isFencth = false;
-                                ReBingCassette();
+                                //ReBingCassette();
 
                             }
                             #endregion}
@@ -647,9 +653,10 @@ namespace VirtualDualHost
                 string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\ScreenUpdate\";
                 string groupFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\GroupFunctionIdentifier\";
                 string EnhancedFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\EnhancedFunction\";
-
+				string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\CommonConfig.ini";
 
                 string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
+				string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
 
                 string NotesToDispense = "0000000000000000";
 
@@ -666,10 +673,16 @@ namespace VirtualDualHost
                 {
                     int amout = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
                     XDCUnity.RecordLastTransaction(msgContent, amout);
+
+                    #region 改变钱箱数据
+                    int addNoteCount = amout / int.Parse(DDCCVList[0].Denomination);
+                    DDCCVList[0].LoadCount = (int.Parse(DDCCVList[0].LoadCount) + addNoteCount).ToString();
+                    ReBingCassette();
+                    #endregion
                 }
 
                 string updateDataStr = XDCUnity.GetTxtFileText(screenDisplayUpdatePath + CurrentOperationCode.ScreenDisplayUpdate[resultIndex]);
-                UpdateUserDataReplyToTerminal(msgContent, ref updateDataStr);
+
                 string printData = XDCUnity.GetTxtFileText(printDataPath + CurrentOperationCode.PrintData[resultIndex]);
                 string groupFunctionId = XDCUnity.GetTxtFileText(groupFunctionPath + CurrentOperationCode.GroupFunctionIdentifier[resultIndex]);
                 string enhanceFunction = XDCUnity.GetTxtFileText(EnhancedFunctionPath + CurrentOperationCode.EnhancedFunction[resultIndex]);
@@ -679,9 +692,11 @@ namespace VirtualDualHost
                     msgTemplate += enhanceFunction;
                 }
 
+                UpdateUserDataReplyToTerminal(msgContent, ref updateDataStr, resultIndex);
+                UpdateUserDataReplyToTerminal(msgContent, ref printData, resultIndex);
                 msgTemplate = msgTemplate.Replace("[MsgClass]", "4")
                     .Replace("[ResponseFlag]", "")
-                    .Replace("[LUNO]", "000")
+                    .Replace("[LUNO]", Luno)
                     .Replace("[MSN]", "1200")
                     .Replace("[NextStateID]", CurrentOperationCode.NextState[resultIndex])
                     .Replace("[NotesToDispense]", NotesToDispense)
@@ -753,7 +768,7 @@ namespace VirtualDualHost
         /// </summary>
         /// <param name="msgContent"></param>
         /// <param name="replyData"></param>
-        public static void UpdateUserDataReplyToTerminal(XDCMessage msgContent, ref string replyData)
+        public static void UpdateUserDataReplyToTerminal(XDCMessage msgContent, ref string replyData, int status)
         {
             string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
             string Pan = XDCUnity.ReadIniData(msgContent.PAN, "Pan", string.Empty, XDCUnity.UserInfoPath);
@@ -761,7 +776,12 @@ namespace VirtualDualHost
             string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
             replyData = replyData.Replace("[USERNAME]", UserName)
                                                 .Replace("[CURRENCY]", Currency)
-                                                .Replace("[AVAILABLEBAL]", availableBanlance);
+                                                .Replace("[AVAILABLEBAL]", availableBanlance)
+                                                .Replace("[PAN]", Pan)
+                                                .Replace("[AMOUNT]",availableBanlance)
+                                                .Replace("[STATUS]", status.ToString())
+                                                .Replace("[TIME]", DateTime.Now.ToShortTimeString())
+                                                .Replace("[DATE]", DateTime.Now.ToShortDateString());
 
         }
 
@@ -926,9 +946,10 @@ namespace VirtualDualHost
                 if (IsDebugSendMsg && !isBack)
                 {
                     currentSendDebug = true;
-                    Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC);
-                    form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                    form_debug.ShowDialog();
+                    ShowDebugWindows(msgContent, XDCProtocolType.DDC);
+                    //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC);
+                    //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                    //form_debug.ShowDialog();
                 }
                 else
                 {
@@ -938,6 +959,12 @@ namespace VirtualDualHost
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
                 }
             }
+        }
+        private static void ShowDebugWindows(string msgContent, XDCProtocolType protocolType)
+        {
+            Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, protocolType);
+            form_debug.SubFormEvent += Form_debug_SubFormEvent;
+            form_debug.ShowDialog();
         }
         #endregion
     }

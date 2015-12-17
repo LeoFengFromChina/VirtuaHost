@@ -31,14 +31,17 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Main));
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.dDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.virtualDualHostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nDCServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.dDCServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
             this.eCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -46,7 +49,6 @@
             this.screenParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
@@ -78,6 +80,16 @@
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
             // toolStripDropDownButton1
             // 
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -102,29 +114,20 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
             // toolStripDropDownButton2
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.dDCServerToolStripMenuItem,
             this.nDCServerToolStripMenuItem,
-            this.virtualDualHostToolStripMenuItem});
+            this.dDCServerToolStripMenuItem,
+            this.virtualDualHostToolStripMenuItem,
+            this.nDCServerToolStripMenuItem1,
+            this.dDCServerToolStripMenuItem1});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
             this.toolStripDropDownButton2.Size = new System.Drawing.Size(47, 22);
             this.toolStripDropDownButton2.Text = "View";
-            // 
-            // dDCServerToolStripMenuItem
-            // 
-            this.dDCServerToolStripMenuItem.Name = "dDCServerToolStripMenuItem";
-            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.dDCServerToolStripMenuItem.Text = "DDCServer_2";
             // 
             // nDCServerToolStripMenuItem
             // 
@@ -132,11 +135,29 @@
             this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.nDCServerToolStripMenuItem.Text = "NDCServer_2";
             // 
+            // dDCServerToolStripMenuItem
+            // 
+            this.dDCServerToolStripMenuItem.Name = "dDCServerToolStripMenuItem";
+            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.dDCServerToolStripMenuItem.Text = "DDCServer_2";
+            // 
             // virtualDualHostToolStripMenuItem
             // 
             this.virtualDualHostToolStripMenuItem.Name = "virtualDualHostToolStripMenuItem";
             this.virtualDualHostToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.virtualDualHostToolStripMenuItem.Text = "VirtualDualHost";
+            // 
+            // nDCServerToolStripMenuItem1
+            // 
+            this.nDCServerToolStripMenuItem1.Name = "nDCServerToolStripMenuItem1";
+            this.nDCServerToolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
+            this.nDCServerToolStripMenuItem1.Text = "NDCServer";
+            // 
+            // dDCServerToolStripMenuItem1
+            // 
+            this.dDCServerToolStripMenuItem1.Name = "dDCServerToolStripMenuItem1";
+            this.dDCServerToolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
+            this.dDCServerToolStripMenuItem1.Text = "DDCServer";
             // 
             // toolStripDropDownButton5
             // 
@@ -193,11 +214,6 @@
             this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.cryptToolToolStripMenuItem.Text = "CryptTool";
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
             // toolStripDropDownButton4
             // 
             this.toolStripDropDownButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -212,7 +228,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // Form_Main
@@ -228,6 +244,7 @@
             this.TabText = "Form_Main";
             this.Text = "XDCHost";
             this.Load += new System.EventHandler(this.Form_Main_Load);
+            this.LocationChanged += new System.EventHandler(this.Form_Main_LocationChanged);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -257,5 +274,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton5;
         private System.Windows.Forms.ToolStripMenuItem eCATToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nDCServerToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem dDCServerToolStripMenuItem1;
     }
 }

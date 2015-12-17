@@ -173,10 +173,12 @@ namespace VirtualDualHost
                 case "btn_ManuSendData":
                     {
                         #region ManuSendData
-                        Form_MsgDebug form_debug = new Form_MsgDebug("", XDCProtocolType.DDC);
-                        form_debug.SubFormEvent += Form_debug_SubFormEvent;
+
                         isManuSend = true;
-                        form_debug.Show();
+                        //Form_MsgDebug form_debug = new Form_MsgDebug("", XDCProtocolType.DDC);
+                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                        //form_debug.Show();
+                        ShowDebugWindows("", XDCProtocolType.NDC);
                         #endregion
                     }
                     break;
@@ -198,9 +200,11 @@ namespace VirtualDualHost
         {
             isBack = true;
             FencthFoundUnknow = false;
-            BackMsg = dataContent.ToString();
             if (currentSendDebug || isManuSend)
             {
+                BackMsg = dataContent.ToString();
+                if (string.IsNullOrEmpty(BackMsg))
+                    return;
                 if (isManuSend)
                     isManuSend = false;
                 SingalSendMsg(BackMsg);
@@ -370,9 +374,10 @@ namespace VirtualDualHost
                     if (IsDebugRecvMsg && !isBack)
                     {
                         currentRecvDebug = true;
-                        Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC);
-                        form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                        form_debug.ShowDialog();
+                        //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC);
+                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                        //form_debug.ShowDialog();
+                        ShowDebugWindows(msgContent.MsgASCIIString, XDCProtocolType.NDC);
                     }
                     if (!string.IsNullOrEmpty(BackMsg))
                     {
@@ -438,7 +443,7 @@ namespace VirtualDualHost
                             || msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
                         {
                             #region Fencth
-
+                            FencthFoundUnknow = false;
                             string fencthMsg = string.Empty;
                             if (currentFentch.Count >= 1)
                             {
@@ -650,6 +655,12 @@ namespace VirtualDualHost
                 else if (CurrentOperationCode.Comment.ToLower().Contains("deposit"))
                 {
                     XDCUnity.RecordLastTransaction(msgContent, int.Parse(msgContent.AmountField));
+
+                    #region 改变钱箱数据
+                    int addNoteCount = int.Parse(msgContent.AmountField) / int.Parse(NDCCVList[0].Denomination);
+                    NDCCVList[0].LoadCount = (int.Parse(NDCCVList[0].LoadCount) + addNoteCount).ToString();
+                    ReBingCassette();
+                    #endregion
                 }
 
                 string updateDataStr = XDCUnity.GetTxtFileText(screenDisplayUpdatePath + CurrentOperationCode.ScreenDisplayUpdate[resultIndex]);
@@ -838,9 +849,11 @@ namespace VirtualDualHost
                 if (IsDebugSendMsg && !isBack)
                 {
                     currentSendDebug = true;
-                    Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC);
-                    form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                    form_debug.ShowDialog();
+
+                    ShowDebugWindows(msgContent, XDCProtocolType.NDC);
+                    //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC);
+                    //form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                    //form_debug.ShowDialog();
                 }
                 else
                 {
@@ -850,6 +863,13 @@ namespace VirtualDualHost
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
                 }
             }
+        }
+
+        private static void ShowDebugWindows(string msgContent, XDCProtocolType protocolType)
+        {
+            Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, protocolType);
+            form_debug.SubFormEvent += Form_debug_SubFormEvent;
+            form_debug.ShowDialog();
         }
         #endregion
 

@@ -82,6 +82,7 @@ namespace MessagePars_NDC
                     {
                         if (result.MsgType == MessageType.TerminalCommand)
                             result.MsgCommandType = MessageCommandType.GoOutOfService;
+
                     }
                     break;
                 case "3":
@@ -128,6 +129,15 @@ namespace MessagePars_NDC
                             //TerminalState
                             result.MsgCommandType = MessageCommandType.TerminalState;
                             NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                        }
+                    }
+                    break;
+                case "P":
+                    {
+                        if (result.MsgType == MessageType.UnSolicitedMessage
+                            && msgFields[3].Length > 2 && "20" == msgFields[3].Substring(1, 2))
+                        {
+                            result.MsgCommandType = MessageCommandType.SupervisorAndSupplySwitchOFF;
                         }
                     }
                     break;

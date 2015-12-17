@@ -68,21 +68,11 @@ namespace VirtualDualHost
         string SendHead = "Send(";
         string RecvHead = "Recv(";
         #endregion
-
-
+        
         #region Control Event
-
-        //RichTextBox tb;
+        
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            //contextMenuStrip1.Items.Add("Clear");
-            //contextMenuStrip1.Items.Add("Pars");
-            //contextMenuStrip1.ItemClicked += new ToolStripItemClickedEventHandler(contextMenuStrip1_ItemClicked);
-            //contextMenuStrip1.Items[0].Click += Form_DualHost_Click;
-            //contextMenuStrip1.Items[1].Click += Form_DualHost_Click1;
-            //msgDebugToolStripMenuItem.Click += MsgDebugToolStripMenuItem_Click;
-
             SendMsgToeCATEvent += new SendMsgToeCAT(Program_SendMsgToeCATEvent);
             SendMsgToGM01_Event += new SendMsgToGM(Program_SendMsgToGM01_Event);
             SendMsgToGM02_Event += new SendMsgToGM(Program_SendMsgToGM02_Event);
@@ -93,32 +83,6 @@ namespace VirtualDualHost
             ReceiveMsg_Unknow += new GMReceivePureMst(Form_Main_ReceiveMsg_Unknow);
 
             lsb_Log_GM02.MouseDoubleClick += lsb_Log_GM01_MouseDoubleClick;
-        }
-
-        //private void Form_DualHost_Click1(object sender, EventArgs e)
-        //{
-        //    if (null != tb)
-        //    {
-        //        string msgText = string.Empty;
-        //        msgText = tb.SelectedText;
-        //        Form_MsgDebug debugForm = new Form_MsgDebug(msgText, XDCProtocolType.NDC);
-        //        debugForm.Show();
-        //    }
-        //}
-
-        //private void Form_DualHost_Click(object sender, EventArgs e)
-        //{
-        //    //throw new NotImplementedException();
-        //    if (null != tb)
-        //    {
-        //        tb.Clear();
-        //    }
-        //}
-
-        private void MsgDebugToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form debugForm = new Form_MsgDebug("", XDCProtocolType.NDC);
-            debugForm.Show();
         }
 
         void Form_Main_ReceiveMsg_Unknow(string msg)
@@ -175,6 +139,7 @@ namespace VirtualDualHost
         }
 
         bool isGM01Start = false;
+        static Thread GM01_StartThread;
         private void btn_H1_Start_Click(object sender, EventArgs e)
         {
             if (!isGM01Start)
@@ -189,7 +154,10 @@ namespace VirtualDualHost
                 LUNO_GM01 = txt_H1_LUNO.Text.Trim();
                 GM01_HostState = HostState.Unknow;
 
-                ConnectGM01();
+                GM01_StartThread = new Thread(ConnectGM01);
+                GM01_StartThread.IsBackground = true;
+                GM01_StartThread.Start();
+                //ConnectGM01();
             }
             else
             {
@@ -199,8 +167,10 @@ namespace VirtualDualHost
                 txt_H1_Port.Enabled = true;
                 txt_H1_LUNO.Enabled = true;
                 isGM01Start = false;
-                GM01Thread.Suspend();
-                GM01Thread = null;
+                GM01_ListenThread.Suspend();
+                GM01_ListenThread = null;
+                GM01_StartThread.Suspend();
+                GM01_StartThread = null;
                 socket_GM01.Disconnect(false);
                 socket_GM01 = null;
 
@@ -212,6 +182,7 @@ namespace VirtualDualHost
         }
 
         bool isGM02Start = false;
+        static Thread GM02_StartThread;
         private void btn_H2_Start_Click(object sender, EventArgs e)
         {
             if (!isGM02Start)
@@ -226,7 +197,10 @@ namespace VirtualDualHost
                 LUNO_GM02 = txt_H2_LUNO.Text.Trim();
                 GM01_HostState = HostState.Unknow;
 
-                ConnectGM02();
+                //ConnectGM02();
+                GM02_StartThread = new Thread(ConnectGM02);
+                GM02_StartThread.IsBackground = true;
+                GM02_StartThread.Start();
             }
             else
             {
@@ -238,28 +212,13 @@ namespace VirtualDualHost
                 isGM02Start = false;
                 GM02Thread.Suspend();
                 GM02Thread = null;
+                GM02_StartThread.Suspend();
+                GM02_StartThread = null;
                 socket_GM02.Disconnect(false);
                 socket_GM02 = null;
 
             }
         }
-
-        //private void rtb_GM01_Msg_TextChanged(object sender, EventArgs e)
-        //{
-        //    rtb_GM01_Msg.SelectionStart = rtb_GM01_Msg.Text.Length;
-        //    rtb_GM01_Msg.ScrollToCaret();
-        //}
-
-        //private void rtb_GM02_Msg_TextChanged(object sender, EventArgs e)
-        //{
-        //    rtb_GM02_Msg.SelectionStart = rtb_GM02_Msg.Text.Length;
-        //    rtb_GM02_Msg.ScrollToCaret();
-        //}
-
-        //void contextMenuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        //{
-        //    tb = ((RichTextBox)((ContextMenuStrip)sender).SourceControl);
-        //}
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -270,6 +229,27 @@ namespace VirtualDualHost
         {
             new From_Seeting_eCATPath().Show();
         }
+        
+        private void lsb_Log_GM01_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (((ListBox)sender) == null || ((ListBox)sender).SelectedItem == null)
+                return;
+            string currentItemStr = ((ListBox)sender).SelectedItem.ToString();
+            string msg = string.Empty;
+            int flagIndex = -1;
+            if ((flagIndex = currentItemStr.IndexOf(SendHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
+            }
+            else if ((flagIndex = currentItemStr.IndexOf(RecvHead)) >= 0)
+            {
+                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
+            }
+
+            Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.NDC);
+            msd.Show();
+        }
+
         #endregion
 
         #region Send Event
@@ -336,6 +316,7 @@ namespace VirtualDualHost
         #endregion
 
         #region eCAT
+
         static Thread eCATThread;
         static void ConnecteCAT()
         {
@@ -363,6 +344,7 @@ namespace VirtualDualHost
 
             }
         }
+
         static Socket myClientSocket;
         /// <summary>  
         /// 接收消息  
@@ -450,10 +432,12 @@ namespace VirtualDualHost
                 }
             }
         }
+
         #endregion
 
         #region GM01
-        static Thread GM01Thread;
+
+        static Thread GM01_ListenThread;
         static void ConnectGM01()
         {
             while (true)
@@ -469,11 +453,9 @@ namespace VirtualDualHost
                     Thread.Sleep(1000);
                 }
             }
-
-            //Console.WriteLine("成功连接到GM-01");
-            //通过Clientsoket发送数据  
-            GM01Thread = new Thread(GM01_ListenClientConnect);
-            GM01Thread.Start();
+            
+            GM01_ListenThread = new Thread(GM01_ListenClientConnect);
+            GM01_ListenThread.Start();
         }
 
         private static void GM01_ListenClientConnect()
@@ -512,6 +494,7 @@ namespace VirtualDualHost
         #endregion
 
         #region GM02
+
         static Thread GM02Thread;
         static void ConnectGM02()
         {
@@ -546,8 +529,7 @@ namespace VirtualDualHost
 
                 if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
                 {
-                    //Console.WriteLine("接收到GM-02消息：" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)));
-
+                    
                     while (true)
                     {
                         //与eCAT连接了，并且，GM01已经进入服务了 
@@ -566,28 +548,8 @@ namespace VirtualDualHost
             }
         }
 
-
         #endregion
 
-        private void lsb_Log_GM01_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (((ListBox)sender) == null || ((ListBox)sender).SelectedItem == null)
-                return;
-            string currentItemStr = ((ListBox)sender).SelectedItem.ToString();
-            string msg = string.Empty;
-            int flagIndex = -1;
-            if ((flagIndex = currentItemStr.IndexOf(SendHead)) >= 0)
-            {
-                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
-            }
-            else if ((flagIndex = currentItemStr.IndexOf(RecvHead)) >= 0)
-            {
-                msg = currentItemStr.Substring(flagIndex + 13, currentItemStr.Length - flagIndex - 13);
-            }
-
-            Form_MsgDebug msd = new Form_MsgDebug(msg, XDCProtocolType.NDC);
-            msd.Show();
-        }
     }
 
 }
