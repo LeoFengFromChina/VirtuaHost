@@ -97,6 +97,10 @@ namespace StandardFeature
         /// </summary>
         TerminalState,
         /// <summary>
+        /// 充正
+        /// </summary>
+        Reversal,
+        /// <summary>
         /// 配置信息
         /// </summary>
         DeviceFault
@@ -201,7 +205,7 @@ namespace StandardFeature
         /// <summary>
         /// 消息的Base64字符串形式(用于发给eCAT)
         /// </summary>
-        public string MsgBase64String { get; set; }
+        //public string MsgBase64String { get; set; }
 
         /// <summary>
         /// 消息的ASCII字符串格式化后的各域

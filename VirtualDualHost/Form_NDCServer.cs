@@ -390,7 +390,7 @@ namespace VirtualDualHost
                     }
                     #endregion
 
-                    string msg = msgContent.MsgBase64String;
+                    //string msg = msgContent.MsgBase64String;
                     isBack = false;
                     if (msgContent.MsgCommandType == MessageCommandType.TerminalState)
                     {
@@ -405,11 +405,12 @@ namespace VirtualDualHost
                     }
                     if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
-                        ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgBase64String);
+                        ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgASCIIString);
                     }
                     if (msgContent.MsgCommandType == MessageCommandType.FullDownLoad)
                     {
                         isFullDownLoad = true;
+                        GetFullDownLoad();
                     }
                     string headContext = string.Empty;
                     if (isFullDownLoad)
@@ -417,10 +418,28 @@ namespace VirtualDualHost
                         if (msgContent.MsgCommandType != MessageCommandType.ReadyB)
                             continue;
                         #region FullDownLoad
-                        if (currentFullDownLoad.Count == 0)
+                        if (currentFullDownLoad.Count == 0 )
                         {
-                            string inservicemsg = "10A210001";
-                            SingalSendMsg(inservicemsg);
+                            if(!isFencth)
+                            {
+                                string inservicemsg = "10A210001";
+                                SingalSendMsg(inservicemsg);
+                            }
+                            else
+                            {
+                                #region 继续联网
+                                string fencthMsg = string.Empty;
+                                if (currentFentch.Count >= 1)
+                                {
+                                    fencthMsg = currentFentch.Dequeue();
+                                    CurrentFencthResponse = currentFentchResponse.Dequeue();
+                                }
+                                if (!string.IsNullOrEmpty(fencthMsg))
+                                {
+                                    SingalSendMsg(fencthMsg);
+                                }
+                                #endregion
+                            }
                             isFullDownLoad = false;
                             Thread.Sleep(100);
                         }
@@ -433,7 +452,7 @@ namespace VirtualDualHost
                             }
                             if (!string.IsNullOrEmpty(FulldownLoadMsg))
                             {
-                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
+                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer.TCPHead, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
                                 myClientSocket.Send(msgBytes);
                                 ReceiveMsg("Send(" + headContext + ") : ", FulldownLoadMsg);
                             }
@@ -475,6 +494,17 @@ namespace VirtualDualHost
                     }
                     else if (!string.IsNullOrEmpty(msgContent.OperationCode))
                     {
+                        string replyMsg = ProcessOperationCode(msgContent);
+                        if (!string.IsNullOrEmpty(replyMsg))
+                        {
+                            SingalSendMsg(replyMsg);
+                            Thread.Sleep(100);
+                        }
+                    }
+                    else if (msgContent.MsgCommandType == MessageCommandType.Reversal)
+                    {
+                        //发充正过来了
+                        msgContent.OperationCode = "REVERSAL";
                         string replyMsg = ProcessOperationCode(msgContent);
                         if (!string.IsNullOrEmpty(replyMsg))
                         {
@@ -653,7 +683,7 @@ namespace VirtualDualHost
                 if (CurrentOperationCode.Comment.ToLower().Contains("withdraw"))
                 {
                     //取款配钞
-                    NotesToDispense = GetNotesToDispense(msgContent);
+                    NotesToDispense = GetNotesToDispense(msgContent, ref resultIndex);
                 }
                 else if (CurrentOperationCode.Comment.ToLower().Contains("deposit"))
                 {
@@ -663,6 +693,14 @@ namespace VirtualDualHost
                     int addNoteCount = int.Parse(msgContent.AmountField) / int.Parse(NDCCVList[0].Denomination);
                     NDCCVList[0].LoadCount = (int.Parse(NDCCVList[0].LoadCount) + addNoteCount).ToString();
                     ReBingCassette();
+                    #endregion
+                }
+                else if (CurrentOperationCode.Comment.ToLower().Contains("doreversal"))
+                {
+                    #region 充正
+
+                    XDCUnity.DoReversal();
+
                     #endregion
                 }
 
@@ -690,30 +728,79 @@ namespace VirtualDualHost
             return msgTemplate;
         }
 
+
+        static List<int> notesOutList = new List<int>();
         /// <summary>
         /// 配钞
         /// </summary>
         /// <param name="amountField"></param>
         /// <returns></returns>
-        public static string GetNotesToDispense(XDCMessage msgContent)
+        public static string GetNotesToDispense(XDCMessage msgContent, ref int resultIndex)
         {
             string result = string.Empty;
 
             string tempAmount = string.Empty;
 
-            int amount = msgContent.AmountField.Length == 12 ? int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2)) : int.Parse(msgContent.AmountField);
-
-            int noteCount = amount / 100;
-
-            #region 暂时先所有都从第一个钞箱出，日后完善配钞算法
-
-            result = noteCount.ToString().PadLeft(2, '0');
-            result = result.PadRight(8, '0');
-            NDCCVList[0].LoadCount = (int.Parse(NDCCVList[0].LoadCount) - noteCount).ToString();
-            ReBingCassette();
+            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
+            notesOutList.Clear();
+            #region MyRegion
+            for (int i = 0; i < NDCCVList.Count; i++)
+            {
+                notesOutList.Add(0);
+            }
             #endregion
 
+            //配钞
+            if (!DispenseNotes(amount))
+            {
+                //配钞失败，除不尽的数
+                resultIndex = 1;
+                return "".PadLeft(8, '0');
+            }
+            //组合配钞结果，更新主机钱箱显示
+            for (int i = 0; i < notesOutList.Count; i++)
+            {
+                result += notesOutList[i].ToString().PadLeft(2, '0');
+                NDCCVList[i].LoadCount = (int.Parse(NDCCVList[i].LoadCount) - notesOutList[i]).ToString();
+            }
+
+            #region 上账
+
             XDCUnity.RecordLastTransaction(msgContent, -amount);
+            ReBingCassette();
+            #endregion
+            return result;
+        }
+
+
+        private static bool DispenseNotes(int amount)
+        {
+            bool result = false;
+            //当前钱箱应分配的张数
+            int noteCount = -1;
+            //余数
+            int currentLeft = -1;
+            //面额
+            int currentDeno = -1;
+            //当前钱箱的剩余张数
+            int currenLoadCount = -1;
+
+            for (int i = 0; i < NDCCVList.Count; i++)
+            {
+                currentDeno = int.Parse(NDCCVList[i].Denomination);
+                currenLoadCount = int.Parse(NDCCVList[i].LoadCount);
+                noteCount = amount / currentDeno;
+                currentLeft = amount % currentDeno;
+                if (currenLoadCount >= noteCount)
+                {
+                    notesOutList[i] += noteCount;
+                }
+                amount = currentLeft;
+            }
+            if (currentLeft != 0)
+                result = false;
+            else
+                result = true;
 
             return result;
         }
@@ -762,10 +849,17 @@ namespace VirtualDualHost
         public static void InitialCassette()
         {
             NDCCVList.Clear();
-            NDCCVList.Add(new NDCCassetteView("TypeA", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeB", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeC", "100", "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeD", "100", "", "", ""));
+            string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\CommonConfig.ini";
+
+            string deno_1 = XDCUnity.ReadIniData("NotesCassetteTable", "1", "", commonConfigPath);
+            string deno_2 = XDCUnity.ReadIniData("NotesCassetteTable", "2", "", commonConfigPath);
+            string deno_3 = XDCUnity.ReadIniData("NotesCassetteTable", "3", "", commonConfigPath);
+            string deno_4 = XDCUnity.ReadIniData("NotesCassetteTable", "4", "", commonConfigPath);
+
+            NDCCVList.Add(new NDCCassetteView("TypeA", deno_1, "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeB", deno_2, "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeC", deno_3, "", "", ""));
+            NDCCVList.Add(new NDCCassetteView("TypeD", deno_4, "", "", ""));
 
             ReBingCassette();
         }
@@ -862,7 +956,7 @@ namespace VirtualDualHost
                 else
                 {
                     string headContext = string.Empty;
-                    byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer, ref headContext);
+                    byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer.TCPHead, ref headContext);
                     clientSocket.Send(msgBytes);
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
                 }

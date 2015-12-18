@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_DualHost));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.txt_eCAT_BaseLUNO = new System.Windows.Forms.TextBox();
@@ -54,7 +53,6 @@
             this.txt_H2_IP = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tssl_Status = new System.Windows.Forms.ToolStripStatusLabel();
@@ -333,12 +331,6 @@
             this.label6.TabIndex = 12;
             this.label6.Text = "IP ：";
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -415,7 +407,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txt_H2_LUNO;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.TextBox txt_eCAT_BaseLUNO;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;

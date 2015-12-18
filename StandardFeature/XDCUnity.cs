@@ -315,11 +315,11 @@ namespace StandardFeature
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public static byte[] EnPackageMsg(string msg, Host currHost, ref string headContext)
+        public static byte[] EnPackageMsg(string msg, TcpHead tcpHead, ref string headContext)
         {
             byte[] resultBytes = null;
             int baseCount = Encoding.ASCII.GetByteCount(msg);
-            if (currHost.TCPHead == TcpHead.L2L1)
+            if (tcpHead == TcpHead.L2L1)
             {
                 char char_1 = new char();
                 char char_2 = new char();
@@ -346,6 +346,8 @@ namespace StandardFeature
         }
 
         public static string UserInfoPath = System.Environment.CurrentDirectory + @"\Config\Server\UserInfo.ini";
+
+        public static bool isFulldownLoadEnqueue = false;
 
         #region ini文件操作
 
@@ -425,5 +427,28 @@ namespace StandardFeature
             XDCUnity.WriteIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", newTSN.ToString(), XDCUnity.UserInfoPath);
 
         }
+
+        public static void DoReversal()
+        {
+            //1.取出上次交易的金额
+            int lastAmount = 0;
+            string lastAmountStr = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "Amount", "", XDCUnity.UserInfoPath);
+            int.TryParse(lastAmountStr, out lastAmount);
+
+            //2，取出账号
+            string Account = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "Pan", "", XDCUnity.UserInfoPath);
+
+            //3.取出用户当前余额
+            string AmountStr = XDCUnity.ReadIniData(Account, "AvailableBalance", "", XDCUnity.UserInfoPath);
+
+            //4.计算充正后的余额
+            int baseAmount = 0;
+            int.TryParse(AmountStr, out baseAmount);
+
+            //5.写入用户数据
+            XDCUnity.WriteIniData(Account, "AvailableBalance", (-lastAmount + baseAmount).ToString(), XDCUnity.UserInfoPath);
+
+        }
+
     }
 }

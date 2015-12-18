@@ -102,7 +102,7 @@
             this.txt_Port.Name = "txt_Port";
             this.txt_Port.Size = new System.Drawing.Size(37, 21);
             this.txt_Port.TabIndex = 2;
-            this.txt_Port.Text = "4070";
+            this.txt_Port.Text = "4072";
             // 
             // dgv_Cassette
             // 

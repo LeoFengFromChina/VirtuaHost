@@ -61,7 +61,7 @@ namespace VirtualDualHost
         string protocolType = string.Empty;
         private void TreeViewSelectItemChange()
         {
-            if (treeView1.SelectedNode.Tag == null)
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Tag == null)
                 return;
             string nodeText = treeView1.SelectedNode.Text;
             string nodePath = treeView1.SelectedNode.Tag.ToString();

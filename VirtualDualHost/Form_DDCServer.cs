@@ -395,7 +395,7 @@ namespace VirtualDualHost
                     }
                     #endregion
 
-                    string msg = msgContent.MsgBase64String;
+                    //string msg = msgContent.MsgBase64String;
                     isBack = false;
                     if (msgContent.MsgCommandType == MessageCommandType.DeviceFault)
                     {
@@ -410,11 +410,12 @@ namespace VirtualDualHost
                     }
                     if (!string.IsNullOrEmpty(msgContent.MsgASCIIString.TrimEnd('\0')))
                     {
-                        ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgBase64String);
+                        ReceiveMsg("Recv(" + (msgContent.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : ", msgContent.MsgASCIIString);
                     }
                     if (msgContent.MsgCommandType == MessageCommandType.FullDownLoad)
                     {
                         isFullDownLoad = true;
+                        GetFullDownLoad();
                     }
                     string headContext = string.Empty;
                     if (isFullDownLoad)
@@ -438,7 +439,7 @@ namespace VirtualDualHost
                             }
                             if (!string.IsNullOrEmpty(FulldownLoadMsg))
                             {
-                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
+                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer.TCPHead, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
                                 myClientSocket.Send(msgBytes);
                                 ReceiveMsg("Send(" + headContext + ") : ", FulldownLoadMsg);
                             }
@@ -653,10 +654,10 @@ namespace VirtualDualHost
                 string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\ScreenUpdate\";
                 string groupFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\GroupFunctionIdentifier\";
                 string EnhancedFunctionPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\EnhancedFunction\";
-				string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\CommonConfig.ini";
+                string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\DDC\Host_1\CommonConfig.ini";
 
                 string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
-				string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
+                string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
 
                 string NotesToDispense = "0000000000000000";
 
@@ -666,8 +667,7 @@ namespace VirtualDualHost
                 if (CurrentOperationCode.Comment.ToLower().Contains("withdraw"))
                 {
                     //取款配钞
-                    NotesToDispense = GetNotesToDispense(msgContent);
-
+                    NotesToDispense = GetNotesToDispense(msgContent, ref resultIndex);
                 }
                 else if (CurrentOperationCode.Comment.ToLower().Contains("deposit"))
                 {
@@ -713,37 +713,78 @@ namespace VirtualDualHost
             return msgTemplate;
         }
 
+        static List<int> notesOutList = new List<int>();
         /// <summary>
         /// 配钞
         /// </summary>
         /// <param name="amountField"></param>
         /// <returns></returns>
-        public static string GetNotesToDispense(XDCMessage msgContent)
+        public static string GetNotesToDispense(XDCMessage msgContent, ref int resultIndex)
         {
             string result = string.Empty;
 
             string tempAmount = string.Empty;
 
             int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
-
-            int noteCount = amount / 100;
-
-            #region 暂时先所有都从第一个钞箱出，日后完善配钞算法
-            if (noteCount < 100)
-                result = noteCount.ToString().PadLeft(2, '0');
-            else
+            notesOutList.Clear();
+            #region MyRegion
+            for (int i = 0; i < DDCCVList.Count; i++)
             {
-                result = noteCount.ToString().Substring(0, 2);
+                notesOutList.Add(0);
             }
-            result = result.PadRight(16, '0');
-
-            //暂时注释
-            DDCCVList[0].LoadCount = (int.Parse(DDCCVList[0].LoadCount) - noteCount).ToString();
-            ReBingCassette();
             #endregion
 
-            //RecordUserInfo(msgContent, -amount);
+            //配钞
+            if (!DispenseNotes(amount))
+            {
+                //配钞失败，除不尽的数
+                resultIndex = 1;
+                return "".PadLeft(16, '0');
+            }
+            //组合配钞结果，更新主机钱箱显示
+            for (int i = 0; i < notesOutList.Count; i++)
+            {
+                result += notesOutList[i].ToString().PadLeft(2, '0');
+                DDCCVList[i].LoadCount = (int.Parse(DDCCVList[i].LoadCount) - notesOutList[i]).ToString();
+            }
+
+            #region 上账
+
             XDCUnity.RecordLastTransaction(msgContent, -amount);
+            ReBingCassette();
+            #endregion
+            return result;
+        }
+
+
+        private static bool DispenseNotes(int amount)
+        {
+            bool result = false;
+            //当前钱箱应分配的张数
+            int noteCount = -1;
+            //余数
+            int currentLeft = -1;
+            //面额
+            int currentDeno = -1;
+            //当前钱箱的剩余张数
+            int currenLoadCount = -1;
+
+            for (int i = 0; i < DDCCVList.Count; i++)
+            {
+                currentDeno = int.Parse(DDCCVList[i].Denomination);
+                currenLoadCount = int.Parse(DDCCVList[i].LoadCount);
+                noteCount = amount / currentDeno;
+                currentLeft = amount % currentDeno;
+                if (currenLoadCount >= noteCount)
+                {
+                    notesOutList[i] += noteCount;
+                }
+                amount = currentLeft;
+            }
+            if (currentLeft != 0)
+                result = false;
+            else
+                result = true;
 
             return result;
         }
@@ -778,7 +819,7 @@ namespace VirtualDualHost
                                                 .Replace("[CURRENCY]", Currency)
                                                 .Replace("[AVAILABLEBAL]", availableBanlance)
                                                 .Replace("[PAN]", Pan)
-                                                .Replace("[AMOUNT]",availableBanlance)
+                                                .Replace("[AMOUNT]", availableBanlance)
                                                 .Replace("[STATUS]", status.ToString())
                                                 .Replace("[TIME]", DateTime.Now.ToShortTimeString())
                                                 .Replace("[DATE]", DateTime.Now.ToShortDateString());
@@ -917,19 +958,19 @@ namespace VirtualDualHost
                 #region Severity
                 //else if (item.FieldName.StartsWith("Cassette type 1"))
                 //{
-                //    NDCCVList[0].Severity = item.FieldComment;
+                //    DDCCVList[0].Severity = item.FieldComment;
                 //}
                 //else if (item.FieldName.StartsWith("Cassette type 2"))
                 //{
-                //    NDCCVList[1].Severity = item.FieldComment;
+                //    DDCCVList[1].Severity = item.FieldComment;
                 //}
                 //else if (item.FieldName.StartsWith("Cassette type 3"))
                 //{
-                //    NDCCVList[2].Severity = item.FieldComment;
+                //    DDCCVList[2].Severity = item.FieldComment;
                 //}
                 //else if (item.FieldName.StartsWith("Cassette type 4"))
                 //{
-                //    NDCCVList[3].Severity = item.FieldComment;
+                //    DDCCVList[3].Severity = item.FieldComment;
                 //}
                 #endregion
             }
@@ -954,7 +995,7 @@ namespace VirtualDualHost
                 else
                 {
                     string headContext = string.Empty;
-                    byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer, ref headContext);
+                    byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer.TCPHead, ref headContext);
                     clientSocket.Send(msgBytes);
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
                 }

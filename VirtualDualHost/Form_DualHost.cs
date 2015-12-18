@@ -68,9 +68,9 @@ namespace VirtualDualHost
         string SendHead = "Send(";
         string RecvHead = "Recv(";
         #endregion
-        
+
         #region Control Event
-        
+
         private void Form1_Load(object sender, EventArgs e)
         {
             SendMsgToeCATEvent += new SendMsgToeCAT(Program_SendMsgToeCATEvent);
@@ -169,7 +169,9 @@ namespace VirtualDualHost
                 isGM01Start = false;
                 GM01_ListenThread.Suspend();
                 GM01_ListenThread = null;
-                GM01_StartThread.Suspend();
+
+                if (GM01_StartThread.ThreadState == System.Threading.ThreadState.Running)
+                    GM01_StartThread.Suspend();
                 GM01_StartThread = null;
                 socket_GM01.Disconnect(false);
                 socket_GM01 = null;
@@ -197,7 +199,6 @@ namespace VirtualDualHost
                 LUNO_GM02 = txt_H2_LUNO.Text.Trim();
                 GM01_HostState = HostState.Unknow;
 
-                //ConnectGM02();
                 GM02_StartThread = new Thread(ConnectGM02);
                 GM02_StartThread.IsBackground = true;
                 GM02_StartThread.Start();
@@ -212,7 +213,8 @@ namespace VirtualDualHost
                 isGM02Start = false;
                 GM02Thread.Suspend();
                 GM02Thread = null;
-                GM02_StartThread.Suspend();
+                if (GM02_StartThread.ThreadState == System.Threading.ThreadState.Running)
+                    GM02_StartThread.Suspend();
                 GM02_StartThread = null;
                 socket_GM02.Disconnect(false);
                 socket_GM02 = null;
@@ -229,7 +231,7 @@ namespace VirtualDualHost
         {
             new From_Seeting_eCATPath().Show();
         }
-        
+
         private void lsb_Log_GM01_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (((ListBox)sender) == null || ((ListBox)sender).SelectedItem == null)
@@ -259,7 +261,10 @@ namespace VirtualDualHost
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg));
+                string headContext = string.Empty;
+                byte[] msgBytes = XDCUnity.EnPackageMsg(msg, TcpHead.L2L1, ref headContext);
+                tempSock.Send(msgBytes);
+                //tempSock.Send(Encoding.ASCII.GetBytes(msg));
             }
         }
 
@@ -268,7 +273,10 @@ namespace VirtualDualHost
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg));
+                string headContext = string.Empty;
+                byte[] msgBytes = XDCUnity.EnPackageMsg(msg, TcpHead.L2L1, ref headContext);
+                tempSock.Send(msgBytes);
+                //tempSock.Send(Encoding.ASCII.GetBytes(msg));
             }
         }
 
@@ -277,10 +285,13 @@ namespace VirtualDualHost
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg.MsgBase64String));
+                string headContext = string.Empty;
+                byte[] msgBytes = XDCUnity.EnPackageMsg(msg.MsgASCIIString, TcpHead.L2L1, ref headContext);
+                tempSock.Send(msgBytes);
+                //tempSock.Send(Convert.FromBase64String(msg.MsgBase64String));
                 //rtb_GM01_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
 
-                this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+                this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length).ToString().PadLeft(4, '0') + ") : " + msg.MsgASCIIString);
             }
             this.lsb_Log_GM01.TopIndex = lsb_Log_GM01.Items.Count - (int)(lsb_Log_GM01.Height / lsb_Log_GM01.ItemHeight);
         }
@@ -290,10 +301,11 @@ namespace VirtualDualHost
             Socket tempSock = socket as Socket;
             if (tempSock != null)
             {
-                tempSock.Send(Convert.FromBase64String(msg.MsgBase64String));
-                //rtb_GM02_Msg.Text += "Send :" + Encoding.ASCII.GetString(Convert.FromBase64String(msg)).Substring(2) + "\r\n";
+                string headContext = string.Empty;
+                byte[] msgBytes = XDCUnity.EnPackageMsg(msg.MsgASCIIString, TcpHead.L2L1, ref headContext); //Encoding.ASCII.GetBytes(msg.MsgASCIIString);
 
-                this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+                tempSock.Send(msgBytes);
+                this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Send(" + (msg.MsgASCIIString.Length ).ToString().PadLeft(4, '0') + ") : " + msg.MsgASCIIString);
             }
 
             this.lsb_Log_GM02.TopIndex = lsb_Log_GM02.Items.Count - (int)(lsb_Log_GM02.Height / lsb_Log_GM02.ItemHeight);
@@ -301,14 +313,14 @@ namespace VirtualDualHost
 
         void Form1_ReceiveMsg_GM02(XDCMessage msg)
         {
-            this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+            this.lsb_Log_GM02.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length).ToString().PadLeft(4, '0') + ") : " + msg.MsgASCIIString);
 
             this.lsb_Log_GM02.TopIndex = lsb_Log_GM02.Items.Count - (int)(lsb_Log_GM02.Height / lsb_Log_GM02.ItemHeight);
         }
 
         void Form1_ReceiveMsg_GM01(XDCMessage msg)
         {
-            this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length - 2).ToString().PadLeft(4, '0') + ") : " + Encoding.ASCII.GetString(Convert.FromBase64String(msg.MsgBase64String)).Substring(2));
+            this.lsb_Log_GM01.Items.Add(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + " :" + "Recv(" + (msg.MsgASCIIString.Length ).ToString().PadLeft(4, '0') + ") : " + msg.MsgASCIIString);
 
             this.lsb_Log_GM01.TopIndex = lsb_Log_GM01.Items.Count - (int)(lsb_Log_GM01.Height / lsb_Log_GM01.ItemHeight);
         }
@@ -359,8 +371,8 @@ namespace VirtualDualHost
                 {
                     result_eCAT = new byte[2048];
                     int receiveNumber = myClientSocket.Receive(result_eCAT);
-                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber);
-                    string msg = msgContent.MsgBase64String;
+                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
+                    string msg = msgContent.MsgASCIIString;
                     if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
                     {
                         #region 解析消息，判断LUNO号
@@ -386,20 +398,21 @@ namespace VirtualDualHost
                                 //发送给GM02
                                 if (socket_GM02.Connected)
                                 {
-                                    //if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
-                                    //{
-                                    //    string QueueMsg = "";
-                                    //    for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
-                                    //    {
-                                    //        //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
-                                    //        QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
-                                    //        if (!string.IsNullOrEmpty(QueueMsg))
-                                    //        {
-                                    //            ReceiveMsg_GM02(QueueMsg);
-                                    //            SendMsgToGM02_Event(socket_GM02, QueueMsg);
-                                    //        }
-                                    //    }
-                                    //}
+                                    if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
+                                    {
+                                        string QueueMsg = "";
+                                        for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
+                                        {
+                                            //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
+                                            QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
+                                            if (!string.IsNullOrEmpty(QueueMsg))
+                                            {
+                                                XDCMessage mssg = XDCUnity.MessageFormat.Format(Encoding.ASCII.GetBytes(QueueMsg), Encoding.ASCII.GetBytes(QueueMsg).Length, TcpHead.L2L1);
+                                                ReceiveMsg_GM02(mssg);
+                                                SendMsgToGM02_Event(socket_GM02, QueueMsg);
+                                            }
+                                        }
+                                    }
                                     ReceiveMsg_GM02(msgContent);
                                     SendMsgToGM02_Event(socket_GM02, msg);
                                 }
@@ -453,7 +466,7 @@ namespace VirtualDualHost
                     Thread.Sleep(1000);
                 }
             }
-            
+
             GM01_ListenThread = new Thread(GM01_ListenClientConnect);
             GM01_ListenThread.Start();
         }
@@ -463,8 +476,8 @@ namespace VirtualDualHost
             while (true && socket_GM01 != null && socket_GM01.Connected)
             {
                 int receiveLength = socket_GM01.Receive(result_GM01);
-                XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_GM01, receiveLength);
-                string msg = msgContent.MsgBase64String;
+                XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_GM01, receiveLength, TcpHead.L2L1);
+                string msg = msgContent.MsgASCIIString;
 
                 if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
                 {
@@ -524,12 +537,12 @@ namespace VirtualDualHost
             while (true && socket_GM02 != null && socket_GM02.Connected)
             {
                 int receiveLength = socket_GM02.Receive(result_GM02);
-                XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_GM02, receiveLength);
-                string msg = msgContent.MsgBase64String;
+                XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_GM02, receiveLength, TcpHead.L2L1);
+                string msg = msgContent.MsgASCIIString;
 
                 if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
                 {
-                    
+
                     while (true)
                     {
                         //与eCAT连接了，并且，GM01已经进入服务了 

@@ -29,10 +29,10 @@ namespace MessagePars_NDC
             result.MsgByteArray = msgByte;
 
             //1.Base64字符串
-            if (HeadType == TcpHead.L2L1)
-                result.MsgBase64String = Convert.ToBase64String(msgByte, 2, msgLength - 2);
-            else
-                result.MsgBase64String = Convert.ToBase64String(msgByte, 0, msgLength);
+            //if (HeadType == TcpHead.L2L1)
+            //    result.MsgBase64String = Convert.ToBase64String(msgByte, 2, msgLength - 2);
+            //else
+            //    result.MsgBase64String = Convert.ToBase64String(msgByte, 0, msgLength);
 
             //2.ASCII字符串
             if (HeadType == TcpHead.L2L1)
@@ -90,7 +90,16 @@ namespace MessagePars_NDC
                         //NDC
                         if (result.MsgType == MessageType.SolicitedMessage)
                             result.MsgCommandType = MessageCommandType.NewKeyVerification;
-                        NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                        //NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                    }
+                    break;
+                case "8":
+                    {
+                        //NDC
+                        if (result.MsgType == MessageType.SolicitedMessage)
+                            result.MsgCommandType = MessageCommandType.DeviceFault;
+                        if (msgFields.Length > 4 && msgFields[4].Substring(0, 2) == "E2")
+                            result.MsgCommandType = MessageCommandType.Reversal;
                     }
                     break;
                 case "9":
@@ -104,10 +113,16 @@ namespace MessagePars_NDC
                         if (result.MsgType == MessageType.UnSolicitedMessage)
                         {
                             if (msgFields[3].Equals("B0000"))
+                            {
                                 result.MsgCommandType = MessageCommandType.FullDownLoad;
+                                if (!XDCUnity.isFulldownLoadEnqueue)
+                                {
+                                    NeedSendToBothHost.Enqueue(result.MsgASCIIString);
+                                    XDCUnity.isFulldownLoadEnqueue = true;
+                                }
+                            }
                             else
                                 result.MsgCommandType = MessageCommandType.NotFullDownLoad;
-                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
                         }
                     }
                     break;
@@ -117,7 +132,7 @@ namespace MessagePars_NDC
                         {
                             //cash handle
                             result.MsgCommandType = MessageCommandType.CashHandler;
-                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                            //NeedSendToBothHost.Enqueue(result.MsgBase64String);
                         }
                     }
                     break;
@@ -128,7 +143,7 @@ namespace MessagePars_NDC
                         {
                             //TerminalState
                             result.MsgCommandType = MessageCommandType.TerminalState;
-                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                            //NeedSendToBothHost.Enqueue(result.MsgBase64String);
                         }
                     }
                     break;
