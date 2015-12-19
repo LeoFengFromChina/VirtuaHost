@@ -100,7 +100,15 @@ namespace VirtualDualHost
         private void Form_DDCServer_ReBingCassette()
         {
             if (dgv_Cassette.DataSource == null)
-                dgv_Cassette.DataSource = DDCCVList;
+            {
+                try
+                {
+                    dgv_Cassette.DataSource = DDCCVList;
+                }
+                catch
+                {
+                }
+            }
             dgv_Cassette.Refresh();
         }
 
@@ -489,6 +497,17 @@ namespace VirtualDualHost
                             Thread.Sleep(100);
                         }
                     }
+                    else if (msgContent.MsgCommandType == MessageCommandType.Reversal)
+                    {
+                        //发充正过来了
+                        msgContent.OperationCode = "REVERSAL";
+                        string replyMsg = ProcessOperationCode(msgContent);
+                        if (!string.IsNullOrEmpty(replyMsg))
+                        {
+                            SingalSendMsg(replyMsg);
+                            Thread.Sleep(100);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -680,7 +699,14 @@ namespace VirtualDualHost
                     ReBingCassette();
                     #endregion
                 }
+                else if (CurrentOperationCode.Comment.ToLower().Contains("doreversal"))
+                {
+                    #region 充正
 
+                    XDCUnity.DoReversal();
+
+                    #endregion
+                }
                 string updateDataStr = XDCUnity.GetTxtFileText(screenDisplayUpdatePath + CurrentOperationCode.ScreenDisplayUpdate[resultIndex]);
 
                 string printData = XDCUnity.GetTxtFileText(printDataPath + CurrentOperationCode.PrintData[resultIndex]);
@@ -742,10 +768,13 @@ namespace VirtualDualHost
                 return "".PadLeft(16, '0');
             }
             //组合配钞结果，更新主机钱箱显示
+            int loadCount = 0;
             for (int i = 0; i < notesOutList.Count; i++)
             {
                 result += notesOutList[i].ToString().PadLeft(2, '0');
-                DDCCVList[i].LoadCount = (int.Parse(DDCCVList[i].LoadCount) - notesOutList[i]).ToString();
+                int.TryParse(DDCCVList[i].LoadCount, out loadCount);
+                DDCCVList[i].LoadCount = (loadCount - notesOutList[i]).ToString();
+                loadCount = 0;
             }
 
             #region 上账
@@ -761,25 +790,34 @@ namespace VirtualDualHost
         {
             bool result = false;
             //当前钱箱应分配的张数
-            int noteCount = -1;
+            int noteCount = 0;
             //余数
-            int currentLeft = -1;
+            int currentLeft = 0;
             //面额
-            int currentDeno = -1;
+            int currentDeno = 0;
             //当前钱箱的剩余张数
-            int currenLoadCount = -1;
-
-            for (int i = 0; i < DDCCVList.Count; i++)
+            int currenLoadCount = 0;
+            try
             {
-                currentDeno = int.Parse(DDCCVList[i].Denomination);
-                currenLoadCount = int.Parse(DDCCVList[i].LoadCount);
-                noteCount = amount / currentDeno;
-                currentLeft = amount % currentDeno;
-                if (currenLoadCount >= noteCount)
+
+                for (int i = 0; i < DDCCVList.Count; i++)
                 {
-                    notesOutList[i] += noteCount;
+                    //currentDeno = int.Parse(DDCCVList[i].Denomination);
+                    int.TryParse(DDCCVList[i].Denomination, out currentDeno);
+                    //currenLoadCount = int.Parse(DDCCVList[i].LoadCount);
+                    int.TryParse(DDCCVList[i].LoadCount, out currenLoadCount);
+                    noteCount = amount / currentDeno;
+                    currentLeft = amount % currentDeno;
+                    if (currenLoadCount >= noteCount)
+                    {
+                        notesOutList[i] += noteCount;
+                    }
+                    amount = currentLeft;
                 }
-                amount = currentLeft;
+            }
+            catch (Exception ex)
+            {
+
             }
             if (currentLeft != 0)
                 result = false;

@@ -96,6 +96,14 @@ namespace MessagePars_DDC
                     {
                         if (result.MsgType == MessageType.SolicitedMessage)
                             result.MsgCommandType = MessageCommandType.DeviceFault;
+                        if (result.MsgType == MessageType.SolicitedMessage
+                            && msgFields.Length > 4 && msgFields[4].Length > 4 /*&& msgFields[4].Substring(0, 2) == "E2"*/)
+                        {
+                            string DID = msgFields[4].Substring(0, 1);
+                            string PartialDispenseStatus = msgFields[4].Substring(4, 1);
+                            if (DID == "?" && PartialDispenseStatus != "0")
+                                result.MsgCommandType = MessageCommandType.Reversal;
+                        }
                     }
                     break;
                 case "9":

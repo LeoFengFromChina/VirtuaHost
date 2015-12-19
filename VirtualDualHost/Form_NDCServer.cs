@@ -686,6 +686,7 @@ namespace VirtualDualHost
                 string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\ScreenUpdate\";
                 string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_1\CommonConfig.ini";
 
+                string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
                 string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
                 string NotesToDispense = "00000000";
                 if (CurrentOperationCode.Comment.ToLower().Contains("withdraw"))
@@ -724,7 +725,7 @@ namespace VirtualDualHost
                     .Replace("[MSN]", "1200")
                     .Replace("[NextStateID]", CurrentOperationCode.NextState[resultIndex])
                     .Replace("[NotesToDispense]", NotesToDispense)
-                    .Replace("[TSN]", "1400")
+                    .Replace("[TSN]", TSN)
                     .Replace("[FunctionId]", CurrentOperationCode.FunctionIdentifier[resultIndex])
                     .Replace("[ScreenNumber]", CurrentOperationCode.FunctionScreenNumber[resultIndex])
                     .Replace("[ScreenUpdateData]", updateDataStr)
@@ -766,10 +767,13 @@ namespace VirtualDualHost
                 return "".PadLeft(8, '0');
             }
             //组合配钞结果，更新主机钱箱显示
+            int loadCount = 0;
             for (int i = 0; i < notesOutList.Count; i++)
             {
                 result += notesOutList[i].ToString().PadLeft(2, '0');
-                NDCCVList[i].LoadCount = (int.Parse(NDCCVList[i].LoadCount) - notesOutList[i]).ToString();
+                int.TryParse(NDCCVList[i].LoadCount, out loadCount);
+                NDCCVList[i].LoadCount = (loadCount - notesOutList[i]).ToString();
+                loadCount = 0;
             }
 
             #region 上账
@@ -785,18 +789,22 @@ namespace VirtualDualHost
         {
             bool result = false;
             //当前钱箱应分配的张数
-            int noteCount = -1;
+            int noteCount = 0;
             //余数
-            int currentLeft = -1;
+            int currentLeft = 0;
             //面额
-            int currentDeno = -1;
+            int currentDeno = 0;
             //当前钱箱的剩余张数
-            int currenLoadCount = -1;
+            int currenLoadCount = 0;
+            try
+            {
 
             for (int i = 0; i < NDCCVList.Count; i++)
             {
-                currentDeno = int.Parse(NDCCVList[i].Denomination);
-                currenLoadCount = int.Parse(NDCCVList[i].LoadCount);
+                    //currentDeno = int.Parse(DDCCVList[i].Denomination);
+                    int.TryParse(NDCCVList[i].Denomination, out currentDeno);
+                    //currenLoadCount = int.Parse(DDCCVList[i].LoadCount);
+                    int.TryParse(NDCCVList[i].LoadCount, out currenLoadCount);
                 noteCount = amount / currentDeno;
                 currentLeft = amount % currentDeno;
                 if (currenLoadCount >= noteCount)
@@ -804,6 +812,11 @@ namespace VirtualDualHost
                     notesOutList[i] += noteCount;
                 }
                 amount = currentLeft;
+            }
+            }
+            catch (Exception ex)
+            {
+
             }
             if (currentLeft != 0)
                 result = false;
@@ -844,6 +857,7 @@ namespace VirtualDualHost
                                                 .Replace("[CURRENCY]", Currency)
                                                 .Replace("[AVAILABLEBAL]", availableBanlance)
                                                 .Replace("[PAN]", Pan)
+                                                .Replace("[AMOUNT]", availableBanlance)
                                                 .Replace("[STATUS]", status.ToString())
                                                 .Replace("[TIME]", DateTime.Now.ToShortTimeString())
                                                 .Replace("[DATE]", DateTime.Now.ToShortDateString());
