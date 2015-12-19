@@ -31,11 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Main));
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.nDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,8 +48,14 @@
             this.screenParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.killeCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.starteCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eCATConfigToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,23 +77,15 @@
             this.toolStripDropDownButton2,
             this.toolStripDropDownButton5,
             this.toolStripDropDownButton3,
+            this.toolStripDropDownButton6,
             this.toolStripSeparator2,
-            this.toolStripDropDownButton4});
+            this.toolStripDropDownButton4,
+            this.toolStripSeparator3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(784, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripDropDownButton1
             // 
@@ -113,6 +110,11 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.exitToolStripMenuItem.Text = "Exit";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripDropDownButton2
             // 
@@ -214,6 +216,11 @@
             this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.cryptToolToolStripMenuItem.Text = "CryptTool";
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
             // toolStripDropDownButton4
             // 
             this.toolStripDropDownButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -231,6 +238,42 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripDropDownButton6
+            // 
+            this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.killeCATToolStripMenuItem,
+            this.starteCATToolStripMenuItem,
+            this.eCATConfigToolToolStripMenuItem});
+            this.toolStripDropDownButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton6.Image")));
+            this.toolStripDropDownButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton6.Name = "toolStripDropDownButton6";
+            this.toolStripDropDownButton6.Size = new System.Drawing.Size(50, 22);
+            this.toolStripDropDownButton6.Text = "eCAT";
+            // 
+            // killeCATToolStripMenuItem
+            // 
+            this.killeCATToolStripMenuItem.Name = "killeCATToolStripMenuItem";
+            this.killeCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.killeCATToolStripMenuItem.Text = "KilleCAT";
+            // 
+            // starteCATToolStripMenuItem
+            // 
+            this.starteCATToolStripMenuItem.Name = "starteCATToolStripMenuItem";
+            this.starteCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.starteCATToolStripMenuItem.Text = "StarteCAT";
+            // 
+            // eCATConfigToolToolStripMenuItem
+            // 
+            this.eCATConfigToolToolStripMenuItem.Name = "eCATConfigToolToolStripMenuItem";
+            this.eCATConfigToolToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.eCATConfigToolToolStripMenuItem.Text = "eCATConfigTool";
+            // 
             // Form_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -244,7 +287,6 @@
             this.TabText = "Form_Main";
             this.Text = "XDCHost";
             this.Load += new System.EventHandler(this.Form_Main_Load);
-            this.LocationChanged += new System.EventHandler(this.Form_Main_LocationChanged);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -276,5 +318,10 @@
         private System.Windows.Forms.ToolStripMenuItem eCATToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nDCServerToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem dDCServerToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton6;
+        private System.Windows.Forms.ToolStripMenuItem killeCATToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem starteCATToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eCATConfigToolToolStripMenuItem;
     }
 }

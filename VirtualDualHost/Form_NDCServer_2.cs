@@ -97,7 +97,16 @@ namespace VirtualDualHost
         private void Form_NDCServer_ReBingCassette()
         {
             if (dgv_Cassette.DataSource == null)
-                dgv_Cassette.DataSource = NDCCVList;
+            {
+                try
+                {
+                    dgv_Cassette.DataSource = NDCCVList;
+                }
+                catch
+                {
+
+                }
+            }
             dgv_Cassette.Refresh();
 
         }

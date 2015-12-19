@@ -97,7 +97,15 @@ namespace VirtualDualHost
         private void Form_NDCServer_ReBingCassette()
         {
             if (dgv_Cassette.DataSource == null)
-                dgv_Cassette.DataSource = NDCCVList;
+            {
+                try
+                {
+                    dgv_Cassette.DataSource = NDCCVList;
+                }
+                catch
+                {
+                }
+            }
             dgv_Cassette.Refresh();
 
         }
@@ -418,9 +426,9 @@ namespace VirtualDualHost
                         if (msgContent.MsgCommandType != MessageCommandType.ReadyB)
                             continue;
                         #region FullDownLoad
-                        if (currentFullDownLoad.Count == 0 )
+                        if (currentFullDownLoad.Count == 0)
                         {
-                            if(!isFencth)
+                            if (!isFencth)
                             {
                                 string inservicemsg = "10A210001";
                                 SingalSendMsg(inservicemsg);

@@ -48,7 +48,7 @@
             this.Controls.Add(this.dockPanel1);
             this.IsMdiContainer = true;
             this.Name = "Form_Pars";
-            this.Text = "格式化";
+            this.Text = "SuperParse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Pars_FormClosing);
             this.Load += new System.EventHandler(this.Form_Pars_Load);
             this.ResumeLayout(false);

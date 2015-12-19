@@ -1,12 +1,16 @@
-﻿using System;
+﻿using StandardFeature;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using WeifenLuo.WinFormsUI.Docking;
+using XmlHelper;
 
 namespace VirtualDualHost
 {
@@ -50,8 +54,11 @@ namespace VirtualDualHost
             aboutToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             nDCServerToolStripMenuItem1.Click += DDCServerToolStripMenuItem_Click;
             dDCServerToolStripMenuItem1.Click += DDCServerToolStripMenuItem_Click;
-
+            killeCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            starteCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            eCATConfigToolToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
         }
+
         bool isAlreadyNDC_1 = false;
         bool isAlreadyNDC_2 = false;
         bool isAlareadyDualHost = false;
@@ -69,11 +76,11 @@ namespace VirtualDualHost
                 case "NDCServer_2":
                 case "VirtualDualHost":
                     {
-                         isAlreadyNDC_1 = false;
-                         isAlreadyNDC_2 = false;
-                         isAlareadyDualHost = false;
-                         isAlreadyDDC_1 = false;
-                         isAlreadyDDC_2 = false;
+                        isAlreadyNDC_1 = false;
+                        isAlreadyNDC_2 = false;
+                        isAlareadyDualHost = false;
+                        isAlreadyDDC_1 = false;
+                        isAlreadyDDC_2 = false;
                         foreach (DockContent dockContent in dockPanel1.Contents)
                         {
                             if (dockContent.Name.Equals("Form_NDCServer"))
@@ -126,6 +133,21 @@ namespace VirtualDualHost
                         form_eCAT.Show();
                     }
                     break;
+                case "KilleCAT":
+                    {
+                        KilleCATFunc();
+                    }
+                    break;
+                case "StarteCAT":
+                    {
+                        StarteCATFunc();
+                    }
+                    break;
+                case "eCATConfigTool":
+                    {
+                        eCATConfigToolFunc();
+                    }
+                    break;
                 case "About":
                     {
                         new Form_About().ShowDialog();
@@ -136,9 +158,85 @@ namespace VirtualDualHost
             }
         }
 
-        private void Form_Main_LocationChanged(object sender, EventArgs e)
+        /// <summary>
+        /// 启动eCAT
+        /// </summary>
+        private void StarteCATFunc()
         {
+            #region start
+            CheckeCATPath();
 
+            CheckTrueBackPath();
+
+            XDCUnity.StarteCAT();
+
+            #endregion
         }
+
+        /// <summary>
+        /// 关闭eCAT
+        /// </summary>
+        private void KilleCATFunc()
+        {
+            CheckeCATPath();
+            XDCUnity.KilleCAT();
+        }
+
+        /// <summary>
+        /// 启动eCAT-XDC配置
+        /// </summary>
+        private void eCATConfigToolFunc()
+        {
+            #region eCATConfigTool
+
+            //检查eCAT路径
+            CheckeCATPath();
+
+            string path = XDCUnity.eCATPath + @"\eCATConfigTool";
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch
+                {
+
+                }
+            }
+            path = XDCUnity.eCATPath + @"\eCATConfigTool.exe";
+            XDCUnity.ProcessFile(path);
+            #endregion
+        }
+
+        /// <summary>
+        /// 检查eCAT路径是否有配置
+        /// </summary>
+        private void CheckeCATPath()
+        {
+            if (string.IsNullOrEmpty(XDCUnity.eCATPath))
+            {
+                XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+                XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
+                if (string.IsNullOrEmpty(node.Attributes["value"].InnerText))
+                    MessageBox.Show("Please Set eCAT Path First in [Config--eCAT].");
+                else
+                    XDCUnity.eCATPath = node.Attributes["value"].InnerText;
+            }
+        }
+
+        private void CheckTrueBackPath()
+        {
+            if (string.IsNullOrEmpty(XDCUnity.TrueBackPath))
+            {
+                XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+                XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/TrueBackPath");
+                if (string.IsNullOrEmpty(node.Attributes["value"].InnerText))
+                    MessageBox.Show("Please Set eCAT Path First in [Config--eCAT].");
+                else
+                    XDCUnity.TrueBackPath = node.Attributes["value"].InnerText;
+            }
+        }
+        
     }
 }

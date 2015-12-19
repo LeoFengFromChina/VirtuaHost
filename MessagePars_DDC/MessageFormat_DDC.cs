@@ -28,12 +28,6 @@ namespace MessagePars_DDC
             //0.原字节数组
             result.MsgByteArray = msgByte;
 
-            //1.Base64字符串
-            if (HeadType == TcpHead.L2L1)
-                result.MsgBase64String = Convert.ToBase64String(msgByte, 2, msgLength - 2);
-            else
-                result.MsgBase64String = Convert.ToBase64String(msgByte, 0, msgLength);
-
             //2.ASCII字符串
             if (HeadType == TcpHead.L2L1)
                 result.MsgASCIIString = Encoding.ASCII.GetString(msgByte, 2, msgLength - 2);
@@ -118,7 +112,7 @@ namespace MessagePars_DDC
                                 result.MsgCommandType = MessageCommandType.FullDownLoad;
                             else
                                 result.MsgCommandType = MessageCommandType.NotFullDownLoad;
-                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                            NeedSendToBothHost.Enqueue(result.MsgASCIIString);
                         }
                     }
                     break;
@@ -128,7 +122,7 @@ namespace MessagePars_DDC
                         {
                             //cash handle
                             result.MsgCommandType = MessageCommandType.CashHandler;
-                            NeedSendToBothHost.Enqueue(result.MsgBase64String);
+                            NeedSendToBothHost.Enqueue(result.MsgASCIIString);
                         }
                     }
                     break;

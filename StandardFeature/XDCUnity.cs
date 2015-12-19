@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -16,6 +17,10 @@ namespace StandardFeature
             get; set;
         }
         public static string eCATPath
+        {
+            get; set;
+        }
+        public static string TrueBackPath
         {
             get; set;
         }
@@ -167,7 +172,7 @@ namespace StandardFeature
             BaseConfig.Add("eCATPath", new List<string> { eCATPath });
         }
 
-        private static List<string> GetXmlValueList(string xmlStr)
+        public static List<string> GetXmlValueList(string xmlStr)
         {
             List<string> resultList = new List<string>();
             string[] resultXMLarray = xmlStr.Split(';');
@@ -449,6 +454,70 @@ namespace StandardFeature
             XDCUnity.WriteIniData(Account, "AvailableBalance", (-lastAmount + baseAmount).ToString(), XDCUnity.UserInfoPath);
 
         }
+        /// <summary>
+        /// KilleCAT
+        /// </summary>
+        public static void KilleCAT()
+        {
+            if (string.IsNullOrEmpty(eCATPath))
+            {
+                XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+                XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
+                eCATPath = node.Attributes["value"].InnerText;
+            }
+            string batPath = eCATPath + @"\KillATMC.bat";
+            System.Threading.Thread killeCAT = new System.Threading.Thread(ProcessFile);
+            killeCAT.IsBackground = true;
+            killeCAT.Start(batPath);
+            //ProcessBAT(batPath);
+        }
 
+        public static void StarteCAT()
+        {
+            if (string.IsNullOrEmpty(TrueBackPath))
+            {
+                XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+                XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/TrueBackPath");
+                TrueBackPath = node.Attributes["value"].InnerText;
+            }
+            string batPath = TrueBackPath;
+            System.Threading.Thread killeCAT = new System.Threading.Thread(ProcessFile);
+            killeCAT.IsBackground = true;
+            killeCAT.Start(batPath);
+
+            System.Threading.Thread.Sleep(200);
+
+            if (string.IsNullOrEmpty(eCATPath))
+            {
+                XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+                XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
+                eCATPath = node.Attributes["value"].InnerText;
+            }
+            batPath = eCATPath + @"\eCAT.exe";
+            System.Threading.Thread startCAT = new System.Threading.Thread(ProcessFile);
+            startCAT.IsBackground = true;
+            startCAT.Start(batPath);
+        }
+        /// <summary>
+        /// 执行bat文件
+        /// </summary>
+        /// <param name="path"></param>
+        public static void ProcessFile(object path)
+        {
+            Process proc = null;
+            try
+            {
+                proc = new Process();
+                proc.StartInfo.FileName = path.ToString();
+                proc.StartInfo.Arguments = string.Format("10");//this is argument
+                proc.StartInfo.CreateNoWindow = false;
+                proc.Start();
+                proc.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
+            }
+        }
     }
 }

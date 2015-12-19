@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rb_DDC = new System.Windows.Forms.RadioButton();
             this.rb_NDC = new System.Windows.Forms.RadioButton();
@@ -39,18 +39,18 @@
             this.rb_Screen = new System.Windows.Forms.RadioButton();
             this.rb_State = new System.Windows.Forms.RadioButton();
             this.rtb_Msg = new System.Windows.Forms.RichTextBox();
+            this.cms_Save = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dgv_Fileds = new System.Windows.Forms.DataGridView();
             this.FieldName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_Paras = new System.Windows.Forms.Button();
             this.button_Go = new System.Windows.Forms.Button();
-            this.cms_Save = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).BeginInit();
             this.cms_Save.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -152,6 +152,19 @@
             this.rtb_Msg.TabIndex = 2;
             this.rtb_Msg.Text = "";
             // 
+            // cms_Save
+            // 
+            this.cms_Save.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem});
+            this.cms_Save.Name = "cms_Save";
+            this.cms_Save.Size = new System.Drawing.Size(102, 26);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            // 
             // dgv_Fileds
             // 
             this.dgv_Fileds.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -188,8 +201,8 @@
             // 
             this.FieldValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.FieldValue.DataPropertyName = "FieldValue";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle2;
             this.FieldValue.HeaderText = "Value";
             this.FieldValue.Name = "FieldValue";
             // 
@@ -220,19 +233,6 @@
             this.button_Go.UseVisualStyleBackColor = true;
             this.button_Go.Click += new System.EventHandler(this.button_Go_Click);
             // 
-            // cms_Save
-            // 
-            this.cms_Save.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem});
-            this.cms_Save.Name = "cms_Save";
-            this.cms_Save.Size = new System.Drawing.Size(102, 26);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            // 
             // Form_MsgDebug
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -246,16 +246,16 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "Form_MsgDebug";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.TabText = "消息格式化";
-            this.Text = "消息格式化";
+            this.TabText = "DataParse";
+            this.Text = "DataParse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_MsgDebug_FormClosing);
             this.Load += new System.EventHandler(this.Form_MsgDebug_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).EndInit();
             this.cms_Save.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).EndInit();
             this.ResumeLayout(false);
 
         }

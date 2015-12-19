@@ -103,7 +103,7 @@
             this.txt_eCAT_Port.Location = new System.Drawing.Point(60, 28);
             this.txt_eCAT_Port.Name = "txt_eCAT_Port";
             this.txt_eCAT_Port.Size = new System.Drawing.Size(70, 21);
-            this.txt_eCAT_Port.TabIndex = 3;
+            this.txt_eCAT_Port.TabIndex = 10;
             this.txt_eCAT_Port.Text = "4070";
             // 
             // label2
@@ -160,7 +160,7 @@
             this.lsb_Log_GM01.ItemHeight = 12;
             this.lsb_Log_GM01.Location = new System.Drawing.Point(14, 73);
             this.lsb_Log_GM01.Name = "lsb_Log_GM01";
-            this.lsb_Log_GM01.Size = new System.Drawing.Size(378, 424);
+            this.lsb_Log_GM01.Size = new System.Drawing.Size(378, 412);
             this.lsb_Log_GM01.TabIndex = 14;
             this.lsb_Log_GM01.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lsb_Log_GM01_MouseDoubleClick);
             // 
@@ -190,7 +190,7 @@
             this.btn_H1_Start.Name = "btn_H1_Start";
             this.btn_H1_Start.Size = new System.Drawing.Size(71, 48);
             this.btn_H1_Start.TabIndex = 9;
-            this.btn_H1_Start.Text = "Start";
+            this.btn_H1_Start.Text = "ClearLogs";
             this.btn_H1_Start.UseVisualStyleBackColor = true;
             this.btn_H1_Start.Click += new System.EventHandler(this.btn_H1_Start_Click);
             // 
@@ -260,7 +260,7 @@
             this.lsb_Log_GM02.ItemHeight = 12;
             this.lsb_Log_GM02.Location = new System.Drawing.Point(10, 73);
             this.lsb_Log_GM02.Name = "lsb_Log_GM02";
-            this.lsb_Log_GM02.Size = new System.Drawing.Size(368, 424);
+            this.lsb_Log_GM02.Size = new System.Drawing.Size(368, 412);
             this.lsb_Log_GM02.TabIndex = 20;
             // 
             // txt_H2_LUNO
@@ -289,7 +289,7 @@
             this.btn_H2_Start.Name = "btn_H2_Start";
             this.btn_H2_Start.Size = new System.Drawing.Size(67, 48);
             this.btn_H2_Start.TabIndex = 16;
-            this.btn_H2_Start.Text = "Start";
+            this.btn_H2_Start.Text = "ClearLogs";
             this.btn_H2_Start.UseVisualStyleBackColor = true;
             this.btn_H2_Start.Click += new System.EventHandler(this.btn_H2_Start_Click);
             // 
