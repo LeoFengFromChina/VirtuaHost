@@ -581,7 +581,7 @@ namespace VirtualDualHost
 
             if (XDCUnity.NDC_2FentchMessage.Count <= 0)
             {
-                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\Raw\FentchConfig.txt";
+                string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\Raw\FentchConfig.txt";
 
                 StreamReader sr = new StreamReader(path, Encoding.Default);
                 string line;
@@ -610,7 +610,7 @@ namespace VirtualDualHost
         {
             if (currentFullDownLoad.Count <= 0)
             {
-                string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\FullDownData\Cust.data";
+                string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\FullDownData\Cust.data";
                 string fulldownLoadData = XDCUnity.GetTxtFileText(path);
                 string[] dataArray = fulldownLoadData.Split(FieldspliterStr, StringSplitOptions.None);
                 foreach (string dataItem in dataArray)
@@ -630,7 +630,7 @@ namespace VirtualDualHost
         {
             int resultIndex = 0;
             string msgTemplate = string.Empty;
-            string path = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\OperationCodeConfig.ini";
+            string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\OperationCodeConfig.ini";
 
             CurrentOperationCode.Comment = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.Comment, string.Empty, path);
             if (!string.IsNullOrEmpty(CurrentOperationCode.Comment))
@@ -638,7 +638,7 @@ namespace VirtualDualHost
                 CurrentOperationCode.CheckPin = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.CheckPin, string.Empty, path);
 
                 //获取消息模板
-                string RPpath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\TransactionReply.ini";
+                string RPpath = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\TransactionReply.ini";
                 msgTemplate = XDCUnity.ReadIniData("Template", "Msg", string.Empty, RPpath);
 
                 if (CurrentOperationCode.Comment.ToLower() == "pinentry" && !CheckUserInfo(msgContent))
@@ -663,9 +663,9 @@ namespace VirtualDualHost
                 CurrentOperationCode.OptionPrintData = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.OptionPrintData, string.Empty, path).Split(';');
                 CurrentOperationCode.EnhancedFunction = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.EnhancedFunction, string.Empty, path).Split(';');
 
-                string printDataPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\PrintData\";
-                string screenDisplayUpdatePath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\ScreenUpdate\";
-                string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\CommonConfig.ini";
+                string printDataPath = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\PrintData\";
+                string screenDisplayUpdatePath = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\ScreenUpdate\";
+                string commonConfigPath = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\CommonConfig.ini";
 
                 string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
                 string NotesToDispense = "00000000";
@@ -802,7 +802,7 @@ namespace VirtualDualHost
         {
             bool result = false;
 
-            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
+            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty,  XDCUnity.UserInfoPath);
             result = string.IsNullOrEmpty(UserName) ? false : true;
 
             return result;
@@ -836,7 +836,7 @@ namespace VirtualDualHost
         public static void InitialCassette()
         {
             NDCCVList.Clear();
-            string commonConfigPath = System.Environment.CurrentDirectory + @"\Config\Server\NDC\Host_2\CommonConfig.ini";
+            string commonConfigPath = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_2\CommonConfig.ini";
 
             string deno_1 = XDCUnity.ReadIniData("NotesCassetteTable", "1", "", commonConfigPath);
             string deno_2 = XDCUnity.ReadIniData("NotesCassetteTable", "2", "", commonConfigPath);

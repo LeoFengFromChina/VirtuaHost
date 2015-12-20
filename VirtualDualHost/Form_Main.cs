@@ -27,9 +27,11 @@ namespace VirtualDualHost
         //Form_DualHost form_DualHost;
         private void Form_Main_Load(object sender, EventArgs e)
         {
-
+            XDCUnity.CurrentPath = System.Environment.CurrentDirectory;
+            XDCUnity.UserInfoPath = XDCUnity.CurrentPath + XDCUnity.UserInfoPath;
             //NDCserver
             //form_NDCServer = new Form_NDCServer();
+            this.Text += XDCUnity.Version;
 
             Form_NDCServer form_NDCServer1 = new Form_NDCServer();
             form_NDCServer1.Show(this.dockPanel1, DockState.Document);
@@ -57,6 +59,7 @@ namespace VirtualDualHost
             killeCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             starteCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             eCATConfigToolToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            exitToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
         }
 
         bool isAlreadyNDC_1 = false;
@@ -145,12 +148,20 @@ namespace VirtualDualHost
                     break;
                 case "eCATConfigTool":
                     {
-                        eCATConfigToolFunc();
+                        System.Threading.Thread eCATToolThread = new System.Threading.Thread(eCATConfigToolFunc);
+                        eCATToolThread.IsBackground = true;
+                        eCATToolThread.Start();
+                        //eCATConfigToolFunc();
                     }
                     break;
                 case "About":
                     {
                         new Form_About().ShowDialog();
+                    }
+                    break;
+                case "Exit":
+                    {
+                        this.Close();
                     }
                     break;
                 default:
@@ -185,7 +196,7 @@ namespace VirtualDualHost
         /// <summary>
         /// 启动eCAT-XDC配置
         /// </summary>
-        private void eCATConfigToolFunc()
+        private static void eCATConfigToolFunc()
         {
             #region eCATConfigTool
 
@@ -212,7 +223,7 @@ namespace VirtualDualHost
         /// <summary>
         /// 检查eCAT路径是否有配置
         /// </summary>
-        private void CheckeCATPath()
+        private static void CheckeCATPath()
         {
             if (string.IsNullOrEmpty(XDCUnity.eCATPath))
             {
@@ -225,7 +236,7 @@ namespace VirtualDualHost
             }
         }
 
-        private void CheckTrueBackPath()
+        private static void CheckTrueBackPath()
         {
             if (string.IsNullOrEmpty(XDCUnity.TrueBackPath))
             {
@@ -237,6 +248,6 @@ namespace VirtualDualHost
                     XDCUnity.TrueBackPath = node.Attributes["value"].InnerText;
             }
         }
-        
+
     }
 }

@@ -20,10 +20,14 @@ namespace StandardFeature
         {
             get; set;
         }
+        public static string CurrentPath
+        { get; set; }
         public static string TrueBackPath
         {
             get; set;
         }
+
+        public static string Version = "    V0.1";
         public static Dictionary<string, List<string>> BaseConfig
         {
             get;
@@ -350,7 +354,7 @@ namespace StandardFeature
             return resultBytes;
         }
 
-        public static string UserInfoPath = System.Environment.CurrentDirectory + @"\Config\Server\UserInfo.ini";
+        public static string UserInfoPath = @"\Config\Server\UserInfo.ini";
 
         public static bool isFulldownLoadEnqueue = false;
 
@@ -373,10 +377,11 @@ namespace StandardFeature
 
         public static string ReadIniData(string Section, string Key, string NoText, string iniFilePath)
         {
-            if (File.Exists(iniFilePath))
+            string path = iniFilePath;
+            if (File.Exists(path))
             {
                 StringBuilder temp = new StringBuilder(1024);
-                GetPrivateProfileString(Section, Key, NoText, temp, 1024, iniFilePath);
+                GetPrivateProfileString(Section, Key, NoText, temp, 1024, path);
                 return temp.ToString();
             }
             else

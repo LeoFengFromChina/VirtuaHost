@@ -376,6 +376,15 @@ namespace StandardFeature
         public static Char VT2 = '\u000B';
     }
 
+    public static class DDCSrennCmdChars
+    {
+        public static Char SI = '\u000F';
+        public static Char FF = '\u000C';
+        public static Char ESC = '\u001B';
+    }
+
+
+
     public static class DDCdeviceID
     {
         public static string DP01 = "DP01";
@@ -413,6 +422,28 @@ namespace StandardFeature
             return false;
         }
     }
+
+    public class DDC_SI_Command
+    {
+        //public DDC_SI_Command(string )
+
+        public string StartRow { get; set; }
+
+        public string StartColumn { get; set; }
+
+        public string Content { get; set; }
+    }
+
+    public class DDC_EXC_Command
+    {
+        public string Introducer { get; set; }
+
+        public string Identifier { get; set; }
+
+        public string Content { get; set; }
+    }
+
+
 
     /// <summary>
     /// 当前主机情况

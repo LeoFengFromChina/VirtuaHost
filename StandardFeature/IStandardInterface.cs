@@ -33,6 +33,6 @@ namespace StandardFeature
     }
     public interface IScreenOperator
     {
-        List<ParsRowView> GetView(string parsText);
+        List<object> GetView(string parsText);
     }
 }

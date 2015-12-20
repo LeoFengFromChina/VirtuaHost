@@ -9,9 +9,9 @@ namespace ScreenPars_NDC
 {
     public class ScreenOperator_NDC : IScreenOperator
     {
-        public List<ParsRowView> GetView(string parsText)
+        public List<object> GetView(string parsText)
         {
-            return new List<ParsRowView>();
+            return new List<object>();
         }
     }
 }
