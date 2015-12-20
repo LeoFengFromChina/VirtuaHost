@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(From_Seeting_eCATPath));
             this.label1 = new System.Windows.Forms.Label();
             this.btn_eCAT = new System.Windows.Forms.Button();
             this.btn_TrueBack = new System.Windows.Forms.Button();
@@ -48,7 +49,8 @@
             // 
             // btn_eCAT
             // 
-            this.btn_eCAT.Location = new System.Drawing.Point(481, 41);
+            this.btn_eCAT.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_eCAT.Location = new System.Drawing.Point(370, 41);
             this.btn_eCAT.Name = "btn_eCAT";
             this.btn_eCAT.Size = new System.Drawing.Size(31, 23);
             this.btn_eCAT.TabIndex = 2;
@@ -58,7 +60,8 @@
             // 
             // btn_TrueBack
             // 
-            this.btn_TrueBack.Location = new System.Drawing.Point(481, 84);
+            this.btn_TrueBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_TrueBack.Location = new System.Drawing.Point(370, 84);
             this.btn_TrueBack.Name = "btn_TrueBack";
             this.btn_TrueBack.Size = new System.Drawing.Size(31, 23);
             this.btn_TrueBack.TabIndex = 5;
@@ -77,9 +80,10 @@
             // 
             // btn_OK
             // 
-            this.btn_OK.Location = new System.Drawing.Point(263, 116);
+            this.btn_OK.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.btn_OK.Location = new System.Drawing.Point(194, 115);
             this.btn_OK.Name = "btn_OK";
-            this.btn_OK.Size = new System.Drawing.Size(75, 23);
+            this.btn_OK.Size = new System.Drawing.Size(62, 23);
             this.btn_OK.TabIndex = 102;
             this.btn_OK.Text = "确定";
             this.btn_OK.UseVisualStyleBackColor = true;
@@ -87,25 +91,29 @@
             // 
             // cmb_eCAT
             // 
+            this.cmb_eCAT.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmb_eCAT.FormattingEnabled = true;
             this.cmb_eCAT.Location = new System.Drawing.Point(108, 43);
             this.cmb_eCAT.Name = "cmb_eCAT";
-            this.cmb_eCAT.Size = new System.Drawing.Size(367, 20);
+            this.cmb_eCAT.Size = new System.Drawing.Size(256, 20);
             this.cmb_eCAT.TabIndex = 103;
             // 
             // cmb_Trueback
             // 
+            this.cmb_Trueback.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmb_Trueback.FormattingEnabled = true;
             this.cmb_Trueback.Location = new System.Drawing.Point(108, 84);
             this.cmb_Trueback.Name = "cmb_Trueback";
-            this.cmb_Trueback.Size = new System.Drawing.Size(367, 20);
+            this.cmb_Trueback.Size = new System.Drawing.Size(256, 20);
             this.cmb_Trueback.TabIndex = 104;
             // 
             // From_Seeting_eCATPath
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(535, 161);
+            this.ClientSize = new System.Drawing.Size(424, 161);
             this.Controls.Add(this.cmb_Trueback);
             this.Controls.Add(this.cmb_eCAT);
             this.Controls.Add(this.btn_OK);
@@ -113,6 +121,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btn_eCAT);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "From_Seeting_eCATPath";

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_NDCServer));
             this.gb_Server = new System.Windows.Forms.GroupBox();
             this.cmb_Header = new System.Windows.Forms.ComboBox();
             this.btn_Start = new System.Windows.Forms.Button();
@@ -260,6 +261,7 @@
             this.Controls.Add(this.gb_Debug);
             this.Controls.Add(this.dgv_Cassette);
             this.Controls.Add(this.gb_Server);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form_NDCServer";
             this.TabText = "NDCServer";
             this.Text = "NDCServer";

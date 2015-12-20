@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_COMviewList));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.DateTimeC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DataC = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -78,6 +79,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 448);
             this.Controls.Add(this.dataGridView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form_COMviewList";
             this.TabText = "MessageList";
             this.Text = "MessageList";

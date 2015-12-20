@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_MsgDebug));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rb_DDC = new System.Windows.Forms.RadioButton();
             this.rb_NDC = new System.Windows.Forms.RadioButton();
@@ -201,8 +202,8 @@
             // 
             this.FieldValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.FieldValue.DataPropertyName = "FieldValue";
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.FieldValue.DefaultCellStyle = dataGridViewCellStyle1;
             this.FieldValue.HeaderText = "Value";
             this.FieldValue.Name = "FieldValue";
             // 
@@ -244,6 +245,7 @@
             this.Controls.Add(this.rtb_Msg);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form_MsgDebug";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.TabText = "DataParse";

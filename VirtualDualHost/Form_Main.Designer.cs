@@ -48,14 +48,14 @@
             this.screenParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
             this.killeCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.starteCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eCATConfigToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,19 +96,19 @@
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(39, 22);
-            this.toolStripDropDownButton1.Text = "File";
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(53, 22);
+            this.toolStripDropDownButton1.Text = "File(&F)";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolStripSeparator1
@@ -128,19 +128,21 @@
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
-            this.toolStripDropDownButton2.Size = new System.Drawing.Size(47, 22);
-            this.toolStripDropDownButton2.Text = "View";
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(63, 22);
+            this.toolStripDropDownButton2.Text = "View(&V)";
             // 
             // nDCServerToolStripMenuItem
             // 
             this.nDCServerToolStripMenuItem.Name = "nDCServerToolStripMenuItem";
-            this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.nDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.nDCServerToolStripMenuItem.Text = "NDCServer_2";
             // 
             // dDCServerToolStripMenuItem
             // 
             this.dDCServerToolStripMenuItem.Name = "dDCServerToolStripMenuItem";
-            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.dDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.dDCServerToolStripMenuItem.Text = "DDCServer_2";
             // 
             // virtualDualHostToolStripMenuItem
@@ -169,13 +171,14 @@
             this.toolStripDropDownButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton5.Image")));
             this.toolStripDropDownButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton5.Name = "toolStripDropDownButton5";
-            this.toolStripDropDownButton5.Size = new System.Drawing.Size(58, 22);
-            this.toolStripDropDownButton5.Text = "Config";
+            this.toolStripDropDownButton5.Size = new System.Drawing.Size(74, 22);
+            this.toolStripDropDownButton5.Text = "Config(&C)";
             // 
             // eCATToolStripMenuItem
             // 
             this.eCATToolStripMenuItem.Name = "eCATToolStripMenuItem";
-            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.eCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.eCATToolStripMenuItem.Text = "eCAT";
             // 
             // toolStripDropDownButton3
@@ -189,32 +192,68 @@
             this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
             this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton3.Name = "toolStripDropDownButton3";
-            this.toolStripDropDownButton3.Size = new System.Drawing.Size(52, 22);
-            this.toolStripDropDownButton3.Text = "Tools";
+            this.toolStripDropDownButton3.Size = new System.Drawing.Size(67, 22);
+            this.toolStripDropDownButton3.Text = "Tools(&T)";
             // 
             // parseToolStripMenuItem
             // 
             this.parseToolStripMenuItem.Name = "parseToolStripMenuItem";
-            this.parseToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.parseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.parseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.parseToolStripMenuItem.Text = "SuperParse";
             // 
             // screenParseToolStripMenuItem
             // 
             this.screenParseToolStripMenuItem.Name = "screenParseToolStripMenuItem";
-            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.screenParseToolStripMenuItem.Text = "ScreenParse";
             // 
             // errorCodeToolStripMenuItem
             // 
             this.errorCodeToolStripMenuItem.Name = "errorCodeToolStripMenuItem";
-            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.errorCodeToolStripMenuItem.Text = "ErrorCode";
             // 
             // cryptToolToolStripMenuItem
             // 
             this.cryptToolToolStripMenuItem.Name = "cryptToolToolStripMenuItem";
-            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.cryptToolToolStripMenuItem.Text = "CryptTool";
+            // 
+            // toolStripDropDownButton6
+            // 
+            this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.killeCATToolStripMenuItem,
+            this.starteCATToolStripMenuItem,
+            this.eCATConfigToolToolStripMenuItem});
+            this.toolStripDropDownButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton6.Image")));
+            this.toolStripDropDownButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton6.Name = "toolStripDropDownButton6";
+            this.toolStripDropDownButton6.Size = new System.Drawing.Size(65, 22);
+            this.toolStripDropDownButton6.Text = "eCAT(&E)";
+            // 
+            // killeCATToolStripMenuItem
+            // 
+            this.killeCATToolStripMenuItem.Name = "killeCATToolStripMenuItem";
+            this.killeCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.End)));
+            this.killeCATToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.killeCATToolStripMenuItem.Text = "KilleCAT";
+            // 
+            // starteCATToolStripMenuItem
+            // 
+            this.starteCATToolStripMenuItem.Name = "starteCATToolStripMenuItem";
+            this.starteCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.S)));
+            this.starteCATToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.starteCATToolStripMenuItem.Text = "StarteCAT";
+            // 
+            // eCATConfigToolToolStripMenuItem
+            // 
+            this.eCATConfigToolToolStripMenuItem.Name = "eCATConfigToolToolStripMenuItem";
+            this.eCATConfigToolToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.eCATConfigToolToolStripMenuItem.Text = "eCATConfigTool";
             // 
             // toolStripSeparator2
             // 
@@ -229,50 +268,19 @@
             this.toolStripDropDownButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton4.Image")));
             this.toolStripDropDownButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton4.Name = "toolStripDropDownButton4";
-            this.toolStripDropDownButton4.Size = new System.Drawing.Size(47, 22);
-            this.toolStripDropDownButton4.Text = "Help";
+            this.toolStripDropDownButton4.Size = new System.Drawing.Size(64, 22);
+            this.toolStripDropDownButton4.Text = "Help(&H)";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripDropDownButton6
-            // 
-            this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.killeCATToolStripMenuItem,
-            this.starteCATToolStripMenuItem,
-            this.eCATConfigToolToolStripMenuItem});
-            this.toolStripDropDownButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton6.Image")));
-            this.toolStripDropDownButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton6.Name = "toolStripDropDownButton6";
-            this.toolStripDropDownButton6.Size = new System.Drawing.Size(50, 22);
-            this.toolStripDropDownButton6.Text = "eCAT";
-            // 
-            // killeCATToolStripMenuItem
-            // 
-            this.killeCATToolStripMenuItem.Name = "killeCATToolStripMenuItem";
-            this.killeCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.killeCATToolStripMenuItem.Text = "KilleCAT";
-            // 
-            // starteCATToolStripMenuItem
-            // 
-            this.starteCATToolStripMenuItem.Name = "starteCATToolStripMenuItem";
-            this.starteCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.starteCATToolStripMenuItem.Text = "StarteCAT";
-            // 
-            // eCATConfigToolToolStripMenuItem
-            // 
-            this.eCATConfigToolToolStripMenuItem.Name = "eCATConfigToolToolStripMenuItem";
-            this.eCATConfigToolToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.eCATConfigToolToolStripMenuItem.Text = "eCATConfigTool";
             // 
             // Form_Main
             // 
@@ -281,11 +289,12 @@
             this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.dockPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.Name = "Form_Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.TabText = "Form_Main";
-            this.Text = "XDCHost";
+            this.TabText = "XDC-Host";
+            this.Text = "XDC-Host";
             this.Load += new System.EventHandler(this.Form_Main_Load);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
