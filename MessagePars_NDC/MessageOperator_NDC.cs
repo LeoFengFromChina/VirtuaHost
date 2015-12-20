@@ -529,7 +529,8 @@ namespace MessagePars_NDC
                         {
                             dic.Add(valueItem.InnerText, attrComment.Value);
                         }
-                        tv.FieldSize = valueItem.InnerText.Length > tv.FieldSize ? valueItem.InnerText.Length : tv.FieldSize;
+                        if (valueItem.InnerText != "*")
+                            tv.FieldSize = valueItem.InnerText.Length > tv.FieldSize ? valueItem.InnerText.Length : tv.FieldSize;
                     }
                     tv.FieldValue = dic;
                 }

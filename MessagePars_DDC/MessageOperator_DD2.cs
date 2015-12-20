@@ -247,6 +247,17 @@ namespace MessagePars_DDC
 
         public static List<ParsRowView> GetViewList(XDCMessage XDCmsg, string msgCurrentFieldContent, int currentFSindex, ref int currXmlNodeIndex)
         {
+            #region 修复12消息解析错误的问题
+
+            if (string.IsNullOrEmpty(msgCurrentFieldContent))
+            {
+                XmlAttribute fieldName=CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
+                if(fieldName!=null && fieldName.Value.StartsWith("FS"))
+                {
+                    return null;
+                }
+            }
+            #endregion
             List<ParsRowView> rowViewList = new List<ParsRowView>();
             List<TemplateView> TvList = new List<TemplateView>();
 
