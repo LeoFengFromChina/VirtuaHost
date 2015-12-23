@@ -48,7 +48,9 @@ namespace VirtualDualHost
 
         private static void ParsFunc()
         {
-            StreamReader sr = new StreamReader(comLogPath, Encoding.Default);
+            //避免被占用就
+            FileStream fs = new FileStream(comLogPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StreamReader sr = new StreamReader(fs, System.Text.Encoding.Default); //new StreamReader( /*new StreamReader(comLogPath, Encoding.Default);*/
             String line;
             MessageView mv = null;
             DateTime dt = new DateTime();
@@ -88,14 +90,6 @@ namespace VirtualDualHost
                 }
             }
             BindEvent(MsgList);
-        }
-
-        private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            //string msgContext = dataGridView1.CurrentRow.Cells[1].Value.ToString();
-            ////MessageBox.Show(dataGridView1.CurrentRow.Cells[1].Value.ToString());
-            //msgContext = msgContext.Replace(MsgHeaderRecv, "").Replace(MsgHeaderTrans, "");
-            //SubFormEvent(msgContext, XDCProtocolType.DDC, DataType.Message);
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)

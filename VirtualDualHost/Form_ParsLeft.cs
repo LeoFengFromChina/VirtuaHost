@@ -132,14 +132,21 @@ namespace VirtualDualHost
 
         private void InvokeMethod()
         {
-
-            Root.Expand();
-            treeView1.Nodes.Add(Root);
-            if (!string.IsNullOrEmpty(onlyNode))
+            try
             {
-                treeView1.ExpandAll();
-                if (treeView1.Nodes[0].Nodes.Count > 2)
-                    treeView1.Nodes[0].Nodes[2].Collapse();
+
+                Root.Expand();
+                treeView1.Nodes.Add(Root);
+                if (!string.IsNullOrEmpty(onlyNode))
+                {
+                    treeView1.ExpandAll();
+                    if (treeView1.Nodes[0].Nodes.Count > 2)
+                        treeView1.Nodes[0].Nodes[2].Collapse();
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("你已经打开一个SuperParse");
             }
         }
         static string onlyNode = string.Empty;
@@ -178,7 +185,7 @@ namespace VirtualDualHost
         }
         static object lockObj_ddc = new object();
         static object lockObj_ndc = new object();
-        
+
         private static void StartGeteCATFile()
         {
             Root = null;

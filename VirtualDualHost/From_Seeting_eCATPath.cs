@@ -23,8 +23,9 @@ namespace VirtualDualHost
         string currentProcessPath = string.Empty;
         private void From_Seeting_eCATPath_Load(object sender, EventArgs e)
         {
-            //1.当前路径
-            currentProcessPath = Environment.CurrentDirectory;
+            //1.当前路径，不知为何，在XP上，如果在当前窗体选择了文件后，使用system.Enviroment获取路径会有差异。所以用这个方法
+            string processName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            currentProcessPath = processName.Substring(0, processName.LastIndexOf('\\'));
 
             //2.获取eCAT路径列表
             string resultXML_eCAT = XMLHelper.instance.XMLFiles["BaseConfig"].GetXmlAttributeValue("BaseConfig.Settings.eCATPath.[*].{*}");
@@ -116,8 +117,15 @@ namespace VirtualDualHost
 
             XDCUnity.TrueBackPath = cmb_Trueback.Text;
             currentTruebacknode.Attributes["value"].InnerText = cmb_Trueback.Text;
-
-            doc.Save(currentProcessPath + @"\Config\BaseConfig.xml");
+            try
+            {
+                doc.Save(currentProcessPath + @"\Config\BaseConfig.xml");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save Error:" + ex.ToString());
+            }
+            //doc.Save();
             MessageBox.Show("Save Successed.");
             currenteCATnode = null;
             neweCATPathNode = null;
