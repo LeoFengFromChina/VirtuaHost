@@ -10,6 +10,7 @@ using System.Xml;
 using XmlHelper;
 using StandardFeature;
 using WeifenLuo.WinFormsUI.Docking;
+using System.IO;
 
 namespace VirtualDualHost
 {
@@ -19,24 +20,49 @@ namespace VirtualDualHost
         public delegate void SubForm(object dataContent);
         public event SubForm SubFormEvent;
         public string currentFilePath = string.Empty;
-        public Form_MsgDebug(string msgText, XDCProtocolType protocolType)
+        public Form_MsgDebug(string msgText, XDCProtocolType protocolType, DataType dataType = DataType.Message, string subTitle = "")
         {
             InitializeComponent();
             XDCUnity.Initial();
             rtb_Msg.Text = msgText;
+            currentProtocolType = protocolType;
+            if (!string.IsNullOrEmpty(subTitle))
+            {
+                this.Text += " - [" + subTitle + "]";
+            }
             if (protocolType == XDCProtocolType.DDC)
             {
                 rb_DDC.Checked = true;
+                folderName = "DDC";
             }
             else
             {
                 rb_NDC.Checked = true;
+                folderName = "NDC";
+            }
+            if (dataType == DataType.Message)
+            {
+                rb_Message.Checked = true;
+            }
+            else if (dataType == DataType.State)
+            {
+                rb_State.Checked = true;
+            }
+            else if (dataType == DataType.Screen)
+            {
+                rb_Screen.Checked = true;
+            }
+            else if (dataType == DataType.Fit)
+            {
+                rb_Fit.Checked = true;
             }
             BeginPars();
         }
         Form_Pars form_Pars;
         private DockPanel dp;
         bool IsSendBack = false;
+        string folderName = string.Empty;
+        XDCProtocolType currentProtocolType;
         public Form_MsgDebug(Form_Pars formMain)
         {
             if (null != formMain)
@@ -69,11 +95,15 @@ namespace VirtualDualHost
                 case XDCProtocolType.NDC:
                     {
                         rb_NDC.Checked = true;
+                        folderName = "NDC";
+                        currentProtocolType = XDCProtocolType.NDC;
                     }
                     break;
                 case XDCProtocolType.DDC:
                     {
                         rb_DDC.Checked = true;
+                        folderName = "DDC";
+                        currentProtocolType = XDCProtocolType.DDC;
                     }
                     break;
                 default:
@@ -323,6 +353,42 @@ namespace VirtualDualHost
             }
 
             rtb_Msg.Text = MsgContent;
+        }
+
+        private void dgv_Fileds_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex == 1)
+                return;
+            string FieldName = (dgv_Fileds.DataSource as List<ParsRowView>)[e.RowIndex].FieldName;
+            string FieldValue = (dgv_Fileds.DataSource as List<ParsRowView>)[e.RowIndex].FieldValue;
+            if (FieldName.Contains("Screen"))
+            {
+                string screenPath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\Screen\Host\000\" + FieldValue + ".txt";
+                if (File.Exists(screenPath))
+                {
+                    string screenText = XDCUnity.GetTxtFileText(screenPath);
+                    Form_ScreenParse form_ScreenParse = new Form_ScreenParse(screenText, currentProtocolType, FieldValue + ".txt");
+                    form_ScreenParse.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Do note Exists Screen File:" + screenPath);
+                }
+            }
+            else if (FieldName.Contains("State"))
+            {
+                string statePath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\State\Host\" + FieldValue + ".txt";
+                if (File.Exists(statePath))
+                {
+                    string stateText = XDCUnity.GetTxtFileText(statePath);
+                    Form_MsgDebug form_Debug = new Form_MsgDebug(stateText, currentProtocolType, DataType.State, FieldValue + ".txt");
+                    form_Debug.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Do note Exists State File:" + statePath);
+                }
+            }
         }
     }
 }

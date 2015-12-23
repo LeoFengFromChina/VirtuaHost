@@ -379,10 +379,23 @@ namespace StandardFeature
     public static class DDCSrennCmdChars
     {
         public static Char SI = '\u000F';
+        /// <summary>
+        /// include 一个完整页面
+        /// </summary>
+        public static Char SO = '\u000E';
         public static Char FF = '\u000C';
         public static Char ESC = '\u001B';
     }
-
+    public static class NDCSrennCmdChars
+    {
+        public static Char SI = '\u000F';
+        /// <summary>
+        /// include 一个完整页面
+        /// </summary>
+        public static Char SO = '\u000E';
+        public static Char FF = '\u000C';
+        public static Char ESC = '\u001B';
+    }
 
 
     public static class DDCdeviceID
@@ -425,15 +438,20 @@ namespace StandardFeature
 
     public class DDC_SI_Command
     {
-        //public DDC_SI_Command(string )
-
         public string StartRow { get; set; }
 
         public string StartColumn { get; set; }
 
         public string Content { get; set; }
     }
-
+    public class DDC_SO_Command
+    {
+        public string Content { get; set; }
+    }
+    public class DDC_ESCP_Command
+    {
+        public string Content { get; set; }        
+    }
     public class DDC_EXC_Command
     {
         public string Introducer { get; set; }

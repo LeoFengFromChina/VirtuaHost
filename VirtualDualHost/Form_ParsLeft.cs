@@ -38,7 +38,7 @@ namespace VirtualDualHost
         private void Form_ParsLeft_Load(object sender, EventArgs e)
         {
             BuildTreeEvent += Form_ParsLeft_BuildTreeEvent;
-
+            treeView1.MouseDoubleClick += TreeView1_MouseDoubleClick;
             buildTreeThread = new System.Threading.Thread(StartGeteCATFile);
             buildTreeThread.IsBackground = true;
             buildTreeThread.Start();
@@ -52,7 +52,6 @@ namespace VirtualDualHost
                 //最后完成树的生成
                 if (this.IsHandleCreated)
                     treeView1.BeginInvoke(new InvokeDelegate(InvokeMethod));
-                treeView1.MouseDoubleClick += TreeView1_MouseDoubleClick;
                 //treeView1.MouseClick += TreeView1_MouseDoubleClick;
             }
 
@@ -179,6 +178,7 @@ namespace VirtualDualHost
         }
         static object lockObj_ddc = new object();
         static object lockObj_ndc = new object();
+        
         private static void StartGeteCATFile()
         {
             Root = null;
@@ -293,6 +293,7 @@ namespace VirtualDualHost
             buildTreeThread = new System.Threading.Thread(StartGeteCATFile);
             treeView1.Nodes.Clear();
             buildTreeThread.Start();
+
             System.Threading.Thread.Sleep(50);
         }
     }

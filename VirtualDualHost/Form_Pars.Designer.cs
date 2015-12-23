@@ -50,6 +50,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.Name = "Form_Pars";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SuperParse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Pars_FormClosing);
             this.Load += new System.EventHandler(this.Form_Pars_Load);

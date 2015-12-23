@@ -67,9 +67,17 @@ namespace VirtualDualHost
             }
             else
             {
-                //双击树节点，将数据传至主窗体并格式化显示
                 string text = XDCUnity.GetTxtFileText(subControl.ToString());
-                form_MsgDebug.ParsFromSubForm(text, protocolType, dataType, subControl.ToString());
+                //双击树节点，将数据传至主窗体并格式化显示
+                if (dataType == DataType.Screen)
+                {
+                    Form_ScreenParse form_ScreenParse = new Form_ScreenParse(text, protocolType);
+                    form_ScreenParse.Show();
+                }
+                else
+                {
+                    form_MsgDebug.ParsFromSubForm(text, protocolType, dataType, subControl.ToString());
+                }
             }
         }
 

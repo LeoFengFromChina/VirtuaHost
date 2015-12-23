@@ -189,6 +189,7 @@
             this.dgv_Fileds.TabIndex = 3;
             this.dgv_Fileds.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgv_Fileds_CellBeginEdit);
             this.dgv_Fileds.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_Fileds_CellEndEdit);
+            this.dgv_Fileds.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_Fileds_CellMouseDoubleClick);
             this.dgv_Fileds.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgv_Fileds_RowPostPaint);
             // 
             // FieldName

@@ -130,6 +130,12 @@ namespace VirtualDualHost
                         form_Pars.Show();
                     }
                     break;
+                case "ScreenParse":
+                    {
+                        Form_ScreenParse form_screenPars = new Form_ScreenParse();
+                        form_screenPars.Show();
+                    }
+                    break;
                 case "eCAT":
                     {
                         From_Seeting_eCATPath form_eCAT = new From_Seeting_eCATPath();
