@@ -60,6 +60,11 @@ namespace VirtualDualHost
             starteCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             eCATConfigToolToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             exitToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            openeCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            openXDCHostToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            openTrueBackToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            CheckeCATPath();
+
         }
 
         bool isAlreadyNDC_1 = false;
@@ -158,6 +163,33 @@ namespace VirtualDualHost
                         eCATToolThread.IsBackground = true;
                         eCATToolThread.Start();
                         //eCATConfigToolFunc();
+                    }
+                    break;
+                case "Open-eCAT":
+                    {
+                        //打开eCAT路径
+                        XDCUnity.OpenPath(XDCUnity.eCATPath);
+                    }
+                    break;
+                case "Open-XDCHost":
+                    {
+                        //打开当前主机路径
+                        XDCUnity.OpenPath(Environment.CurrentDirectory);
+                    }
+                    break;
+                case "Open-TrueBack":
+                    {
+                        //打开当前主机路径
+                        CheckTrueBackPath();
+                        string truebackPath = XDCUnity.TrueBackPath;
+                        truebackPath = truebackPath.Substring(0, truebackPath.LastIndexOf('\\'));
+                        XDCUnity.OpenPath(truebackPath);
+                    }
+                    break;
+                case "ErrorCode":
+                    {
+                        Form_ErrorCodeSearch form_errorcode = new Form_ErrorCodeSearch();
+                        form_errorcode.Show();
                     }
                     break;
                 case "About":

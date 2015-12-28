@@ -27,7 +27,7 @@ namespace StandardFeature
             get; set;
         }
 
-        public static string Version = "    V0.1";
+        public static string Version = " V0.1";
         public static Dictionary<string, List<string>> BaseConfig
         {
             get;
@@ -477,6 +477,23 @@ namespace StandardFeature
             //ProcessBAT(batPath);
         }
 
+        /// <summary>
+        /// 打开文件夹
+        /// </summary>
+        /// <param name="path"></param>
+        public static void OpenPath(string path)
+        {
+            Process.Start("Explorer.exe", path);
+        }
+
+        /// <summary>
+        /// 打开文件
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void OpenFile(string fileName)
+        {
+            Process.Start(fileName);
+        }
         public static void StarteCAT()
         {
             if (string.IsNullOrEmpty(TrueBackPath))

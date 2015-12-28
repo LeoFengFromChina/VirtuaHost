@@ -78,7 +78,10 @@ namespace MessagePars_NDC
                                 }
                                 else
                                 {
-                                    tempValueGS = GSstring[k].Substring(l, GSstring[k].Length - l);
+                                    if (l < GSstring[k].Length)
+                                        tempValueGS = GSstring[k].Substring(l, GSstring[k].Length - l);
+                                    else
+                                        tempValueGS = "";
                                 }
                                 if (GSitemList[l].FieldValue != null
                                     && GSitemList[l].FieldValue.ContainsKey(tempValueGS))
@@ -206,7 +209,10 @@ namespace MessagePars_NDC
                         }
                         else
                         {
-                            tempValueGS = GSstring[k].Substring(l, GSstring[k].Length - l);
+                            if (l < GSstring[k].Length)
+                                tempValueGS = GSstring[k].Substring(l, GSstring[k].Length - l);
+                            else
+                                tempValueGS = "";
                         }
                         if (GSitemList[l].FieldValue != null
                             && GSitemList[l].FieldValue.ContainsKey(tempValueGS))

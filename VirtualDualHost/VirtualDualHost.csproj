@@ -137,6 +137,12 @@
     <Compile Include="Form_COMviewList.Designer.cs">
       <DependentUpon>Form_COMviewList.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_ErrorCodeSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_ErrorCodeSearch.Designer.cs">
+      <DependentUpon>Form_ErrorCodeSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_NDCServer_2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -204,6 +210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_COMviewList.resx">
       <DependentUpon>Form_COMviewList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_ErrorCodeSearch.resx">
+      <DependentUpon>Form_ErrorCodeSearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_NDCServer_2.resx">
       <DependentUpon>Form_NDCServer_2.cs</DependentUpon>

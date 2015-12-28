@@ -38,11 +38,12 @@ namespace VirtualDualHost
                     FontSize = DDCFontSize;
                 }
                 currentProtocol = protocol;
-                BegionScreenParse();
             }
         }
 
         #region Field
+
+        List<object> result = new List<object>();
 
         string[] columnsArray = new string[] { "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "P", "Q", "R", "S", "T", "U", "V", "W" };
 
@@ -69,6 +70,8 @@ namespace VirtualDualHost
 
         List<DDC_SI_Command> toPaintSI = null;
 
+        string startColumn = "@";
+        string startRow = "@";
         #endregion
 
         #region Event
@@ -83,12 +86,14 @@ namespace VirtualDualHost
 
         private void Chb_GridLine_CheckedChanged(object sender, EventArgs e)
         {
-            if (chb_GridLine.Checked)
-                DrawXDCScreen();
+            if (((CheckBox)sender).Checked)
+            {
+                DrawNetScreen();
+            }
             else
+            {
                 pnl_Screen.Refresh();
-            if (toPaintSI != null && toPaintSI.Count > 0)
-                DrawSI_Text();
+            }
         }
 
         private void Rb_DDC_CheckedChanged(object sender, EventArgs e)
@@ -110,35 +115,26 @@ namespace VirtualDualHost
             DrawXDCScreen();
             if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
                 BegionScreenParse();
-            if (toPaintSI != null && toPaintSI.Count > 0)
-            {
-                DrawSI_Text();
-            }
-
         }
 
         private void btn_Parse_Click(object sender, EventArgs e)
         {
+            DrawXDCScreen();
             if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
             {
                 BegionScreenParse();
-                DrawSI_Text();
             }
-            else
-                DrawXDCScreen();
         }
 
         private void pnl_Final_Paint_1(object sender, PaintEventArgs e)
         {
             DrawXDCScreen();
-            if (toPaintSI != null && toPaintSI.Count > 0)
-            {
-                DrawSI_Text();
-            }
+            BegionScreenParse();
         }
 
         private void rtb_Text_TextChanged(object sender, EventArgs e)
         {
+            DrawNetScreen();
             BegionScreenParse();
         }
 
@@ -154,6 +150,9 @@ namespace VirtualDualHost
             if (toPaintSI != null && toPaintSI.Count > 0)
                 toPaintSI.Clear();
             pnl_Screen.BackgroundImage = null;
+            pnl_Screen.Controls.Clear();
+            startColumn = "@";
+            startRow = "@";
             if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
             {
                 CalculateProcotolScreen();
@@ -173,7 +172,6 @@ namespace VirtualDualHost
         private void DrawXDCScreen()
         {
             //计算对应协议的屏幕
-
             DrawColumnTitle();
             DrawRowTitle();
             DrawNetScreen();
@@ -188,6 +186,7 @@ namespace VirtualDualHost
 
             lbl_Notice.Text = "";
             lbl_Notice.ForeColor = Color.Black;
+            pnl_Screen.Controls.Clear();
             pnl_Screen.Refresh();
 
             Graphics g = pnl_Screen.CreateGraphics();
@@ -224,29 +223,29 @@ namespace VirtualDualHost
         /// <summary>
         /// 画SI文字
         /// </summary>
-        private void DrawSI_Text()
-        {
-            //pnl_Screen.Refresh();
-            //计算对应协议的屏幕
-            //DrawXDCScreen();
-            DrawNetScreen();
-            //CalculateProcotolScreen();
-            Graphics g = pnl_Screen.CreateGraphics();
-            if (toPaintSI != null && toPaintSI.Count > 0)
-            {
-                foreach (DDC_SI_Command cur_SI in toPaintSI)
-                {
-                    string toPaintStr = cur_SI.Content;
-                    string startRow = cur_SI.StartRow;
-                    string startColumn = cur_SI.StartColumn;
-                    if (!string.IsNullOrEmpty(toPaintStr))
-                    {
-                        DrawString(g, toPaintStr, startRow, startColumn, Color.Blue);
-                    }
-                }
-            }
-            g.Dispose();
-        }
+        //private void DrawSI_Text()
+        //{
+        //    //pnl_Screen.Refresh();
+        //    //计算对应协议的屏幕
+        //    //DrawXDCScreen();
+        //    DrawNetScreen();
+        //    //CalculateProcotolScreen();
+        //    Graphics g = pnl_Screen.CreateGraphics();
+        //    if (toPaintSI != null && toPaintSI.Count > 0)
+        //    {
+        //        foreach (DDC_SI_Command cur_SI in toPaintSI)
+        //        {
+        //            string toPaintStr = cur_SI.Content;
+        //            /*string*/ startRow = cur_SI.StartRow;
+        //            /*string*/ startColumn = cur_SI.StartColumn;
+        //            if (!string.IsNullOrEmpty(toPaintStr))
+        //            {
+        //                DrawString(g, toPaintStr, startRow, startColumn, Color.Blue);
+        //            }
+        //        }
+        //    }
+        //    g.Dispose();
+        //}
 
         /// <summary>
         /// 根据当前协议，计算屏幕当前的行、列数和对应的宽、高度
@@ -334,13 +333,24 @@ namespace VirtualDualHost
                         {
                             if (toPaintSI == null)
                                 toPaintSI = new List<DDC_SI_Command>();
-                            toPaintSI.Add((DDC_SI_Command)cmd);
+                            Graphics g = pnl_Screen.CreateGraphics();
+                            DDC_SI_Command cur_SI = (DDC_SI_Command)cmd;
+                            string toPaintStr = cur_SI.Content;
+                            startRow = cur_SI.StartRow;
+                            startColumn = cur_SI.StartColumn;
+                            if (!string.IsNullOrEmpty(toPaintStr))
+                            {
+                                DrawString(g, toPaintStr, startRow, startColumn, Color.Blue);
+                            }
+
                         }
                         break;
                     case "DDC_ESCP_Command":
                         {
                             DDC_ESCP_Command cur_ESCP = (DDC_ESCP_Command)cmd;
+
                             SetBackgroundImage_ESCP(cur_ESCP.Content);
+
                         }
                         break;
                     case "DDC_SO_Command":
@@ -362,7 +372,6 @@ namespace VirtualDualHost
         /// <param name="imageID"></param>
         private void SetBackgroundImage_ESCP(string imageID)
         {
-            //string resFilePath = /*XDCUnity.eCATPath*/ @"F:\GRGBanking\VPBank_eCAT_03_04\eCAT\Resource\XDC\ResFileMap.xml";
             string resFilePath = XDCUnity.eCATPath + @"\Resource\XDC\ResFileMap.xml";
             //初始化一个xml实例
             XmlDocument xml = new XmlDocument();
@@ -384,7 +393,26 @@ namespace VirtualDualHost
                 string imagePath = XDCUnity.eCATPath + @"\Resource\XDC\Image\000\" + imageFileName;
 
                 if (File.Exists(imagePath))
-                    pnl_Screen.BackgroundImage = Image.FromFile(imagePath);
+                {
+                    Image img = Image.FromFile(imagePath);
+                    if (img.Width < ScreenWidth && img.Height < ScreenHeigh)
+                    {
+                        PictureBox pb = new PictureBox();
+                        pb.BackgroundImage = Image.FromFile(imagePath);
+                        int Sx = currentSignalColumnWidth * columnDic[startColumn];
+                        int Sy = currentSignalRowHeiht * rowDic[startRow];
+                        pb.Location = new Point(Sx, Sy);
+                        pb.Width = img.Width * 640 / 800;
+                        pb.Height = img.Height * 480 / 600;
+                        pb.BackgroundImageLayout = ImageLayout.Stretch;
+                        pnl_Screen.Controls.Add(pb);
+                    }
+                    else
+                    {
+                        pnl_Screen.BackgroundImage = img;
+                        DrawNetScreen();
+                    }
+                }
                 else
                 {
                     lbl_Notice.Text = "Can't Find Image:" + imagePath;
