@@ -67,7 +67,21 @@ namespace StatePars_NDC
                         {
                             string commentValue = commentItem.InnerText;
                             string commentText = commentItem.Attributes["Comment"].Value;
-                            if (tempValue.Equals(commentValue.Trim()))
+                            XmlAttribute attrOperation = commentItem.Attributes["Operation"];
+                            if (attrOperation != null && attrOperation.Value.StartsWith("&"))
+                            {
+                                //&运算
+                                //<Value Comment="Active FDK C" Operation="&amp;4">4</Value>
+                                string ampValue = attrOperation.Value.Replace("&", "");
+                                int ampResult = int.Parse(ampValue) & int.Parse(tempValue);
+                                if (ampResult.ToString() == commentValue)
+                                {
+                                    tempComment += commentText + ";";
+                                    isFindComment = true;
+                                }
+
+                            }
+                            else if (tempValue.Equals(commentValue.Trim()))
                             {
                                 tempComment = commentText;
                                 isFindComment = true;

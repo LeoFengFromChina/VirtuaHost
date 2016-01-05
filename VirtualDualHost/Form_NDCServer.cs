@@ -380,6 +380,13 @@ namespace VirtualDualHost
                     receiveNumber = myClientSocket.Receive(result_eCAT);
                     CurrentOperationCode = new OperationCode();
                     XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
+                    //交互响应消息处理。by frde 20151229
+                    if(CurrentHostServer.IsCurrentInterActiveReply==true)
+                    {
+                        msgContent.OperationCode = CurrentHostServer.LastOperationCode;
+                        
+                        CurrentHostServer.LastOperationCode = "        ";
+                    }
                     #region 调试接收到的消息
                     if (IsDebugRecvMsg && !isBack)
                     {
@@ -666,7 +673,26 @@ namespace VirtualDualHost
                     resultIndex = 1;
                 }
 
+                //交互响应消息处理。by frde 20151229
+                string InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, "InteractiveReply", string.Empty, path);
+                if (InteractiveReply == "1" && CurrentHostServer.IsCurrentInterActiveReply == false)
+                {
+                    CurrentHostServer.IsCurrentInterActiveReply = true;
+                    CurrentHostServer.LastOperationCode = msgContent.OperationCode;
+                    string DeadInterActiveMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadInterActiveMsg", string.Empty, path);
+                    return DeadInterActiveMsg;
+                }
+                //第二次才来把开关关了
+                CurrentHostServer.IsCurrentInterActiveReply = false;
+
+                string deadMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadMsg", string.Empty, path);
+                if (!string.IsNullOrEmpty(deadMsg))
+                {
+                    return deadMsg;
+                }
                 CurrentOperationCode.InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InteractiveReply, string.Empty, path);
+                CurrentOperationCode.FastCash = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FastCash, string.Empty, path);
+                CurrentOperationCode.FastCashAmountField = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FastCashAmountField, string.Empty, path);
 
                 CurrentOperationCode.NextState = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.NextState, string.Empty, path).Split(';');
                 CurrentOperationCode.FunctionIdentifier = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FunctionIdentifier, string.Empty, path).Split(';');
@@ -693,6 +719,16 @@ namespace VirtualDualHost
                 {
                     //取款配钞
                     NotesToDispense = GetNotesToDispense(msgContent, ref resultIndex);
+                }
+                else if (CurrentOperationCode.Comment.ToLower().Contains("fastcash"))
+                {
+                    //快速取款
+                    //FastCash = "1"
+                    //AmountField = "01000000";
+                    if (CurrentOperationCode.FastCash == "1")
+                    {
+                        NotesToDispense = CurrentOperationCode.FastCashAmountField;
+                    }
                 }
                 else if (CurrentOperationCode.Comment.ToLower().Contains("deposit"))
                 {
@@ -749,8 +785,14 @@ namespace VirtualDualHost
             string result = string.Empty;
 
             string tempAmount = string.Empty;
+            //DecimalLen
+            int decimalLen = -1;
 
-            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
+            string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\OperationCodeConfig.ini";
+            string decmalLenStr = XDCUnity.ReadIniData(msgContent.OperationCode, "DecimalLen", string.Empty, path);
+            int.TryParse(decmalLenStr, out decimalLen);
+
+            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - decimalLen));
             notesOutList.Clear();
             #region MyRegion
             for (int i = 0; i < NDCCVList.Count; i++)
@@ -836,7 +878,7 @@ namespace VirtualDualHost
         {
             bool result = false;
 
-            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty,  XDCUnity.UserInfoPath);
+            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
             result = string.IsNullOrEmpty(UserName) ? false : true;
 
             return result;
@@ -877,11 +919,27 @@ namespace VirtualDualHost
             string deno_2 = XDCUnity.ReadIniData("NotesCassetteTable", "2", "", commonConfigPath);
             string deno_3 = XDCUnity.ReadIniData("NotesCassetteTable", "3", "", commonConfigPath);
             string deno_4 = XDCUnity.ReadIniData("NotesCassetteTable", "4", "", commonConfigPath);
+            string deno_5 = XDCUnity.ReadIniData("NotesCassetteTable", "5", "", commonConfigPath);
+            string deno_6 = XDCUnity.ReadIniData("NotesCassetteTable", "6", "", commonConfigPath);
+            string deno_7 = XDCUnity.ReadIniData("NotesCassetteTable", "7", "", commonConfigPath);
+            string deno_8 = XDCUnity.ReadIniData("NotesCassetteTable", "8", "", commonConfigPath);
 
-            NDCCVList.Add(new NDCCassetteView("TypeA", deno_1, "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeB", deno_2, "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeC", deno_3, "", "", ""));
-            NDCCVList.Add(new NDCCassetteView("TypeD", deno_4, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_1))
+                NDCCVList.Add(new NDCCassetteView("TypeA", deno_1, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_2))
+                NDCCVList.Add(new NDCCassetteView("TypeB", deno_2, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_3))
+                NDCCVList.Add(new NDCCassetteView("TypeC", deno_3, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_4))
+                NDCCVList.Add(new NDCCassetteView("TypeD", deno_4, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_5))
+                NDCCVList.Add(new NDCCassetteView("TypeE", deno_5, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_6))
+                NDCCVList.Add(new NDCCassetteView("TypeF", deno_6, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_7))
+                NDCCVList.Add(new NDCCassetteView("TypeG", deno_7, "", "", ""));
+            if (!string.IsNullOrEmpty(deno_8))
+                NDCCVList.Add(new NDCCassetteView("TypeH", deno_8, "", "", ""));
 
             ReBingCassette();
         }

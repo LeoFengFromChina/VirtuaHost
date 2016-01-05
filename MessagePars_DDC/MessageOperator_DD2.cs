@@ -249,7 +249,8 @@ namespace MessagePars_DDC
         {
             #region 修复12消息解析错误的问题
 
-            if (string.IsNullOrEmpty(msgCurrentFieldContent))
+            if (string.IsNullOrEmpty(msgCurrentFieldContent)
+                && CurrentNode.ChildNodes.Count> currXmlNodeIndex)
             {
                 XmlAttribute fieldName=CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
                 if(fieldName!=null && fieldName.Value.StartsWith("FS"))

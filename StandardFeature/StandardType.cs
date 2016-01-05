@@ -450,7 +450,7 @@ namespace StandardFeature
     }
     public class DDC_ESCP_Command
     {
-        public string Content { get; set; }        
+        public string Content { get; set; }
     }
     public class DDC_EXC_Command
     {
@@ -475,6 +475,9 @@ namespace StandardFeature
         public TcpHead TCPHead { get; set; }
 
         public ServerState State { get; set; }
+
+        public bool IsCurrentInterActiveReply { get; set; }
+        public string LastOperationCode { get; set; }
 
         public Cassette TypeA { get; set; }
         public Cassette TypeB { get; set; }
@@ -522,6 +525,8 @@ namespace StandardFeature
         public string Comment { get; set; }
         public string InteractiveReply { get; set; }
         public string CheckPin { get; set; }
+        public string FastCash { get; set; }
+        public string FastCashAmountField { get; set; }
         public string[] NextState { get; set; }
         public string[] FunctionIdentifier { get; set; }
         public string[] FunctionScreenNumber { get; set; }
@@ -542,6 +547,8 @@ namespace StandardFeature
         public static string Comment = "Comment";
         public static string InteractiveReply = "InteractiveReply";
         public static string CheckPin = "CheckPin";
+        public static string FastCash = "FastCash";
+        public static string FastCashAmountField = "FastCashAmountField";
         public static string NextState = "NextState";
         public static string FunctionIdentifier = "FunctionIdentifier";
         public static string FunctionScreenNumber = "FunctionScreenNumber";

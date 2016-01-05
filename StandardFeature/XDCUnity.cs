@@ -26,7 +26,7 @@ namespace StandardFeature
         {
             get; set;
         }
-
+        
         public static string Version = " V0.1";
         public static Dictionary<string, List<string>> BaseConfig
         {
