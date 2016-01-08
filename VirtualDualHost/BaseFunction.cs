@@ -28,7 +28,7 @@ namespace VirtualDualHost
                 case XDCProtocolType.NDC:
                     {
                         XDCUnity.MessageFormat = new MessageFormat_NDC();
-                        XDCUnity.MessageOperator = new MessageOperator_NDC();
+                        XDCUnity.MessageOperator = new MessageOperator_NDC2();
                         XDCUnity.StateOperator = new StateOperator_NDC();
                         XDCUnity.ScreenOperator = new ScreenOperator_NDC();
                         XDCUnity.FitOperator = new FitOperator_NDC();

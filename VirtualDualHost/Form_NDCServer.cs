@@ -381,10 +381,10 @@ namespace VirtualDualHost
                     CurrentOperationCode = new OperationCode();
                     XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
                     //交互响应消息处理。by frde 20151229
-                    if(CurrentHostServer.IsCurrentInterActiveReply==true)
+                    if (CurrentHostServer.IsCurrentInterActiveReply == true)
                     {
                         msgContent.OperationCode = CurrentHostServer.LastOperationCode;
-                        
+
                         CurrentHostServer.LastOperationCode = "        ";
                     }
                     #region 调试接收到的消息
@@ -853,7 +853,9 @@ namespace VirtualDualHost
                     {
                         notesOutList[i] += noteCount;
                     }
-                    amount = currentLeft;
+                    //当余数不为0的时候才给到原来的。刘总提bug（只有最后一个强行有配置了，其他钱箱都没配）
+                    if (currentLeft != 0)
+                        amount = currentLeft;
                 }
             }
             catch (Exception ex)

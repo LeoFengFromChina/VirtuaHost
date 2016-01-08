@@ -235,6 +235,14 @@ namespace VirtualDualHost
             {
                 dgv_Fileds.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Silver;
             }
+            else if (null != FiledNameObj && FiledNameObj.ToString().Equals("TG"))
+            {
+                dgv_Fileds.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.SlateBlue;
+            }
+            else if (null != FiledNameObj && FiledNameObj.ToString().Equals("IC"))
+            {
+                dgv_Fileds.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightSkyBlue;
+            }
             else if (null != CommentObj)
             {
                 //根据配置，指定说明内容时，颜色匹配

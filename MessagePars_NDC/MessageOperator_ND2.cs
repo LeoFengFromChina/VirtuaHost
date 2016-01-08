@@ -6,9 +6,9 @@ using System.Text;
 using System.Xml;
 using XmlHelper;
 
-namespace MessagePars_DDC
+namespace MessagePars_NDC
 {
-    public class MessageOperator_DDC2 : IMessageOperator
+    public class MessageOperator_NDC2 : IMessageOperator
     {
         public List<ParsRowView> GetView(XDCMessage XDCmsg)
         {
@@ -44,7 +44,7 @@ namespace MessagePars_DDC
             XmlNode root = null;
             string attrID = "";
             //1NDC|2DDC
-            string attrProtocolType = "2";
+            string attrProtocolType = "1";
             //1State
             //2Screen
             //3Fit
@@ -62,21 +62,15 @@ namespace MessagePars_DDC
                     {
                         #region 3x_DataCommand
 
-                        //DDC的状态、屏幕、FIT等，有 tempArrary[3]做为commandCode
                         commandCode = tempArrary[3].Substring(0, 1);
-                        MessageIdentifier = tempArrary[3].Substring(1, 1);
-                        attrID = "3FSFSFS" + commandCode + MessageIdentifier;
+                        MessageIdentifier = commandCode;
+                        attrID = "3FSFSFS" + commandCode;
                         cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
                         if (null == cur)
                         {
-                            attrID = "3FSFSFS" + commandCode;
-                            cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
-                            if (null == cur)
                             //通常查询xml文件中ID=1的配置
-                            {
-                                attrID = tempArrary[0].Substring(0, 1);
-                                cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
-                            }
+                            attrID = tempArrary[0].Substring(0, 1);
+                            cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
                         }
                         #endregion
                     }
@@ -163,7 +157,6 @@ namespace MessagePars_DDC
                         {
                             commandCode = "";
                         }
-                        MessageIdentifier = commandCode;
                         attrID = tempArrary[0] + "FSFSFS" + commandCode;
                         if (tempArrary[0].Equals("11"))
                         {
@@ -189,10 +182,8 @@ namespace MessagePars_DDC
                 case MessageType.TransactionReplyCommand:
                     {
                         #region 4_TransactionReplyCommand
-                        //扩张功能命令：‘
+
                         attrID = "4";
-                        if (CurrentMessage.MsgASCIIString.Contains(XDCSplictorChar.FS + "'"))
-                            MessageIdentifier = "'";
                         cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
 
                         #endregion
@@ -451,78 +442,168 @@ namespace MessagePars_DDC
                 int currentContentIndex = 0;
                 foreach (TemplateView tvItem in TvList)
                 {
-                    ParsRowView prv = new ParsRowView();
-                    prv.FieldName = tvItem.FieldName;
-                    //加上prv.FieldName == "GS**"的判断，解决显示GS**行而内容又为空的情况。edit by frde 20160106
-                    if ((prv.FieldName == "GS" || prv.FieldName == "GS**")
-                        && msgCurrentFieldContent.Length == currentContentIndex)
+                    if (tvItem.FieldName == "ICC data objects (and Further ICC data objects) requested by Central")
                     {
-                        break;
-                    }
-                    try
-                    {
-                        if (tvItem.FieldSize <= 0)
+                        #region 生成IC卡数据提示行
+
+                        ParsRowView ic = new ParsRowView();
+                        ic.FieldName = "IC";
+                        ic.FieldComment = tvItem.FieldName;
+                        rowViewList.Add(ic);
+
+                        #endregion
+
+                        string tempvalueAll = msgCurrentFieldContent.Substring(currentContentIndex, msgCurrentFieldContent.Length - currentContentIndex);
+                        string tempAll = tempvalueAll;
+                        string key = "tagMeaning";
+                        bool isFirst = true;
+
+                        string sub_4 = tempAll.Substring(0, 4);
+                        string sub_2 = tempAll.Substring(0, 2);
+                        string tagIniPath = XDCUnity.CurrentPath + @"\Config\Protocol\TagList.ini";
+                        string tagMeaning = XDCUnity.ReadIniData(sub_4, key, "", tagIniPath);
+                        int currentLen = -1;
+                        string tagName = string.Empty;
+                        while (tempAll.Length > 0)
                         {
-                            prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, msgCurrentFieldContent.Length - currentContentIndex);
+                            if (!isFirst)
+                            {
+                                ParsRowView tg = new ParsRowView();
+                                tg.FieldName = "TG";
+                                rowViewList.Add(tg);
+                            }
+                            isFirst = false;
+                            sub_4 = tempAll.Substring(0, 4);
+                            sub_2 = tempAll.Substring(0, 2);
+                            tagMeaning = XDCUnity.ReadIniData(sub_4, key, "", tagIniPath);
+                            currentLen = -1;
+                            tagName = string.Empty;
+                            if (!string.IsNullOrEmpty(tagMeaning))
+                            {
+                                currentLen = 4;
+                                tagName = sub_4;
+                            }
+                            else
+                            {
+                                //长度为4的tag找不到，找长度为2的。
+                                tagMeaning = XDCUnity.ReadIniData(sub_2, key, "", tagIniPath);
+                                if (string.IsNullOrEmpty(tagMeaning))
+                                {
+                                    break;
+                                }
+                                currentLen = 2;
+                                tagName = sub_2;
+                            }
+
+                            #region 增加行
+                            //tagName
+                            tempAll = tempAll.Substring(currentLen, tempAll.Length - currentLen);
+                            ParsRowView prv_tagName = new ParsRowView();
+                            prv_tagName.FieldName = "TagName";
+                            prv_tagName.FieldComment = tagMeaning;
+                            prv_tagName.FieldValue = tagName;
+                            rowViewList.Add(prv_tagName);
+
+                            //tagLen
+                            string len = tempAll.Substring(0, 2);
+                            tempAll = tempAll.Substring(2, tempAll.Length - 2);
+                            ParsRowView prv_tagLen = new ParsRowView();
+                            prv_tagLen.FieldName = "ValueLength";
+                            prv_tagLen.FieldComment = "Hex";
+                            prv_tagLen.FieldValue = len;
+                            rowViewList.Add(prv_tagLen);
+
+                            //tagValue
+                            int valueLen = Convert.ToInt32(len, 16);
+                            string value = tempAll.Substring(0, valueLen * 2);
+                            tempAll = tempAll.Substring(valueLen * 2, tempAll.Length - valueLen * 2);
+                            ParsRowView prv_tagValue = new ParsRowView();
+                            prv_tagValue.FieldName = "Value";
+                            prv_tagValue.FieldComment = "";
+                            prv_tagValue.FieldValue = value;
+                            rowViewList.Add(prv_tagValue);
+                            #endregion
+                        }
+                    }
+                    else
+                    {
+                        #region MyRegion
+                        ParsRowView prv = new ParsRowView();
+                        prv.FieldName = tvItem.FieldName;
+                        //加上prv.FieldName == "GS**"的判断，解决显示GS**行而内容又为空的情况。edit by frde 20160106
+                        if (/*(prv.FieldName == "GS" || prv.FieldName == "GS**")*/
+                            prv.FieldName.StartsWith("GS")
+                           /* && msgCurrentFieldContent.Length == currentContentIndex*/)
+                        {
+                            break;
+                        }
+                        try
+                        {
+                            if (tvItem.FieldSize <= 0)
+                            {
+                                prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, msgCurrentFieldContent.Length - currentContentIndex);
+                            }
+                            else
+                                prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, tvItem.FieldSize);
+                        }
+                        catch
+                        {
+                            prv.FieldValue = "";
+                        }
+                        if (tvItem.FieldValue != null)
+                        {
+                            if (string.IsNullOrEmpty(prv.FieldValue))
+                            {
+                                prv.FieldComment = "";
+                            }
+                            else if (tvItem.FieldValue.ContainsKey(prv.FieldValue))
+                                prv.FieldComment = tvItem.FieldValue[prv.FieldValue];
+                            else if (tvItem.FieldValue.ContainsKey("*"))
+                                prv.FieldComment = tvItem.FieldValue["*"];
+                            else
+                            {
+                                bool isFind = false;
+                                foreach (KeyValuePair<string, string> kvpItem in tvItem.FieldValue)
+                                {
+                                    //&运算
+                                    if (kvpItem.Key.Contains("&amp;"))
+                                    {
+                                        try
+                                        {
+
+                                            isFind = true;
+                                            string ampValue = kvpItem.Key.Substring(0, kvpItem.Key.IndexOf("&amp;"));
+                                            string ampOperator = kvpItem.Key.Substring(kvpItem.Key.IndexOf("&amp;") + 5, kvpItem.Key.Length - kvpItem.Key.IndexOf("&amp;") - 5);
+                                            int ampResult = int.Parse(prv.FieldValue) & int.Parse(ampOperator);
+                                            if (ampResult.ToString() == ampValue)
+                                            {
+                                                prv.FieldComment += kvpItem.Value + ";";
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            prv.FieldComment = "";
+                                        }
+                                    }
+                                }
+                                if (!isFind)
+                                    prv.FieldComment = "UnKnow Value";
+                            }
                         }
                         else
-                            prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, tvItem.FieldSize);
-                    }
-                    catch
-                    {
-                        prv.FieldValue = "";
-                    }
-                    if (tvItem.FieldValue != null)
-                    {
-                        if (string.IsNullOrEmpty(prv.FieldValue))
                         {
                             prv.FieldComment = "";
                         }
-                        else if (tvItem.FieldValue.ContainsKey(prv.FieldValue))
-                            prv.FieldComment = tvItem.FieldValue[prv.FieldValue];
-                        else if (tvItem.FieldValue.ContainsKey("*"))
-                            prv.FieldComment = tvItem.FieldValue["*"];
-                        else
-                        {
-                            bool isFind = false;
-                            foreach (KeyValuePair<string, string> kvpItem in tvItem.FieldValue)
-                            {
-                                //&运算
-                                if (kvpItem.Key.Contains("&amp;"))
-                                {
-                                    try
-                                    {
+                        rowViewList.Add(prv);
 
-                                        isFind = true;
-                                        string ampValue = kvpItem.Key.Substring(0, kvpItem.Key.IndexOf("&amp;"));
-                                        string ampOperator = kvpItem.Key.Substring(kvpItem.Key.IndexOf("&amp;") + 5, kvpItem.Key.Length - kvpItem.Key.IndexOf("&amp;") - 5);
-                                        int ampResult = int.Parse(prv.FieldValue) & int.Parse(ampOperator);
-                                        if (ampResult.ToString() == ampValue)
-                                        {
-                                            prv.FieldComment += kvpItem.Value + ";";
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        prv.FieldComment = "";
-                                    }
-                                }
-                            }
-                            if (!isFind)
-                                prv.FieldComment = "UnKnow Value";
+                        if (tvItem.FieldSize <= 0)
+                        {
+                            currentContentIndex += msgCurrentFieldContent.Length - currentContentIndex;
                         }
+                        else
+                            currentContentIndex += tvItem.FieldSize;
+                        #endregion
                     }
-                    else
-                    {
-                        prv.FieldComment = "";
-                    }
-                    rowViewList.Add(prv);
-                    if (tvItem.FieldSize <= 0)
-                    {
-                        currentContentIndex += msgCurrentFieldContent.Length - currentContentIndex;
-                    }
-                    else
-                        currentContentIndex += tvItem.FieldSize;
                 }
                 TvList.Clear();
                 #endregion
@@ -557,10 +638,10 @@ namespace MessagePars_DDC
                     vtRepeatXMLnodeCount = 0;
                     isVTRepeat = false;
                     string[] vtDataArray;
-                    if (rsData.Contains(XDCSplictorChar.VT2))
-                        vtDataArray = rsData.Split(XDCSplictorChar.VT2);
-                    else
-                        vtDataArray = rsData.Split(XDCSplictorChar.VT);
+                    //if (rsData.Contains(XDCSplictorChar.VT2))
+                    vtDataArray = rsData.Split(XDCSplictorChar.VT2);
+                    //else
+                    //    vtDataArray = rsData.Split(XDCSplictorChar.VT);
                     foreach (string vtDataItem in vtDataArray)
                     {
                         vtRepeatXMLnodeCount = 0;
