@@ -255,8 +255,9 @@ namespace MessagePars_DDC
                 XmlAttribute fieldName = CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
                 if (fieldName != null && fieldName.Value.StartsWith("FS"))
                 {
-                    //解决存款消息中，310，311等buffer先生不正确的问题。edit by frde 20160106
-                    currXmlNodeIndex += 1;
+                    //解决存款消息中，310，311等buffer先生不正确的问题。edit by frde 20160106      
+                    if (fieldName.Value.Equals("FS"))
+                        currXmlNodeIndex += 1;
                     return null;
                 }
             }

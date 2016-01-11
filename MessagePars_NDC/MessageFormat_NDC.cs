@@ -190,7 +190,7 @@ namespace MessagePars_NDC
         public static MessageType ParsMessageClass(string field_0)
         {
             MessageType result = MessageType.Unknow;
-            switch (field_0)
+            switch (field_0.Trim())
             {
                 case "30":
                 case "3":
