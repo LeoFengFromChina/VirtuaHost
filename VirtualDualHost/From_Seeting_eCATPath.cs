@@ -24,6 +24,7 @@ namespace VirtualDualHost
         private void From_Seeting_eCATPath_Load(object sender, EventArgs e)
         {
             //1.当前路径，不知为何，在XP上，如果在当前窗体选择了文件后，使用system.Enviroment获取路径会有差异。所以用这个方法
+            //由一个A进程启动B进程，在B进程中使用system.Enviroment获取路径会得到A进程的当前路径。
             string processName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             currentProcessPath = processName.Substring(0, processName.LastIndexOf('\\'));
 

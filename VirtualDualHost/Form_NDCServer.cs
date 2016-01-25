@@ -856,6 +856,10 @@ namespace VirtualDualHost
                     //当余数不为0的时候才给到原来的。刘总提bug（只有最后一个强行有配置了，其他钱箱都没配）
                     if (currentLeft != 0)
                         amount = currentLeft;
+                    else
+                    {
+                        break;
+                    }
                 }
             }
             catch (Exception ex)
