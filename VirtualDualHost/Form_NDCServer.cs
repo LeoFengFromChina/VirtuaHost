@@ -79,6 +79,7 @@ namespace VirtualDualHost
 
             chb_ReceiveMsgDebug.CheckedChanged += Chb_ReceiveMsgDebug_CheckedChanged;
             chb_SendMsgDebug.CheckedChanged += Chb_ReceiveMsgDebug_CheckedChanged;
+            lsb_Log.KeyDown += Lsb_Log_KeyDown;
             //LoadBaseConfigThread.Start();
         }
 
@@ -246,6 +247,19 @@ namespace VirtualDualHost
 
         private void lsb_Log_DoubleClick(object sender, EventArgs e)
         {
+            ShowLogDetail();
+        }
+
+        private void Lsb_Log_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode== Keys.Enter)
+            {
+                ShowLogDetail();
+            }
+        }
+
+        private void ShowLogDetail()
+        {
             if (lsb_Log == null || lsb_Log.SelectedItem == null)
                 return;
             string currentItemStr = lsb_Log.SelectedItem.ToString();
@@ -264,7 +278,6 @@ namespace VirtualDualHost
             //msd.Show();
             ShowDebugWindows(msg, XDCProtocolType.NDC);
         }
-
         private void dgv_Cassette_Leave(object sender, EventArgs e)
         {
             dgv_Cassette.ClearSelection();

@@ -49,6 +49,7 @@
             this.parseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.screenParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.errorCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.InteractiveBufferMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
             this.killeCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +58,6 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.InteractiveBufferMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,25 +105,31 @@
             // openeCATToolStripMenuItem
             // 
             this.openeCATToolStripMenuItem.Name = "openeCATToolStripMenuItem";
-            this.openeCATToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openeCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.E)));
+            this.openeCATToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.openeCATToolStripMenuItem.Text = "Open-eCAT";
             // 
             // openXDCHostToolStripMenuItem
             // 
             this.openXDCHostToolStripMenuItem.Name = "openXDCHostToolStripMenuItem";
-            this.openXDCHostToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openXDCHostToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.X)));
+            this.openXDCHostToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.openXDCHostToolStripMenuItem.Text = "Open-XDCHost";
             // 
             // openTrueBackToolStripMenuItem
             // 
             this.openTrueBackToolStripMenuItem.Name = "openTrueBackToolStripMenuItem";
-            this.openTrueBackToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.openTrueBackToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.T)));
+            this.openTrueBackToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.openTrueBackToolStripMenuItem.Text = "Open-TrueBack";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolStripSeparator1
@@ -192,7 +198,7 @@
             // eCATToolStripMenuItem
             // 
             this.eCATToolStripMenuItem.Name = "eCATToolStripMenuItem";
-            this.eCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.eCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.eCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.eCATToolStripMenuItem.Text = "eCAT";
             // 
@@ -215,25 +221,32 @@
             // 
             this.parseToolStripMenuItem.Name = "parseToolStripMenuItem";
             this.parseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.parseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.parseToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.parseToolStripMenuItem.Text = "SuperParse";
             // 
             // screenParseToolStripMenuItem
             // 
             this.screenParseToolStripMenuItem.Name = "screenParseToolStripMenuItem";
-            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.screenParseToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.screenParseToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.screenParseToolStripMenuItem.Text = "ScreenParse";
             // 
             // errorCodeToolStripMenuItem
             // 
             this.errorCodeToolStripMenuItem.Name = "errorCodeToolStripMenuItem";
-            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.errorCodeToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.errorCodeToolStripMenuItem.Text = "ErrorCode";
+            // 
+            // InteractiveBufferMenuItem
+            // 
+            this.InteractiveBufferMenuItem.Name = "InteractiveBufferMenuItem";
+            this.InteractiveBufferMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.InteractiveBufferMenuItem.Text = "InteractiveBuffer";
             // 
             // cryptToolToolStripMenuItem
             // 
             this.cryptToolToolStripMenuItem.Name = "cryptToolToolStripMenuItem";
-            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.cryptToolToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.cryptToolToolStripMenuItem.Text = "CryptTool";
             // 
             // toolStripDropDownButton6
@@ -290,14 +303,8 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.aboutToolStripMenuItem.Text = "About";
-            // 
-            // InteractiveBufferMenuItem
-            // 
-            this.InteractiveBufferMenuItem.Name = "InteractiveBufferMenuItem";
-            this.InteractiveBufferMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.InteractiveBufferMenuItem.Text = "InteractiveBuffer";
             // 
             // Form_Main
             // 

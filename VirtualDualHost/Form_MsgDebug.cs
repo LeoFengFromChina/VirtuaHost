@@ -155,7 +155,9 @@ namespace VirtualDualHost
             rb_Fit.MouseClick += Rb_DDC_Click;
             rb_Message.MouseClick += Rb_DDC_Click;
             saveToolStripMenuItem.Click += SaveToolStripMenuItem_Click;
+            dgv_Fileds.KeyDown += Dgv_Fileds_KeyDown;
         }
+
 
         /// <summary>
         /// 保存内容
@@ -369,6 +371,20 @@ namespace VirtualDualHost
                 return;
             string FieldName = (dgv_Fileds.DataSource as List<ParsRowView>)[e.RowIndex].FieldName;
             string FieldValue = (dgv_Fileds.DataSource as List<ParsRowView>)[e.RowIndex].FieldValue;
+            ShowDetailStateOrScreen(FieldName, FieldValue);
+        }
+        private void Dgv_Fileds_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                string FieldName = (dgv_Fileds.DataSource as List<ParsRowView>)[dgv_Fileds.CurrentRow.Index].FieldName;
+                string FieldValue = (dgv_Fileds.DataSource as List<ParsRowView>)[dgv_Fileds.CurrentRow.Index].FieldValue;
+                ShowDetailStateOrScreen(FieldName, FieldValue);
+            }
+        }
+
+        private void ShowDetailStateOrScreen(string FieldName, string FieldValue)
+        {
             if (FieldName.Contains("Screen"))
             {
                 string screenPath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\Screen\Host\000\" + FieldValue + ".txt";
@@ -398,7 +414,6 @@ namespace VirtualDualHost
                 }
             }
         }
-
         private void getInteractiveMsgBufferToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new Form_GetInteractiveMsgTextToShow(rtb_Msg.Text).Show();

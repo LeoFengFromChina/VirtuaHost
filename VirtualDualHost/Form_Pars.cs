@@ -32,14 +32,15 @@ namespace VirtualDualHost
             XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
 
             XDCUnity.eCATPath = node.Attributes["value"].InnerText;
-            //左侧工具
-            form_Left = new Form_ParsLeft();
-            form_Left.SubFormEvent += Form_Left_SubFormEvent;
-            form_Left.Show(this.dockPanel1, DockState.DockLeftAutoHide);
 
+            //左侧工具
             form_COMviewList = new Form_COMviewList();
             form_COMviewList.SubFormEvent += Form_COMviewList_SubFormEvent;
-            form_COMviewList.Show(this.dockPanel1, DockState.DockLeftAutoHide);
+            form_COMviewList.Show(this.dockPanel1, DockState.DockLeft);
+
+            form_Left = new Form_ParsLeft();
+            form_Left.SubFormEvent += Form_Left_SubFormEvent;
+            form_Left.Show(this.dockPanel1, DockState.DockLeft);
 
 
             //正文内容
