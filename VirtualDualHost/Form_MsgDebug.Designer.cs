@@ -48,6 +48,7 @@
             this.FieldComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_Paras = new System.Windows.Forms.Button();
             this.button_Go = new System.Windows.Forms.Button();
+            this.getInteractiveMsgBufferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.cms_Save.SuspendLayout();
@@ -156,14 +157,15 @@
             // cms_Save
             // 
             this.cms_Save.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem});
+            this.saveToolStripMenuItem,
+            this.getInteractiveMsgBufferToolStripMenuItem});
             this.cms_Save.Name = "cms_Save";
-            this.cms_Save.Size = new System.Drawing.Size(102, 26);
+            this.cms_Save.Size = new System.Drawing.Size(216, 70);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // dgv_Fileds
@@ -235,6 +237,13 @@
             this.button_Go.UseVisualStyleBackColor = true;
             this.button_Go.Click += new System.EventHandler(this.button_Go_Click);
             // 
+            // getInteractiveMsgBufferToolStripMenuItem
+            // 
+            this.getInteractiveMsgBufferToolStripMenuItem.Name = "getInteractiveMsgBufferToolStripMenuItem";
+            this.getInteractiveMsgBufferToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.getInteractiveMsgBufferToolStripMenuItem.Text = "GetInteractiveMsgBuffer";
+            this.getInteractiveMsgBufferToolStripMenuItem.Click += new System.EventHandler(this.getInteractiveMsgBufferToolStripMenuItem_Click);
+            // 
             // Form_MsgDebug
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -282,5 +291,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FieldComment;
         private System.Windows.Forms.ContextMenuStrip cms_Save;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getInteractiveMsgBufferToolStripMenuItem;
     }
 }

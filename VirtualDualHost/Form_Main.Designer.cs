@@ -57,6 +57,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.InteractiveBufferMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -192,7 +193,7 @@
             // 
             this.eCATToolStripMenuItem.Name = "eCATToolStripMenuItem";
             this.eCATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.eCATToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.eCATToolStripMenuItem.Text = "eCAT";
             // 
             // toolStripDropDownButton3
@@ -202,6 +203,7 @@
             this.parseToolStripMenuItem,
             this.screenParseToolStripMenuItem,
             this.errorCodeToolStripMenuItem,
+            this.InteractiveBufferMenuItem,
             this.cryptToolToolStripMenuItem});
             this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
             this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -288,8 +290,14 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // InteractiveBufferMenuItem
+            // 
+            this.InteractiveBufferMenuItem.Name = "InteractiveBufferMenuItem";
+            this.InteractiveBufferMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.InteractiveBufferMenuItem.Text = "InteractiveBuffer";
             // 
             // Form_Main
             // 
@@ -342,5 +350,6 @@
         private System.Windows.Forms.ToolStripMenuItem eCATConfigToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openXDCHostToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openTrueBackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem InteractiveBufferMenuItem;
     }
 }

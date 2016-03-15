@@ -150,10 +150,18 @@ namespace MessagePars_NDC
                 case "P":
                     {
                         if (result.MsgType == MessageType.UnSolicitedMessage
-                            && msgFields[3].Length > 2 && "20" == msgFields[3].Substring(1, 2))
+                            && msgFields[3].Length > 2)
                         {
-                            result.MsgCommandType = MessageCommandType.SupervisorAndSupplySwitchOFF;
+                            if ("20" == msgFields[3].Substring(1, 2))
+                            {
+                                result.MsgCommandType = MessageCommandType.SupervisorAndSupplySwitchOFF;
+                            }
+                            else if ("21" == msgFields[3].Substring(1, 2))
+                            {
+                                result.MsgCommandType = MessageCommandType.SupervisorAndSupplySwitchON;
+                            }
                         }
+
                     }
                     break;
                 case "":

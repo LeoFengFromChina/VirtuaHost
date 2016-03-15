@@ -678,7 +678,7 @@ namespace VirtualDualHost
                 string TSN = XDCUnity.ReadIniData("LastTransactionNotesDispensed", "LastTransactionSerialNumber", "", XDCUnity.UserInfoPath);
                 string Luno = XDCUnity.ReadIniData("CommonConfig", "Luno", "", commonConfigPath);
 
-                string NotesToDispense = "0000000000000000";
+                string NotesToDispense = "00000000";
 
                 string mcoo = "0";//= new string(new char[] { newMcc });
 
@@ -765,7 +765,7 @@ namespace VirtualDualHost
             {
                 //配钞失败，除不尽的数
                 resultIndex = 1;
-                return "".PadLeft(16, '0');
+                return "".PadLeft(8, '0');
             }
             //组合配钞结果，更新主机钱箱显示
             int loadCount = 0;
@@ -812,7 +812,12 @@ namespace VirtualDualHost
                     {
                         notesOutList[i] += noteCount;
                     }
-                    amount = currentLeft;
+                    if (currentLeft != 0)
+                        amount = currentLeft;
+                    else
+                    {
+                        break;
+                    }
                 }
             }
             catch (Exception ex)
@@ -836,7 +841,7 @@ namespace VirtualDualHost
         {
             bool result = false;
 
-            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty,  XDCUnity.UserInfoPath);
+            string UserName = XDCUnity.ReadIniData(msgContent.PAN, "UserName", string.Empty, XDCUnity.UserInfoPath);
             result = string.IsNullOrEmpty(UserName) ? false : true;
 
             return result;
@@ -870,12 +875,33 @@ namespace VirtualDualHost
         public static void InitialCassette()
         {
             DDCCVList.Clear();
-            DDCCVList.Add(new DDCCassetteView("TypeA", "", "", ""));
-            DDCCVList.Add(new DDCCassetteView("TypeB", "", "", ""));
-            DDCCVList.Add(new DDCCassetteView("TypeC", "", "", ""));
-            DDCCVList.Add(new DDCCassetteView("TypeD", "", "", ""));
-            DDCCVList.Add(new DDCCassetteView("TypeE", "", "", ""));
-            DDCCVList.Add(new DDCCassetteView("TypeF", "", "", ""));
+            string commonConfigPath = XDCUnity.CurrentPath + @"\Config\Server\DDC\Host_1\CommonConfig.ini";
+
+            string deno_1 = XDCUnity.ReadIniData("NotesCassetteTable", "1", "", commonConfigPath);
+            string deno_2 = XDCUnity.ReadIniData("NotesCassetteTable", "2", "", commonConfigPath);
+            string deno_3 = XDCUnity.ReadIniData("NotesCassetteTable", "3", "", commonConfigPath);
+            string deno_4 = XDCUnity.ReadIniData("NotesCassetteTable", "4", "", commonConfigPath);
+            string deno_5 = XDCUnity.ReadIniData("NotesCassetteTable", "5", "", commonConfigPath);
+            string deno_6 = XDCUnity.ReadIniData("NotesCassetteTable", "6", "", commonConfigPath);
+            string deno_7 = XDCUnity.ReadIniData("NotesCassetteTable", "7", "", commonConfigPath);
+            string deno_8 = XDCUnity.ReadIniData("NotesCassetteTable", "8", "", commonConfigPath);
+
+            if (!string.IsNullOrEmpty(deno_1))
+                DDCCVList.Add(new DDCCassetteView("TypeA", deno_1, "", ""));
+            if (!string.IsNullOrEmpty(deno_2))
+                DDCCVList.Add(new DDCCassetteView("TypeB", deno_2, "", ""));
+            if (!string.IsNullOrEmpty(deno_3))
+                DDCCVList.Add(new DDCCassetteView("TypeC", deno_3, "", ""));
+            if (!string.IsNullOrEmpty(deno_4))
+                DDCCVList.Add(new DDCCassetteView("TypeD", deno_4, "", ""));
+            if (!string.IsNullOrEmpty(deno_5))
+                DDCCVList.Add(new DDCCassetteView("TypeE", deno_5, "", ""));
+            if (!string.IsNullOrEmpty(deno_6))
+                DDCCVList.Add(new DDCCassetteView("TypeF", deno_6, "", ""));
+            if (!string.IsNullOrEmpty(deno_7))
+                DDCCVList.Add(new DDCCassetteView("TypeG", deno_7, "", ""));
+            if (!string.IsNullOrEmpty(deno_8))
+                DDCCVList.Add(new DDCCassetteView("TypeH", deno_8, "", ""));
 
             ReBingCassette();
         }
@@ -887,130 +913,138 @@ namespace VirtualDualHost
         public static void CheckCassetteStatus(XDCMessage msgContent)
         {
             List<ParsRowView> view = XDCUnity.MessageOperator.GetView(msgContent);
-
-            foreach (ParsRowView item in view)
+            try
             {
-                #region LoadCout
 
-                if (item.FieldName.StartsWith("Total bills loaded - position 1"))
+                foreach (ParsRowView item in view)
                 {
-                    DDCCVList[0].LoadCount = int.Parse(item.FieldValue).ToString();
-                }
-                else if (item.FieldName.StartsWith("Total bills loaded - position 2"))
-                {
-                    DDCCVList[1].LoadCount = int.Parse(item.FieldValue).ToString();
-                }
-                else if (item.FieldName.StartsWith("Total bills loaded - position 3"))
-                {
-                    DDCCVList[2].LoadCount = int.Parse(item.FieldValue).ToString();
-                }
-                else if (item.FieldName.StartsWith("Total bills loaded - position 4"))
-                {
-                    DDCCVList[3].LoadCount = int.Parse(item.FieldValue).ToString();
-                }
-                #endregion
+                    #region LoadCout
 
-                #region Denomination
-                //Bill Values	000001000000000100000000010000000000500000000050000000005000	
-                else if (item.FieldName.StartsWith("Bill Values"))
-                {
-                    string valuesStr = item.FieldValue.ToString();
-                    string leftStr = valuesStr;
-                    for (int i = 0; i < 6; i++)
+                    if (item.FieldName.StartsWith("Total bills loaded - position 1"))
                     {
-                        if (string.IsNullOrEmpty(leftStr))
-                            break;
-                        string singleBill = leftStr.Substring(0, 10);
-                        leftStr = leftStr.Substring(10, leftStr.Length - 10);
-                        singleBill = singleBill.Substring(0, singleBill.Length - 2);
-                        DDCCVList[i].Denomination = int.Parse(singleBill).ToString();
+                        DDCCVList[0].LoadCount = int.Parse(item.FieldValue).ToString();
                     }
-                }
+                    else if (item.FieldName.StartsWith("Total bills loaded - position 2"))
+                    {
+                        DDCCVList[1].LoadCount = int.Parse(item.FieldValue).ToString();
+                    }
+                    else if (item.FieldName.StartsWith("Total bills loaded - position 3"))
+                    {
+                        DDCCVList[2].LoadCount = int.Parse(item.FieldValue).ToString();
+                    }
+                    else if (item.FieldName.StartsWith("Total bills loaded - position 4"))
+                    {
+                        DDCCVList[3].LoadCount = int.Parse(item.FieldValue).ToString();
+                    }
+                    #endregion
 
-                #endregion
+                    #region Denomination
+                    //Bill Values	000001000000000100000000010000000000500000000050000000005000	
+                    //else if (item.FieldName.StartsWith("Bill Values"))
+                    //{
+                    //    string valuesStr = item.FieldValue.ToString();
+                    //    string leftStr = valuesStr;
+                    //    for (int i = 0; i < DDCCVList.Count; i++)
+                    //    {
+                    //        if (string.IsNullOrEmpty(leftStr))
+                    //            break;
+                    //        string singleBill = leftStr.Substring(0, 10);
+                    //        leftStr = leftStr.Substring(10, leftStr.Length - 10);
+                    //        singleBill = singleBill.Substring(0, singleBill.Length - 2);
+                    //        DDCCVList[i].Denomination = int.Parse(singleBill).ToString();
+                    //    }
+                    //}
 
-                #region Status
-                //Cassette status, position 1 
-                else if (item.FieldName.StartsWith("Cassette status, position 1"))
-                {
-                    if (item.FieldValue == "<1")
-                    {
-                        DDCCVList[0].Status = "Good";
-                    }
-                    else if (item.FieldValue == ">1")
-                    {
-                        DDCCVList[0].Status = "Low";
-                    }
-                    else if (item.FieldValue == "=?")
-                    {
-                        DDCCVList[0].Status = "Not Present";
-                    }
-                }
-                else if (item.FieldName.StartsWith("Cassette status, position 2"))
-                {
-                    if (item.FieldValue == "<2")
-                    {
-                        DDCCVList[1].Status = "Good";
-                    }
-                    else if (item.FieldValue == ">2")
-                    {
-                        DDCCVList[1].Status = "Low";
-                    }
-                    else if (item.FieldValue == "=?")
-                    {
-                        DDCCVList[1].Status = "Not Present";
-                    }
-                }
-                else if (item.FieldName.StartsWith("Cassette status, position 3"))
-                {
-                    if (item.FieldValue == "<3")
-                    {
-                        DDCCVList[2].Status = "Good";
-                    }
-                    else if (item.FieldValue == ">3")
-                    {
-                        DDCCVList[2].Status = "Low";
-                    }
-                    else if (item.FieldValue == "=?")
-                    {
-                        DDCCVList[2].Status = "Not Present";
-                    }
-                }
-                else if (item.FieldName.StartsWith("Cassette status, position 4"))
-                {
-                    if (item.FieldValue == "<4")
-                    {
-                        DDCCVList[3].Status = "Good";
-                    }
-                    else if (item.FieldValue == ">4")
-                    {
-                        DDCCVList[3].Status = "Low";
-                    }
-                    else if (item.FieldValue == "=?")
-                    {
-                        DDCCVList[3].Status = "Not Present";
-                    }
-                }
-                #endregion
+                    #endregion
 
-                #region Severity
-                //else if (item.FieldName.StartsWith("Cassette type 1"))
-                //{
-                //    DDCCVList[0].Severity = item.FieldComment;
-                //}
-                //else if (item.FieldName.StartsWith("Cassette type 2"))
-                //{
-                //    DDCCVList[1].Severity = item.FieldComment;
-                //}
-                //else if (item.FieldName.StartsWith("Cassette type 3"))
-                //{
-                //    DDCCVList[2].Severity = item.FieldComment;
-                //}
-                //else if (item.FieldName.StartsWith("Cassette type 4"))
-                //{
-                //    DDCCVList[3].Severity = item.FieldComment;
-                //}
-                #endregion
+                    #region Status
+                    //Cassette status, position 1 
+                    else if (item.FieldName.StartsWith("Cassette status, position 1"))
+                    {
+                        if (item.FieldValue == "<1")
+                        {
+                            DDCCVList[0].Status = "Good";
+                        }
+                        else if (item.FieldValue == ">1")
+                        {
+                            DDCCVList[0].Status = "Low";
+                        }
+                        else if (item.FieldValue == "=?")
+                        {
+                            DDCCVList[0].Status = "Not Present";
+                        }
+                    }
+                    else if (item.FieldName.StartsWith("Cassette status, position 2"))
+                    {
+                        if (item.FieldValue == "<2")
+                        {
+                            DDCCVList[1].Status = "Good";
+                        }
+                        else if (item.FieldValue == ">2")
+                        {
+                            DDCCVList[1].Status = "Low";
+                        }
+                        else if (item.FieldValue == "=?")
+                        {
+                            DDCCVList[1].Status = "Not Present";
+                        }
+                    }
+                    else if (item.FieldName.StartsWith("Cassette status, position 3"))
+                    {
+                        if (item.FieldValue == "<3")
+                        {
+                            DDCCVList[2].Status = "Good";
+                        }
+                        else if (item.FieldValue == ">3")
+                        {
+                            DDCCVList[2].Status = "Low";
+                        }
+                        else if (item.FieldValue == "=?")
+                        {
+                            DDCCVList[2].Status = "Not Present";
+                        }
+                    }
+                    else if (item.FieldName.StartsWith("Cassette status, position 4"))
+                    {
+                        if (item.FieldValue == "<4")
+                        {
+                            DDCCVList[3].Status = "Good";
+                        }
+                        else if (item.FieldValue == ">4")
+                        {
+                            DDCCVList[3].Status = "Low";
+                        }
+                        else if (item.FieldValue == "=?")
+                        {
+                            DDCCVList[3].Status = "Not Present";
+                        }
+                    }
+                    #endregion
+
+                    #region Severity
+                    //else if (item.FieldName.StartsWith("Cassette type 1"))
+                    //{
+                    //    DDCCVList[0].Severity = item.FieldComment;
+                    //}
+                    //else if (item.FieldName.StartsWith("Cassette type 2"))
+                    //{
+                    //    DDCCVList[1].Severity = item.FieldComment;
+                    //}
+                    //else if (item.FieldName.StartsWith("Cassette type 3"))
+                    //{
+                    //    DDCCVList[2].Severity = item.FieldComment;
+                    //}
+                    //else if (item.FieldName.StartsWith("Cassette type 4"))
+                    //{
+                    //    DDCCVList[3].Severity = item.FieldComment;
+                    //}
+                    #endregion
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
 

@@ -380,6 +380,12 @@ namespace VirtualDualHost
                     receiveNumber = myClientSocket.Receive(result_eCAT);
                     CurrentOperationCode = new OperationCode();
                     XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
+
+                    if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchON)
+                        CurrentHostServer.State = ServerState.Maintance;
+                    else if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
+                        CurrentHostServer.State = ServerState.OutOfService;
+
                     //交互响应消息处理。by frde 20151229
                     if (CurrentHostServer.IsCurrentInterActiveReply == true)
                     {
@@ -493,7 +499,8 @@ namespace VirtualDualHost
                                 Thread.Sleep(100);
                             }
                             if (currentFentch.Count <= 0
-                                && CurrentHostServer.State == ServerState.OutOfService)
+                                && (CurrentHostServer.State == ServerState.OutOfService
+                                || CurrentHostServer.State == ServerState.Maintance))
                             {
                                 //已经是最后一条go-in-service了
                                 CurrentHostServer.State = ServerState.InService;

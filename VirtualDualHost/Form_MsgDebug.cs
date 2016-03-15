@@ -398,5 +398,10 @@ namespace VirtualDualHost
                 }
             }
         }
+
+        private void getInteractiveMsgBufferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Form_GetInteractiveMsgTextToShow(rtb_Msg.Text).Show();
+        }
     }
 }

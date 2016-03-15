@@ -541,5 +541,62 @@ namespace StandardFeature
                 Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
             }
         }
+
+        public static void PackMsgCode(ref byte[] argData, ref long argCount,string isRecvOrSent)
+        {
+
+            if(false)
+            {
+                if(isRecvOrSent=="Recv")
+                {
+                    #region EBCDID
+                    try
+                    {
+                        byte[] byteEBCD = argData;
+                        byte[] byteASCII = null;
+
+                        printHex(argData, argCount);
+                        byteASCII = ConvertEbcdicToAscii(byteEBCD);
+
+                        //convertor.ebcd_to_asc(out byteASCII, out lenASCII, byteEBCD, lenEBCD);
+
+                        argData = byteASCII;
+                        printHex(argData, argCount);
+                    }
+                    catch (System.Exception ex)
+                    {
+
+                    }
+                    #endregion
+                }
+                else if(isRecvOrSent == "Send")
+                {
+
+                }
+            }
+            else
+            {
+
+            }
+            
+        }
+
+        public static byte[] ConvertEbcdicToAscii(byte[] ebcdicData)
+        {
+            // Create two different encodings.      
+            Encoding ascii = Encoding.ASCII;
+            Encoding ebcdic = Encoding.GetEncoding("IBM500");
+
+            //return ASCII Data 
+            return Encoding.Convert(ebcdic, ascii, ebcdicData);
+        }
+        private static void printHex(byte[] argData, long argCount)
+        {
+            string sLog = "";
+            for (int i = 0; i < argCount; i++)
+            {
+                sLog = sLog + " " + Convert.ToString(argData[i], 16);
+            }
+        }
     }
 }

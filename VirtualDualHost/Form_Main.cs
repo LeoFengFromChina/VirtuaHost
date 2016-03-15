@@ -63,6 +63,7 @@ namespace VirtualDualHost
             openeCATToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             openXDCHostToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             openTrueBackToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            InteractiveBufferMenuItem.Click += DDCServerToolStripMenuItem_Click;
             CheckeCATPath();
 
         }
@@ -190,6 +191,11 @@ namespace VirtualDualHost
                     {
                         Form_ErrorCodeSearch form_errorcode = new Form_ErrorCodeSearch();
                         form_errorcode.Show();
+                    }
+                    break;
+                case "InteractiveBuffer":
+                    {
+                        new Form_GetInteractiveMsgTextToShow("").Show();
                     }
                     break;
                 case "About":

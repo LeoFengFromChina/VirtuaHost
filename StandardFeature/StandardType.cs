@@ -86,6 +86,7 @@ namespace StandardFeature
         /// 双屏操作
         /// </summary>
         SupervisorAndSupplySwitchOFF,
+        SupervisorAndSupplySwitchON,
         #endregion
         #region NDC
         /// <summary>
