@@ -28,10 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_ParsLeft));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.checkAllStateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeView1
@@ -39,6 +43,7 @@
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.ContextMenuStrip = this.contextMenuStrip1;
             this.treeView1.Location = new System.Drawing.Point(4, 39);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(264, 330);
@@ -64,6 +69,20 @@
             this.button1.Text = "刷新";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkAllStateToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 26);
+            // 
+            // checkAllStateToolStripMenuItem
+            // 
+            this.checkAllStateToolStripMenuItem.Name = "checkAllStateToolStripMenuItem";
+            this.checkAllStateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.checkAllStateToolStripMenuItem.Text = "CheckAllState";
+            this.checkAllStateToolStripMenuItem.Click += new System.EventHandler(this.checkAllStateToolStripMenuItem_Click);
+            // 
             // Form_ParsLeft
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -77,6 +96,7 @@
             this.TabText = "eCAT Resource";
             this.Text = "eCAT Resource";
             this.Load += new System.EventHandler(this.Form_ParsLeft_Load);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -87,5 +107,7 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem checkAllStateToolStripMenuItem;
     }
 }

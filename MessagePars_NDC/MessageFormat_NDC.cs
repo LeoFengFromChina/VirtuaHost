@@ -59,7 +59,8 @@ namespace MessagePars_NDC
                 //操作码
                 result.OperationCode = msgFields[7].Replace(" ", "_");
                 //金额域
-                result.AmountField = msgFields[8];
+                if (msgFields.Length > 8)
+                    result.AmountField = msgFields[8];
                 //pan
                 if (msgFields[5].IndexOf('=') > 0)
                     result.PAN = msgFields[5].Substring(1, msgFields[5].IndexOf('=') - 1);

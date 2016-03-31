@@ -203,6 +203,12 @@
     <Compile Include="Form_ScreenParse.Designer.cs">
       <DependentUpon>Form_ScreenParse.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_StateCheck.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_StateCheck.Designer.cs">
+      <DependentUpon>Form_StateCheck.cs</DependentUpon>
+    </Compile>
     <Compile Include="From_Seeting_eCATPath.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -251,6 +257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_ScreenParse.resx">
       <DependentUpon>Form_ScreenParse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_StateCheck.resx">
+      <DependentUpon>Form_StateCheck.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="From_Seeting_eCATPath.resx">
       <DependentUpon>From_Seeting_eCATPath.cs</DependentUpon>

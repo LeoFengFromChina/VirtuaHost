@@ -39,10 +39,21 @@ namespace VirtualDualHost
         {
             BuildTreeEvent += Form_ParsLeft_BuildTreeEvent;
             treeView1.MouseDoubleClick += TreeView1_MouseDoubleClick;
+            treeView1.KeyDown += TreeView1_KeyDown;
             buildTreeThread = new System.Threading.Thread(StartGeteCATFile);
             buildTreeThread.IsBackground = true;
             buildTreeThread.Start();
         }
+
+        private void TreeView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+
+                TreeViewSelectItemChange();
+            }
+        }
+
         public delegate void InvokeDelegate();
         static object lockObj = new object();
         private void Form_ParsLeft_BuildTreeEvent(object socket)
@@ -150,6 +161,8 @@ namespace VirtualDualHost
             }
         }
         static string onlyNode = string.Empty;
+        static Dictionary<string, List<string>> stateScan_NDC = new Dictionary<string, List<string>>();
+        static Dictionary<string, List<string>> stateScan_DDC = new Dictionary<string, List<string>>();
         private static void GetFilesList(ref TreeNode currentNode, string dirctoryPath)
         {
             DirectoryInfo folder = new DirectoryInfo(XDCUnity.eCATPath + dirctoryPath);
@@ -161,8 +174,43 @@ namespace VirtualDualHost
                     && !fileItem.Name.StartsWith(onlyNode))
                     continue;
                 TreeNode tn = new TreeNode();
+                if (currentNode.Name.EndsWith("ndc_state", StringComparison.OrdinalIgnoreCase))
+                {
+                    #region 读取状态内的信息 20160330----NDC
+                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (!stateScan_NDC.ContainsKey(stateFlag))
+                    {
+                        stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                    }
+                    else
+                    {
+                        if (!stateScan_NDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                            stateScan_NDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                    }
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                    #endregion
+                }
+                else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
+                {
+                    #region 读取状态内的信息 20160330----DDC
+                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (!stateScan_DDC.ContainsKey(stateFlag))
+                    {
+                        stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                    }
+                    else
+                    {
+                        if (!stateScan_DDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                            stateScan_DDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                    }
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                    #endregion
+                }
+                else
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4);
                 tn.Name = currentNode.Name + "_" + fileItem.Name;
-                tn.Text = fileItem.Name;
                 tn.Tag = fileItem.FullName;
                 currentNode.Nodes.Add(tn);
             }
@@ -302,6 +350,12 @@ namespace VirtualDualHost
             buildTreeThread.Start();
 
             System.Threading.Thread.Sleep(50);
+        }
+
+        private void checkAllStateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Form_StateCheck(stateScan_NDC, stateScan_DDC).Show();
+
         }
     }
 }
