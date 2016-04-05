@@ -227,6 +227,23 @@ namespace MessagePars_NDC
                         #endregion
                     }
                     break;
+                case MessageType.EMVConfigMessages:
+                    {
+                        #region 8x_EmvConfigMessages
+
+                        commandCode = tempArrary[2].Substring(0, 1);
+                        MessageIdentifier = commandCode;
+                        attrID = "8FSFS" + commandCode;
+                        cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
+                        if (null == cur)
+                        {
+                            //通常查询xml文件中ID=1的配置
+                            attrID = tempArrary[0].Substring(0, 1);
+                            cur = XDCUnity.GetNodeDetail(root, attrID, attrProtocolType, attrDataType);
+                        }
+                        #endregion
+                    }
+                    break;
                 case MessageType.Unknow:
                     break;
                 default:
@@ -241,7 +258,7 @@ namespace MessagePars_NDC
             #region 修复12消息解析错误的问题
 
             if (string.IsNullOrEmpty(msgCurrentFieldContent)
-                && CurrentNode.ChildNodes.Count > currXmlNodeIndex)
+                && CurrentNode !=null && CurrentNode.ChildNodes.Count > currXmlNodeIndex)
             {
                 XmlAttribute fieldName = CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
                 if (fieldName != null && fieldName.Value.StartsWith("FS"))

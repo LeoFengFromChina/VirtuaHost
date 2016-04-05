@@ -98,13 +98,13 @@ namespace StandardFeature
         /// </summary>
         TerminalState,
         /// <summary>
-        /// 充正
-        /// </summary>
-        Reversal,
-        /// <summary>
         /// 配置信息
         /// </summary>
-        DeviceFault
+        DeviceFault,
+        /// <summary>
+        /// 充正
+        /// </summary>
+        Reversal
         #endregion
     }
 
@@ -149,7 +149,10 @@ namespace StandardFeature
         /// 7
         /// </summary>
         HostToExitMessages,
-
+        /// <summary>
+        /// 8
+        /// </summary>
+        EMVConfigMessages,
         /// <summary>
         /// 未知
         /// </summary>
@@ -196,7 +199,11 @@ namespace StandardFeature
         /// <summary>
         /// 消息类型
         /// </summary>
-        public MessageCommandType MsgCommandType { get; set; }
+        public MessageCommandType MsgCommandType
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// 消息的ASCII字符串形式(用于显示和查看)

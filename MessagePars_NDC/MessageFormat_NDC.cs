@@ -249,6 +249,11 @@ namespace MessagePars_NDC
                         result = MessageType.HostToExitMessages;
                     }
                     break;
+                case "8":
+                    {
+                        result = MessageType.EMVConfigMessages;
+                    }
+                    break;
                 default:
                     break;
             }
