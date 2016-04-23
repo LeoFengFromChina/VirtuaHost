@@ -806,7 +806,7 @@ namespace VirtualDualHost
 
             string tempAmount = string.Empty;
             //DecimalLen
-            int decimalLen = -1;
+            int decimalLen = 2;
 
             string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\OperationCodeConfig.ini";
             string decmalLenStr = XDCUnity.ReadIniData(msgContent.OperationCode, "DecimalLen", string.Empty, path);

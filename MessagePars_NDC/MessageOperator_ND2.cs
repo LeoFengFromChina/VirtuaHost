@@ -257,17 +257,17 @@ namespace MessagePars_NDC
         {
             #region 修复12消息解析错误的问题
 
-            if (string.IsNullOrEmpty(msgCurrentFieldContent)
-                && CurrentNode !=null && CurrentNode.ChildNodes.Count > currXmlNodeIndex)
-            {
-                XmlAttribute fieldName = CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
-                if (fieldName != null && fieldName.Value.StartsWith("FS"))
-                {
-                    //解决存款消息中，310，311等buffer先生不正确的问题。edit by frde 20160106
-                    currXmlNodeIndex += 1;
-                    return null;
-                }
-            }
+            //if (string.IsNullOrEmpty(msgCurrentFieldContent)
+            //    && CurrentNode !=null && CurrentNode.ChildNodes.Count > currXmlNodeIndex)
+            //{
+            //    XmlAttribute fieldName = CurrentNode.ChildNodes[currXmlNodeIndex].Attributes["Name"];
+            //    if (fieldName != null && fieldName.Value.StartsWith("FS"))
+            //    {
+            //        //解决存款消息中，310，311等buffer先生不正确的问题。edit by frde 20160106
+            //        currXmlNodeIndex += 1;
+            //        return null;
+            //    }
+            //}
             #endregion
             List<ParsRowView> rowViewList = new List<ParsRowView>();
             List<TemplateView> TvList = new List<TemplateView>();
