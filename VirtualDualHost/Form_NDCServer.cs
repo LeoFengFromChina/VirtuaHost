@@ -810,7 +810,10 @@ namespace VirtualDualHost
 
             string path = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\OperationCodeConfig.ini";
             string decmalLenStr = XDCUnity.ReadIniData(msgContent.OperationCode, "DecimalLen", string.Empty, path);
-            int.TryParse(decmalLenStr, out decimalLen);
+            int tempLen = -1;
+            int.TryParse(decmalLenStr, out tempLen);
+            if (tempLen > 0)
+                decimalLen = tempLen;
 
             int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - decimalLen));
             notesOutList.Clear();

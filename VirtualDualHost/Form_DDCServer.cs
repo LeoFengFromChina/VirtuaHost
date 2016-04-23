@@ -385,6 +385,17 @@ namespace VirtualDualHost
                     CurrentOperationCode = new OperationCode();
                     XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
 
+                    if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchON)
+                        CurrentHostServer.State = ServerState.Maintance;
+                    else if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
+                        CurrentHostServer.State = ServerState.OutOfService;
+                    //交互响应消息处理。by frde 20151229
+                    if (CurrentHostServer.IsCurrentInterActiveReply == true)
+                    {
+                        msgContent.OperationCode = CurrentHostServer.LastOperationCode;
+
+                        CurrentHostServer.LastOperationCode = "        ";
+                    }
                     #region 调试接收到的消息
                     if (IsDebugRecvMsg && !isBack)
                     {
@@ -653,7 +664,26 @@ namespace VirtualDualHost
                     resultIndex = 1;
                 }
 
+                //交互响应消息处理。by frde 20151229
+                string InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, "InteractiveReply", string.Empty, path);
+                if (InteractiveReply == "1" && CurrentHostServer.IsCurrentInterActiveReply == false)
+                {
+                    CurrentHostServer.IsCurrentInterActiveReply = true;
+                    CurrentHostServer.LastOperationCode = msgContent.OperationCode;
+                    string DeadInterActiveMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadInterActiveMsg", string.Empty, path);
+                    return DeadInterActiveMsg;
+                }
+                //第二次才来把开关关了
+                CurrentHostServer.IsCurrentInterActiveReply = false;
+
+                string deadMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadMsg", string.Empty, path);
+                if (!string.IsNullOrEmpty(deadMsg))
+                {
+                    return deadMsg;
+                }
                 CurrentOperationCode.InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InteractiveReply, string.Empty, path);
+                CurrentOperationCode.FastCash = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FastCash, string.Empty, path);
+                CurrentOperationCode.FastCashAmountField = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FastCashAmountField, string.Empty, path);
 
                 CurrentOperationCode.NextState = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.NextState, string.Empty, path).Split(';');
                 CurrentOperationCode.FunctionIdentifier = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FunctionIdentifier, string.Empty, path).Split(';');
@@ -750,8 +780,17 @@ namespace VirtualDualHost
             string result = string.Empty;
 
             string tempAmount = string.Empty;
+            //DecimalLen
+            int decimalLen = 2;
 
-            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - 2));
+            string path = XDCUnity.CurrentPath + @"\Config\Server\DDC\Host_1\OperationCodeConfig.ini";
+            string decmalLenStr = XDCUnity.ReadIniData(msgContent.OperationCode, "DecimalLen", string.Empty, path);
+            int tempLen = -1;
+            int.TryParse(decmalLenStr, out tempLen);
+            if (tempLen > 0)
+                decimalLen = tempLen;
+
+            int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - decimalLen));
             notesOutList.Clear();
             #region MyRegion
             for (int i = 0; i < DDCCVList.Count; i++)
