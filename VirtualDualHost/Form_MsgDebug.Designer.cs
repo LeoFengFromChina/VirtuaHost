@@ -42,17 +42,20 @@
             this.rtb_Msg = new System.Windows.Forms.RichTextBox();
             this.cms_Save = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getInteractiveMsgBufferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dgv_Fileds = new System.Windows.Forms.DataGridView();
             this.FieldName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_Paras = new System.Windows.Forms.Button();
             this.button_Go = new System.Windows.Forms.Button();
-            this.getInteractiveMsgBufferToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cms_GetMsgStructure = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.getMsgStructureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.cms_Save.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).BeginInit();
+            this.cms_GetMsgStructure.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -160,13 +163,20 @@
             this.saveToolStripMenuItem,
             this.getInteractiveMsgBufferToolStripMenuItem});
             this.cms_Save.Name = "cms_Save";
-            this.cms_Save.Size = new System.Drawing.Size(216, 70);
+            this.cms_Save.Size = new System.Drawing.Size(216, 48);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.saveToolStripMenuItem.Text = "Save";
+            // 
+            // getInteractiveMsgBufferToolStripMenuItem
+            // 
+            this.getInteractiveMsgBufferToolStripMenuItem.Name = "getInteractiveMsgBufferToolStripMenuItem";
+            this.getInteractiveMsgBufferToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.getInteractiveMsgBufferToolStripMenuItem.Text = "GetInteractiveMsgBuffer";
+            this.getInteractiveMsgBufferToolStripMenuItem.Click += new System.EventHandler(this.getInteractiveMsgBufferToolStripMenuItem_Click);
             // 
             // dgv_Fileds
             // 
@@ -178,6 +188,7 @@
             this.FieldName,
             this.FieldValue,
             this.FieldComment});
+            this.dgv_Fileds.ContextMenuStrip = this.cms_GetMsgStructure;
             this.dgv_Fileds.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dgv_Fileds.Location = new System.Drawing.Point(12, 160);
             this.dgv_Fileds.Name = "dgv_Fileds";
@@ -237,12 +248,19 @@
             this.button_Go.UseVisualStyleBackColor = true;
             this.button_Go.Click += new System.EventHandler(this.button_Go_Click);
             // 
-            // getInteractiveMsgBufferToolStripMenuItem
+            // cms_GetMsgStructure
             // 
-            this.getInteractiveMsgBufferToolStripMenuItem.Name = "getInteractiveMsgBufferToolStripMenuItem";
-            this.getInteractiveMsgBufferToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.getInteractiveMsgBufferToolStripMenuItem.Text = "GetInteractiveMsgBuffer";
-            this.getInteractiveMsgBufferToolStripMenuItem.Click += new System.EventHandler(this.getInteractiveMsgBufferToolStripMenuItem_Click);
+            this.cms_GetMsgStructure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.getMsgStructureToolStripMenuItem});
+            this.cms_GetMsgStructure.Name = "cms_GetMsgStructure";
+            this.cms_GetMsgStructure.Size = new System.Drawing.Size(173, 48);
+            // 
+            // getMsgStructureToolStripMenuItem
+            // 
+            this.getMsgStructureToolStripMenuItem.Name = "getMsgStructureToolStripMenuItem";
+            this.getMsgStructureToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.getMsgStructureToolStripMenuItem.Text = "GetMsgStructure";
+            this.getMsgStructureToolStripMenuItem.Click += new System.EventHandler(this.getMsgStructureToolStripMenuItem_Click);
             // 
             // Form_MsgDebug
             // 
@@ -268,6 +286,7 @@
             this.groupBox2.PerformLayout();
             this.cms_Save.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Fileds)).EndInit();
+            this.cms_GetMsgStructure.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -292,5 +311,7 @@
         private System.Windows.Forms.ContextMenuStrip cms_Save;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getInteractiveMsgBufferToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip cms_GetMsgStructure;
+        private System.Windows.Forms.ToolStripMenuItem getMsgStructureToolStripMenuItem;
     }
 }

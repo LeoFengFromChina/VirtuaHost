@@ -418,5 +418,26 @@ namespace VirtualDualHost
         {
             new Form_GetInteractiveMsgTextToShow(rtb_Msg.Text).Show();
         }
+
+        private void getMsgStructureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<ParsRowView> rowViewS = dgv_Fileds.DataSource as List<ParsRowView>;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<Msg MessageID=\"{MessageID}\" NextMessageID=\"{NextMessageID}\">");
+            sb.AppendLine("\t<FieldList>");
+            string tempRow = "\t\t<Field FieldName=\"{#FieldName#}\" FieldValue=\"{#FieldValue#}\"  />";
+            foreach (ParsRowView item in rowViewS)
+            {
+                sb.AppendLine(tempRow.Replace("{#FieldName#}", item.FieldName).Replace("{#FieldValue#}", item.FieldValue));
+            }
+            sb.AppendLine("\t</FieldList>");
+            sb.AppendLine("\t<ReplyFields>");
+            sb.AppendLine("\t</ReplyFields>");
+            sb.AppendLine("</Msg>");
+
+            string tempResult = sb.ToString();
+            Clipboard.SetDataObject(tempResult);
+            MessageBox.Show("Successed ! ");
+        }
     }
 }
