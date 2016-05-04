@@ -215,6 +215,97 @@ namespace VirtualDualHost
                 currentNode.Nodes.Add(tn);
             }
         }
+        private static void GetFilesListEx(ref TreeNode currentNode, string dirctoryPath)
+        {
+            DirectoryInfo folder = new DirectoryInfo(dirctoryPath);
+            if (!folder.Exists)
+                return;
+            foreach (FileInfo fileItem in folder.GetFiles("*.txt"))
+            {
+                if (!string.IsNullOrEmpty(onlyNode)
+                    && !fileItem.Name.StartsWith(onlyNode))
+                    continue;
+                TreeNode tn = new TreeNode();
+                if (currentNode.Name.EndsWith("ndc_state", StringComparison.OrdinalIgnoreCase))
+                {
+                    #region 读取状态内的信息 20160330----NDC
+                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (!stateScan_NDC.ContainsKey(stateFlag))
+                    {
+                        stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                    }
+                    else
+                    {
+                        if (!stateScan_NDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                            stateScan_NDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                    }
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                    #endregion
+                }
+                else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
+                {
+                    #region 读取状态内的信息 20160330----DDC
+                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (!stateScan_DDC.ContainsKey(stateFlag))
+                    {
+                        stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                    }
+                    else
+                    {
+                        if (!stateScan_DDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                            stateScan_DDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                    }
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                    #endregion
+                }
+                else
+                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4);
+                tn.Name = currentNode.Name + "_" + fileItem.Name;
+                tn.Tag = fileItem.FullName;
+                currentNode.Nodes.Add(tn);
+            }
+
+            DirectoryInfo[] subFolders = folder.GetDirectories();
+            if(subFolders!= null & subFolders.Length>0)
+            {
+                foreach (DirectoryInfo item in subFolders)
+                {
+
+                    TreeNode tn_FullDownLoad_sub = new TreeNode();
+                    if(item.FullName.Contains("NDC") && item.FullName.Contains("State"))
+                    {
+                        tn_FullDownLoad_sub.Name = "NDC_State";
+                    }
+                    else if(item.FullName.Contains("NDC") && item.FullName.Contains("Screen"))
+                    {
+                        tn_FullDownLoad_sub.Name = "NDC_Screen";
+                    }
+                    else if (item.FullName.Contains("NDC") && item.FullName.Contains("FIT"))
+                    {
+                        tn_FullDownLoad_sub.Name = "NDC_Fit";
+                    }
+                    else if (item.FullName.Contains("DDC") && item.FullName.Contains("State"))
+                    {
+                        tn_FullDownLoad_sub.Name = "DDC_State";
+                    }
+                    else if (item.FullName.Contains("DDC") && item.FullName.Contains("Screen"))
+                    {
+                        tn_FullDownLoad_sub.Name = "DDC_Screen";
+                    }
+                    else if (item.FullName.Contains("DDC") && item.FullName.Contains("FIT"))
+                    {
+                        tn_FullDownLoad_sub.Name = "DDC_Fit";
+                    }
+                    tn_FullDownLoad_sub.Text = item.Name;
+                    //COM
+                    currentNode.Nodes.Add(tn_FullDownLoad_sub);
+                    GetFilesListEx(ref tn_FullDownLoad_sub, item.FullName);
+                }
+            }
+
+        }
         private static void GetComLogFile(ref TreeNode currentNode, string dirctoryPath)
         {
             DirectoryInfo folder = new DirectoryInfo(XDCUnity.eCATPath + dirctoryPath);
@@ -240,7 +331,7 @@ namespace VirtualDualHost
             Root = new TreeNode();
             //1.添加根目录
             Root.Name = "Root";
-            Root.Text = "全部";
+            Root.Text = "Root";
 
             //2.添加DDC/NDC文件夹
 
@@ -290,7 +381,7 @@ namespace VirtualDualHost
             tn_NDC.Name = "NDC";
             tn_NDC.Text = "NDC";
 
-            //DDC
+            //NDC
             string ndc_Path = @"\XDC\NDC\Scripts";
 
             //state
@@ -334,7 +425,20 @@ namespace VirtualDualHost
 
             Root.Nodes.Add(tn_COMLog);
             #endregion
+            
+            #region FullDownLoadManagement
 
+            TreeNode tn_FullDownLoad = new TreeNode();
+            tn_FullDownLoad.Name = "FullDownLoad";
+            tn_FullDownLoad.Text = "FullDownLoad";
+            //COM
+            string fulldownload_Path = XDCUnity.CurrentPath + @"\Config\Server";
+            GetFilesListEx(ref tn_FullDownLoad, fulldownload_Path);
+
+            Root.Nodes.Add(tn_FullDownLoad);
+
+
+            #endregion
             //完成 树的生成
             BuildTreeEvent(null);
         }

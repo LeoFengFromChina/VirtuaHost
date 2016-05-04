@@ -208,9 +208,10 @@ namespace StandardFeature
             FileStream fs = null;
             try
             {
-                fs = new FileStream(path, FileMode.Open);
+                fs = new FileStream(path, FileMode.Truncate, FileAccess.ReadWrite, FileShare.ReadWrite);
                 //获得字节数组
                 byte[] data = System.Text.Encoding.Default.GetBytes(content);
+                
                 //开始写入
                 fs.Write(data, 0, data.Length);
                 //清空缓冲区、关闭流
@@ -223,8 +224,8 @@ namespace StandardFeature
             }
             finally
             {
-                fs.Flush();
                 fs.Close();
+                fs.Dispose();
             }
         }
         private static Queue<string> _ddcFentchMessage = new Queue<string>();

@@ -72,7 +72,7 @@ namespace VirtualDualHost
                 //双击树节点，将数据传至主窗体并格式化显示
                 if (dataType == DataType.Screen)
                 {
-                    Form_ScreenParse form_ScreenParse = new Form_ScreenParse(text, protocolType);
+                    Form_ScreenParse form_ScreenParse = new Form_ScreenParse(text, protocolType, subControl.ToString());
                     form_ScreenParse.Show();
                 }
                 else

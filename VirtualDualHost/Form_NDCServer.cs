@@ -169,7 +169,7 @@ namespace VirtualDualHost
                         if (clientSocket != null && clientSocket.Connected && !FencthFoundUnknow)
                         {
                             currentFullDownLoad.Clear();
-                            GetFullDownLoad();
+                            GetFullDownLoadEx();
                             isFullDownLoad = true;
                             //1.发送go-out-of-service消息
                             string out_of_service = currentFullDownLoad.Dequeue();
@@ -252,7 +252,7 @@ namespace VirtualDualHost
 
         private void Lsb_Log_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode== Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 ShowLogDetail();
             }
@@ -444,7 +444,8 @@ namespace VirtualDualHost
                     if (msgContent.MsgCommandType == MessageCommandType.FullDownLoad)
                     {
                         isFullDownLoad = true;
-                        GetFullDownLoad();
+                        //GetFullDownLoad();
+                        GetFullDownLoadEx();
                     }
                     string headContext = string.Empty;
                     if (isFullDownLoad)
@@ -664,6 +665,105 @@ namespace VirtualDualHost
                     if (!string.IsNullOrEmpty(dataItem))
                         currentFullDownLoad.Enqueue(dataItem);
                 }
+            }
+        }
+        public static void GetFullDownLoadEx()
+        {
+            if (currentFullDownLoad.Count <= 0)
+            {
+                currentFullDownLoad.Enqueue("10A210000002");
+                string screenPathstr = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\FullDownData\Screen";
+                string statePathstr = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\FullDownData\State";
+                string fitPathstr = XDCUnity.CurrentPath + @"\Config\Server\NDC\Host_1\FullDownData\FIT";
+                DirectoryInfo screenPath = new DirectoryInfo(screenPathstr);
+                DirectoryInfo statePath = new DirectoryInfo(statePathstr);
+                DirectoryInfo fitPath = new DirectoryInfo(fitPathstr);
+
+                string screenMsgHead = "311";//Screen
+                string stateMsgHead = "312";//State
+                string fitMsgHead = "315";//Fit
+
+                int eachMsgContainDataCount = 5;
+                string tempMsgContent = string.Empty;
+                #region SCREEN
+
+                if (screenPath.Exists)
+                {
+                    foreach (FileInfo item in screenPath.GetFiles("*.txt"))
+                    {
+                        tempMsgContent += "" + item.Name.Replace(item.Extension,"") + XDCUnity.GetTxtFileText(item.FullName);
+                        eachMsgContainDataCount--;
+                        if (eachMsgContainDataCount <= 0)
+                        {
+                            currentFullDownLoad.Enqueue(screenMsgHead + tempMsgContent);
+                            tempMsgContent = string.Empty;
+                            eachMsgContainDataCount = 5;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(tempMsgContent))
+                    {
+                        currentFullDownLoad.Enqueue(screenMsgHead + tempMsgContent);
+                        tempMsgContent = string.Empty;
+                        eachMsgContainDataCount = 5;
+                    }
+                }
+
+                #endregion
+                #region STATE
+                eachMsgContainDataCount = 20;
+                if (statePath.Exists)
+                {
+                    foreach (FileInfo item in statePath.GetFiles("*.txt"))
+                    {
+                        tempMsgContent += "" + item.Name.Replace(item.Extension, "") + XDCUnity.GetTxtFileText(item.FullName);
+                        eachMsgContainDataCount--;
+                        if (eachMsgContainDataCount <= 0)
+                        {
+                            currentFullDownLoad.Enqueue(stateMsgHead + tempMsgContent);
+                            tempMsgContent = string.Empty;
+                            eachMsgContainDataCount = 5;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(tempMsgContent))
+                    {
+                        currentFullDownLoad.Enqueue(stateMsgHead + tempMsgContent);
+                        tempMsgContent = string.Empty;
+                        eachMsgContainDataCount = 5;
+                    }
+                }
+
+                #endregion
+                #region FIT
+
+                if (fitPath.Exists)
+                {
+                    foreach (FileInfo item in fitPath.GetFiles("*.txt"))
+                    {
+                        tempMsgContent += "" + item.Name.Replace(item.Extension, "") + XDCUnity.GetTxtFileText(item.FullName);
+                        eachMsgContainDataCount--;
+                        if (eachMsgContainDataCount <= 0)
+                        {
+                            currentFullDownLoad.Enqueue(fitMsgHead + tempMsgContent);
+                            tempMsgContent = string.Empty;
+                            eachMsgContainDataCount = 5;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(tempMsgContent))
+                    {
+                        currentFullDownLoad.Enqueue(fitMsgHead + tempMsgContent);
+                        tempMsgContent = string.Empty;
+                        eachMsgContainDataCount = 5;
+                    }
+                }
+
+                #endregion
+                //string fulldownLoadData = XDCUnity.GetTxtFileText(path);
+                //string[] dataArray = fulldownLoadData.Split(FieldspliterStr, StringSplitOptions.None);
+                //foreach (string dataItem in dataArray)
+                //{
+                //    if (!string.IsNullOrEmpty(dataItem))
+                //        currentFullDownLoad.Enqueue(dataItem);
+                //}
             }
         }
 

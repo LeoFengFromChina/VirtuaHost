@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_ScreenParse));
             this.btn_Parse = new System.Windows.Forms.Button();
             this.rtb_Text = new System.Windows.Forms.RichTextBox();
@@ -40,7 +41,10 @@
             this.pnl_Row = new System.Windows.Forms.Panel();
             this.pnl_Screen = new System.Windows.Forms.Panel();
             this.lbl_Notice = new System.Windows.Forms.Label();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_Parse
@@ -55,6 +59,7 @@
             // 
             // rtb_Text
             // 
+            this.rtb_Text.ContextMenuStrip = this.contextMenuStrip1;
             this.rtb_Text.Location = new System.Drawing.Point(154, 12);
             this.rtb_Text.Name = "rtb_Text";
             this.rtb_Text.Size = new System.Drawing.Size(430, 40);
@@ -147,6 +152,20 @@
             this.lbl_Notice.TabIndex = 11;
             this.lbl_Notice.Text = "label1";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
             // Form_ScreenParse
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -169,6 +188,7 @@
             this.Load += new System.EventHandler(this.Form_ScreenParse_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -186,5 +206,7 @@
         private System.Windows.Forms.Panel pnl_Row;
         private System.Windows.Forms.Panel pnl_Screen;
         private System.Windows.Forms.Label lbl_Notice;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     }
 }

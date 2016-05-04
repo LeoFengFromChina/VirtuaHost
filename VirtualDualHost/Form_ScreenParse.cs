@@ -16,12 +16,14 @@ namespace VirtualDualHost
     public partial class Form_ScreenParse : Form
     {
         XDCProtocolType currentProtocol;
+        string currentScreenPath = string.Empty;
         public Form_ScreenParse(string parseText = "", XDCProtocolType protocol = XDCProtocolType.NDC, string screenNum = "")
         {
             InitializeComponent();
             if (!string.IsNullOrEmpty(screenNum))
             {
                 this.Text += " - [" + screenNum + "]";
+                currentScreenPath = screenNum;
             }
             if (!string.IsNullOrEmpty(parseText))
             {
@@ -503,5 +505,10 @@ namespace VirtualDualHost
 
         #endregion
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
+                XDCUnity.WriteTextFileText(currentScreenPath, rtb_Text.Text);
+        }
     }
 }
