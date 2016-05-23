@@ -99,7 +99,7 @@ namespace MessagePars_NDC
                         //NDC
                         if (result.MsgType == MessageType.SolicitedMessage)
                             result.MsgCommandType = MessageCommandType.DeviceFault;
-                        if (msgFields.Length > 4 && msgFields[4].Substring(0, 2) == "E2")
+                        if (msgFields.Length > 4 && msgFields[4].Length > 2 && msgFields[4].Substring(0, 2) == "E2")
                             result.MsgCommandType = MessageCommandType.Reversal;
                     }
                     break;
@@ -250,6 +250,7 @@ namespace MessagePars_NDC
                     }
                     break;
                 case "8":
+                case "80":
                     {
                         result = MessageType.EMVConfigMessages;
                     }
