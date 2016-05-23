@@ -184,7 +184,6 @@ namespace MessagePars_NDC
                 else
                     result.LUNO = msgFields[1];
             }
-
             return result;
         }
     }
