@@ -184,10 +184,11 @@ namespace VirtualDualHost
                         #region ManuSendData
 
                         isManuSend = true;
-                        //Form_MsgDebug form_debug = new Form_MsgDebug("", XDCProtocolType.DDC);
-                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                        //form_debug.Show();
-                        ShowDebugWindows("", XDCProtocolType.NDC);
+
+                        Form_ManuSendDataMain form_manuSendMain = new Form_ManuSendDataMain(XDCProtocolType.NDC);
+                        form_manuSendMain.SubFormEvent += Form_debug_SubFormEvent;
+                        form_manuSendMain.ShowDialog();
+                        //ShowDebugWindows("", XDCProtocolType.NDC);
                         #endregion
                     }
                     break;

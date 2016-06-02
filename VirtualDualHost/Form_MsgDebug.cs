@@ -19,6 +19,9 @@ namespace VirtualDualHost
         public bool isAlreadyLoad = false;
         public delegate void SubForm(object dataContent);
         public event SubForm SubFormEvent;
+
+        public delegate void SubFormClose();
+        public event SubFormClose SubFormCloseEvent;
         public string currentFilePath = string.Empty;
         public Form_MsgDebug(string msgText, XDCProtocolType protocolType, DataType dataType = DataType.Message, string subTitle = "")
         {
@@ -316,7 +319,8 @@ namespace VirtualDualHost
             {
                 SubFormEvent(rtb_Msg.Text.Trim());
                 IsSendBack = true;
-                this.Close();
+                //this.Close();
+                SubFormCloseEvent();
             }
         }
 
