@@ -41,6 +41,7 @@ namespace VirtualDualHost
                 }
                 currentProtocol = protocol;
             }
+            btn_Pre.Click += btn_Next_Click;
         }
 
         #region Field
@@ -221,33 +222,6 @@ namespace VirtualDualHost
 
             #endregion
         }
-
-        /// <summary>
-        /// 画SI文字
-        /// </summary>
-        //private void DrawSI_Text()
-        //{
-        //    //pnl_Screen.Refresh();
-        //    //计算对应协议的屏幕
-        //    //DrawXDCScreen();
-        //    DrawNetScreen();
-        //    //CalculateProcotolScreen();
-        //    Graphics g = pnl_Screen.CreateGraphics();
-        //    if (toPaintSI != null && toPaintSI.Count > 0)
-        //    {
-        //        foreach (DDC_SI_Command cur_SI in toPaintSI)
-        //        {
-        //            string toPaintStr = cur_SI.Content;
-        //            /*string*/ startRow = cur_SI.StartRow;
-        //            /*string*/ startColumn = cur_SI.StartColumn;
-        //            if (!string.IsNullOrEmpty(toPaintStr))
-        //            {
-        //                DrawString(g, toPaintStr, startRow, startColumn, Color.Blue);
-        //            }
-        //        }
-        //    }
-        //    g.Dispose();
-        //}
 
         /// <summary>
         /// 根据当前协议，计算屏幕当前的行、列数和对应的宽、高度
@@ -509,6 +483,42 @@ namespace VirtualDualHost
         {
             if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
                 XDCUnity.WriteTextFileText(currentScreenPath, rtb_Text.Text);
+        }
+
+        private void btn_Next_Click(object sender, EventArgs e)
+        {
+            Button currentButton = (Button)sender;
+
+            if (string.IsNullOrEmpty(currentScreenPath))
+                return;
+            int flit_1 = currentScreenPath.LastIndexOf('\\');
+            int flit_2 = currentScreenPath.LastIndexOf('.');
+            int newScreenNum = int.Parse(currentScreenPath.Substring(flit_1 + 1, flit_2 - flit_1 - 1));
+            string newPath = string.Empty;
+            switch (currentButton.Name)
+            {
+                case "btn_Pre":
+                    {
+                        newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum - 1) + ".txt";
+                    }
+                    break;
+                case "btn_Next":
+                    {
+                        newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum + 1) + ".txt";
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+
+            if (File.Exists(newPath))
+            {
+                rtb_Text.Text = XDCUnity.GetTxtFileText(newPath);
+                currentScreenPath = newPath;
+                this.Text = "ScreenParse - [" + newPath + "]";
+            }
+
         }
     }
 }

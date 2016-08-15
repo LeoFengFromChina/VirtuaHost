@@ -179,6 +179,10 @@ namespace VirtualDualHost
                     #region 读取状态内的信息 20160330----NDC
                     string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
                     string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (stateFlag.Equals("d"))
+                    {
+
+                    }
                     if (!stateScan_NDC.ContainsKey(stateFlag))
                     {
                         stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
@@ -193,9 +197,14 @@ namespace VirtualDualHost
                 }
                 else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
                 {
+
                     #region 读取状态内的信息 20160330----DDC
                     string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
                     string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    if (stateFlag.Equals("d"))
+                    {
+
+                    }
                     if (!stateScan_DDC.ContainsKey(stateFlag))
                     {
                         stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
@@ -226,59 +235,59 @@ namespace VirtualDualHost
                     && !fileItem.Name.StartsWith(onlyNode))
                     continue;
                 TreeNode tn = new TreeNode();
-                if (currentNode.Name.EndsWith("ndc_state", StringComparison.OrdinalIgnoreCase))
-                {
-                    #region 读取状态内的信息 20160330----NDC
-                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
-                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
-                    if (!stateScan_NDC.ContainsKey(stateFlag))
-                    {
-                        stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
-                    }
-                    else
-                    {
-                        if (!stateScan_NDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
-                            stateScan_NDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
-                    }
-                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
-                    #endregion
-                }
-                else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
-                {
-                    #region 读取状态内的信息 20160330----DDC
-                    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
-                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
-                    if (!stateScan_DDC.ContainsKey(stateFlag))
-                    {
-                        stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
-                    }
-                    else
-                    {
-                        if (!stateScan_DDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
-                            stateScan_DDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
-                    }
-                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
-                    #endregion
-                }
-                else
-                    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4);
+                //if (currentNode.Name.EndsWith("ndc_state", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    #region 读取状态内的信息 20160330----NDC
+                //    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                //    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                //    if (!stateScan_NDC.ContainsKey(stateFlag))
+                //    {
+                //        stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                //    }
+                //    else
+                //    {
+                //        if (!stateScan_NDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                //            stateScan_NDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                //    }
+                //    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                //    #endregion
+                //}
+                //else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    #region 读取状态内的信息 20160330----DDC
+                //    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
+                //    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                //    if (!stateScan_DDC.ContainsKey(stateFlag))
+                //    {
+                //        stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
+                //    }
+                //    else
+                //    {
+                //        if (!stateScan_DDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
+                //            stateScan_DDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
+                //    }
+                //    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
+                //    #endregion
+                //}
+                //else
+                tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4);
                 tn.Name = currentNode.Name + "_" + fileItem.Name;
                 tn.Tag = fileItem.FullName;
                 currentNode.Nodes.Add(tn);
             }
 
             DirectoryInfo[] subFolders = folder.GetDirectories();
-            if(subFolders!= null & subFolders.Length>0)
+            if (subFolders != null & subFolders.Length > 0)
             {
                 foreach (DirectoryInfo item in subFolders)
                 {
 
                     TreeNode tn_FullDownLoad_sub = new TreeNode();
-                    if(item.FullName.Contains("NDC") && item.FullName.Contains("State"))
+                    if (item.FullName.Contains("NDC") && item.FullName.Contains("State"))
                     {
                         tn_FullDownLoad_sub.Name = "NDC_State";
                     }
-                    else if(item.FullName.Contains("NDC") && item.FullName.Contains("Screen"))
+                    else if (item.FullName.Contains("NDC") && item.FullName.Contains("Screen"))
                     {
                         tn_FullDownLoad_sub.Name = "NDC_Screen";
                     }
@@ -425,7 +434,7 @@ namespace VirtualDualHost
 
             Root.Nodes.Add(tn_COMLog);
             #endregion
-            
+
             #region FullDownLoadManagement
 
             TreeNode tn_FullDownLoad = new TreeNode();

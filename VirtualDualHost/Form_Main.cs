@@ -40,9 +40,13 @@ namespace VirtualDualHost
             Form_DDCServer form_DDCServer1 = new Form_DDCServer();
             form_DDCServer1.Show(this.dockPanel1, DockState.Document);
 
-            //双主机
-            Form_DualHost form_DualHost = new Form_DualHost();
-            form_DualHost.Show(this.dockPanel1, DockState.Document);
+            ////双主机
+            //Form_DualHost form_DualHost = new Form_DualHost();
+            //form_DualHost.Show(this.dockPanel1, DockState.Document);
+
+            //NDC Host 2
+            Form_NDCServer_2 form_NDCServer2 = new Form_NDCServer_2();
+            form_NDCServer2.Show(this.dockPanel1, DockState.Document);
 
             form_NDCServer1.Activate();
 
@@ -64,9 +68,13 @@ namespace VirtualDualHost
             openXDCHostToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             openTrueBackToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             InteractiveBufferMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            importLogsToAutoReplyToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
+            c09ToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             CheckeCATPath();
-
+            GetCurrentFormatCode();
         }
+
+
 
         bool isAlreadyNDC_1 = false;
         bool isAlreadyNDC_2 = false;
@@ -203,9 +211,19 @@ namespace VirtualDualHost
                         new Form_About().ShowDialog();
                     }
                     break;
+                case "ImportLogsToAutoReply":
+                    {
+                        new Form_ImportLogs().Show();
+                    }
+                    break;
                 case "Exit":
                     {
                         this.Close();
+                    }
+                    break;
+                case "C09":
+                    {
+                        new Form_C09().Show();
                     }
                     break;
                 default:
@@ -293,5 +311,19 @@ namespace VirtualDualHost
             }
         }
 
+        private static void GetCurrentFormatCode()
+        {
+            XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+            XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/FormatCode");
+            string currentCode = node.Attributes["value"].InnerText;
+            if (string.IsNullOrEmpty(currentCode))
+            {
+                XDCUnity.CurrentFormatCode = "ASCII";
+            }
+            else
+            {
+                XDCUnity.CurrentFormatCode = currentCode;
+            }
+        }
     }
 }

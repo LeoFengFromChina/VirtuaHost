@@ -441,78 +441,81 @@ namespace VirtualDualHost
                 {
                     result_eCAT = new byte[2048];
                     int receiveNumber = myClientSocket.Receive(result_eCAT);
-                    if (IsLostConnectFromTerminal)
+                    object obj = new object();
+                    lock (obj)
                     {
-                        ConnectToGMEvent();
-
-                    }
-                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
-                    string msg = msgContent.MsgASCIIString;
-                    if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
-                    {
-                        #region 解析消息，判断LUNO号
-                        //签到消息，还没有带terminalID,只有配置文件中的LUNO
-                        if (msgContent.LUNO.Equals(LUNO_eCATBase))
+                        if (IsLostConnectFromTerminal)
                         {
-                            if (GM01_HostState != HostState.InService)
+                            ConnectToGMEvent();
+
+                        }
+                        XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
+                        string msg = msgContent.MsgASCIIString;
+                        if (!string.IsNullOrEmpty(msg.TrimEnd('\0')))
+                        {
+                            #region 解析消息，判断LUNO号
+                            //签到消息，还没有带terminalID,只有配置文件中的LUNO
+                            if (msgContent.LUNO.Equals(LUNO_eCATBase))
                             {
-                                //签到消息，分别发送给GM01和GM02
-                                if (socket_GM01.Connected)
+                                if (GM01_HostState != HostState.InService)
                                 {
-                                    ReceiveMsg_GM01(msgContent);
-                                    SendMsgToGM01_Event(socket_GM01, msg);
+                                    //签到消息，分别发送给GM01和GM02
+                                    if (socket_GM01.Connected)
+                                    {
+                                        ReceiveMsg_GM01(msgContent);
+                                        SendMsgToGM01_Event(socket_GM01, msg);
+                                    }
+
+                                    if (GM01_HostState == HostState.WaitForReadyToInservice && msgContent.MsgCommandType == MessageCommandType.ReadyB)
+                                    {
+                                        GM01_HostState = HostState.InService;
+                                    }
+                                }
+                                else
+                                {
+                                    //发送给GM02
+                                    if (socket_GM02.Connected)
+                                    {
+                                        if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
+                                        {
+                                            string QueueMsg = "";
+                                            for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
+                                            {
+                                                //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
+                                                QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
+                                                if (!string.IsNullOrEmpty(QueueMsg))
+                                                {
+                                                    XDCMessage mssg = XDCUnity.MessageFormat.Format(Encoding.ASCII.GetBytes(QueueMsg), Encoding.ASCII.GetBytes(QueueMsg).Length, TcpHead.L2L1);
+                                                    ReceiveMsg_GM02(mssg);
+                                                    SendMsgToGM02_Event(socket_GM02, QueueMsg);
+                                                }
+                                            }
+                                        }
+                                        ReceiveMsg_GM02(msgContent);
+                                        SendMsgToGM02_Event(socket_GM02, msg);
+                                    }
                                 }
 
-                                if (GM01_HostState == HostState.WaitForReadyToInservice && msgContent.MsgCommandType == MessageCommandType.ReadyB)
-                                {
-                                    GM01_HostState = HostState.InService;
-                                }
+                            }
+                            else if (msgContent.LUNO.Equals(LUNO_GM01))
+                            {
+                                ReceiveMsg_GM01(msgContent);
+                                SendMsgToGM01_Event(socket_GM01, msg);
+                            }
+                            else if (msgContent.LUNO.Equals(LUNO_GM02))
+                            {
+                                ReceiveMsg_GM02(msgContent);
+                                SendMsgToGM02_Event(socket_GM02, msg);
                             }
                             else
                             {
-                                //发送给GM02
-                                if (socket_GM02.Connected)
-                                {
-                                    if (XDCUnity.MessageFormat.NeedSendToBothHost != null && XDCUnity.MessageFormat.NeedSendToBothHost.Count > 0)
-                                    {
-                                        string QueueMsg = "";
-                                        for (int i = 0; i < XDCUnity.MessageFormat.NeedSendToBothHost.Count; i++)
-                                        {
-                                            //消息队列里的消息是需要发送到各个主机的，如fulldownload消息，故障消息等。
-                                            QueueMsg = XDCUnity.MessageFormat.NeedSendToBothHost.Dequeue();
-                                            if (!string.IsNullOrEmpty(QueueMsg))
-                                            {
-                                                XDCMessage mssg = XDCUnity.MessageFormat.Format(Encoding.ASCII.GetBytes(QueueMsg), Encoding.ASCII.GetBytes(QueueMsg).Length, TcpHead.L2L1);
-                                                ReceiveMsg_GM02(mssg);
-                                                SendMsgToGM02_Event(socket_GM02, QueueMsg);
-                                            }
-                                        }
-                                    }
-                                    ReceiveMsg_GM02(msgContent);
-                                    SendMsgToGM02_Event(socket_GM02, msg);
-                                }
+                                //捕获到未知去向消息
+                                ReceiveMsg_Unknow("Receive Message :" + msg + " ,But unknow whice host to send.");
                             }
 
+                            #endregion
                         }
-                        else if (msgContent.LUNO.Equals(LUNO_GM01))
-                        {
-                            ReceiveMsg_GM01(msgContent);
-                            SendMsgToGM01_Event(socket_GM01, msg);
-                        }
-                        else if (msgContent.LUNO.Equals(LUNO_GM02))
-                        {
-                            ReceiveMsg_GM02(msgContent);
-                            SendMsgToGM02_Event(socket_GM02, msg);
-                        }
-                        else
-                        {
-                            //捕获到未知去向消息
-                            ReceiveMsg_Unknow("Receive Message :" + msg + " ,But unknow whice host to send.");
-                        }
-
-                        #endregion
                     }
-
                 }
                 catch (Exception ex)
                 {

@@ -169,7 +169,8 @@ namespace VirtualDualHost
                         if (clientSocket != null && clientSocket.Connected && !FencthFoundUnknow)
                         {
                             currentFullDownLoad.Clear();
-                            GetFullDownLoadEx();
+                            GetFullDownLoad();
+                            //GetFullDownLoadEx();
                             isFullDownLoad = true;
                             //1.发送go-out-of-service消息
                             string out_of_service = currentFullDownLoad.Dequeue();
@@ -187,7 +188,7 @@ namespace VirtualDualHost
 
                         Form_ManuSendDataMain form_manuSendMain = new Form_ManuSendDataMain();
                         form_manuSendMain.SubFormEvent += Form_debug_SubFormEvent;
-                        form_manuSendMain.ShowDialog();
+                        form_manuSendMain.Show();
                         //ShowDebugWindows("", XDCProtocolType.NDC);
                         #endregion
                     }
@@ -498,6 +499,7 @@ namespace VirtualDualHost
                     else if (isFencth)
                     {
                         if ((msgContent.Identification == CurrentFencthResponse)
+                            || (msgContent.Identification == "B")
                             || msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
                         {
                             #region Fencth
@@ -692,7 +694,7 @@ namespace VirtualDualHost
                 {
                     foreach (FileInfo item in screenPath.GetFiles("*.txt"))
                     {
-                        tempMsgContent += "" + item.Name.Replace(item.Extension,"") + XDCUnity.GetTxtFileText(item.FullName);
+                        tempMsgContent += "" + item.Name.Replace(item.Extension, "") + XDCUnity.GetTxtFileText(item.FullName);
                         eachMsgContainDataCount--;
                         if (eachMsgContainDataCount <= 0)
                         {
@@ -1167,7 +1169,7 @@ namespace VirtualDualHost
                 {
                     string headContext = string.Empty;
                     byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer.TCPHead, ref headContext);
-                    clientSocket.Send(msgBytes);
+                    int sendcount = clientSocket.Send(msgBytes);
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
                 }
             }
@@ -1177,7 +1179,7 @@ namespace VirtualDualHost
         {
             Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, protocolType);
             form_debug.SubFormEvent += Form_debug_SubFormEvent;
-            form_debug.ShowDialog();
+            form_debug.Show();
 
         }
         #endregion

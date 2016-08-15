@@ -187,7 +187,7 @@ namespace VirtualDualHost
 
                         Form_ManuSendDataMain form_manuSendMain = new Form_ManuSendDataMain(XDCProtocolType.NDC);
                         form_manuSendMain.SubFormEvent += Form_debug_SubFormEvent;
-                        form_manuSendMain.ShowDialog();
+                        form_manuSendMain.Show();
                         //ShowDebugWindows("", XDCProtocolType.NDC);
                         #endregion
                     }
@@ -452,6 +452,7 @@ namespace VirtualDualHost
                     else if (isFencth)
                     {
                         if ((msgContent.Identification == CurrentFencthResponse)
+                            || (msgContent.Identification == "B")
                             || msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
                         {
                             #region Fencth
@@ -955,7 +956,7 @@ namespace VirtualDualHost
         {
             Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, protocolType);
             form_debug.SubFormEvent += Form_debug_SubFormEvent;
-            form_debug.ShowDialog();
+            form_debug.Show();
         }
         #endregion
 

@@ -56,6 +56,7 @@ namespace VirtualDualHost
             DateTime dt = new DateTime();
             List<MessageView> MsgList = new List<MessageView>();
             string dateTemp = string.Empty;
+            string date2Temp = string.Empty;//eCAT日志有问题的一种情况。日期出现：18:19:27 2016-07-12 18:19:27 461
             int dateStartChar;
             while ((line = sr.ReadLine()) != null)
             {
@@ -65,9 +66,14 @@ namespace VirtualDualHost
                     continue;
                 }
                 dateTemp = line;
+                date2Temp = line;
                 if (int.TryParse(dateTemp.Substring(0, 1), out dateStartChar) && line.Contains(" "))
                     dateTemp = line.Substring(0, line.LastIndexOf(" "));
-                if (DateTime.TryParse(dateTemp, out dt))
+
+                if (int.TryParse(date2Temp.Substring(0, 1), out dateStartChar) && line.Contains(" "))
+                    date2Temp = line.Substring(line.IndexOf(" ") + 1, line.LastIndexOf(" ") - line.IndexOf(" ") - 1);
+                if (DateTime.TryParse(dateTemp, out dt)
+                    || DateTime.TryParse(date2Temp, out dt))
                 {
                     if (mv != null)
                     {

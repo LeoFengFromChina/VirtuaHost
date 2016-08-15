@@ -57,11 +57,34 @@ namespace VirtualDualHost
             if (cmb_Trueback.Items.Contains(currentTruebackPath))
                 cmb_Trueback.Text = currentTruebackPath;
 
+            //编码 add by frde 20160628
+            XmlNode formatCode = doc.SelectSingleNode("BaseConfig/Settings/FormatCode");
+            string currentCode = formatCode.Attributes["value"].InnerText;
+            switch (currentCode.ToUpper())
+            {
+                case "ASCII":
+                    {
+                        rbt_ASCII.Checked = true;
+                    }
+                    break;
+                case "EBCD":
+                    {
+                        rbt_EBCD.Checked = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            XDCUnity.CurrentFormatCode = currentCode;
+            currentFormatCodenode = formatCode;
+
         }
         XmlNode neweCATPathNode = null;
         XmlNode currenteCATnode = null;
         XmlNode newTruebackPathNode = null;
         XmlNode currentTruebacknode = null;
+        XmlNode currentFormatCodenode = null;
         private void button1_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderDlg = new FolderBrowserDialog();
@@ -118,6 +141,9 @@ namespace VirtualDualHost
 
             XDCUnity.TrueBackPath = cmb_Trueback.Text;
             currentTruebacknode.Attributes["value"].InnerText = cmb_Trueback.Text;
+
+            currentFormatCodenode.Attributes["value"].InnerText = rbt_ASCII.Checked ? "ASCII" : "EBCD";
+            XDCUnity.CurrentFormatCode = currentFormatCodenode.Attributes["value"].InnerText;
             try
             {
                 doc.Save(currentProcessPath + @"\Config\BaseConfig.xml");
@@ -174,5 +200,6 @@ namespace VirtualDualHost
                 }
             }
         }
+
     }
 }

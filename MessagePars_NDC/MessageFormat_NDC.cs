@@ -21,10 +21,15 @@ namespace MessagePars_NDC
             }
         }
 
-        public XDCMessage Format(byte[] msgByte, int msgLength, TcpHead HeadType = TcpHead.NoHead)
+        public XDCMessage Format(byte[] msgByte, int msgLength, TcpHead HeadType = TcpHead.NoHead, bool isDebug = false)
         {
             XDCMessage result = new XDCMessage();
 
+
+            #region EBCDIC
+            long blong = 0;
+            XDCUnity.PackMsgCode(ref msgByte, ref blong, "Recv", isDebug);
+            #endregion
             //0.原字节数组
             result.MsgByteArray = msgByte;
 

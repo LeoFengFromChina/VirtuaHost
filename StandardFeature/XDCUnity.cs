@@ -26,7 +26,7 @@ namespace StandardFeature
         {
             get; set;
         }
-        
+
         public static string Version = " V0.1";
         public static Dictionary<string, List<string>> BaseConfig
         {
@@ -48,6 +48,12 @@ namespace StandardFeature
             get;
             set;
         }
+
+        public static string CurrentFormatCode
+        {
+            get; set;
+        }
+
 
         public static IMessageOperator MessageOperator
         {
@@ -211,7 +217,7 @@ namespace StandardFeature
                 fs = new FileStream(path, FileMode.Truncate, FileAccess.ReadWrite, FileShare.ReadWrite);
                 //获得字节数组
                 byte[] data = System.Text.Encoding.Default.GetBytes(content);
-                
+
                 //开始写入
                 fs.Write(data, 0, data.Length);
                 //清空缓冲区、关闭流
@@ -352,6 +358,12 @@ namespace StandardFeature
             }
             else
                 resultBytes = Encoding.ASCII.GetBytes(msg);
+
+            #region EBCDIC
+            long blong = 0;
+            PackMsgCode(ref resultBytes, ref blong, "Send");
+            #endregion
+
             return resultBytes;
         }
 
@@ -543,12 +555,12 @@ namespace StandardFeature
             }
         }
 
-        public static void PackMsgCode(ref byte[] argData, ref long argCount,string isRecvOrSent)
+        public static void PackMsgCode(ref byte[] argData, ref long argCount, string isRecvOrSent, bool isDebug = false)
         {
 
-            if(false)
+            if (!isDebug && XDCUnity.CurrentFormatCode.Equals("EBCD"))
             {
-                if(isRecvOrSent=="Recv")
+                if (isRecvOrSent == "Recv")
                 {
                     #region EBCDID
                     try
@@ -557,11 +569,12 @@ namespace StandardFeature
                         byte[] byteASCII = null;
 
                         printHex(argData, argCount);
+
+                        string msgText1 = Encoding.ASCII.GetString(byteEBCD, 2, byteEBCD.Length - 2);
                         byteASCII = ConvertEbcdicToAscii(byteEBCD);
 
-                        //convertor.ebcd_to_asc(out byteASCII, out lenASCII, byteEBCD, lenEBCD);
-
                         argData = byteASCII;
+                        string msgText = Encoding.ASCII.GetString(argData, 2, argData.Length - 2);
                         printHex(argData, argCount);
                     }
                     catch (System.Exception ex)
@@ -570,16 +583,34 @@ namespace StandardFeature
                     }
                     #endregion
                 }
-                else if(isRecvOrSent == "Send")
+                else if (isRecvOrSent == "Send")
                 {
 
+                    string msgText = Encoding.ASCII.GetString(argData, 2, argData.Length - 2);
+                    try
+                    {
+                        byte[] byteASCII = argData;
+                        byte[] byteEBCD = null;
+
+                        printHex(argData, argCount);
+                        byteEBCD = ConvertAsciiToEbcdic(byteASCII);
+
+                        //convertor.asc_to_ebcd(out byteEBCD,out lenEBCD,byteASCII, lenASCII);
+
+                        argData = byteEBCD;
+                        printHex(argData, argCount);
+                    }
+                    catch (System.Exception ex)
+                    {
+
+                    }
                 }
             }
             else
             {
 
             }
-            
+
         }
 
         public static byte[] ConvertEbcdicToAscii(byte[] ebcdicData)
@@ -591,6 +622,17 @@ namespace StandardFeature
             //return ASCII Data 
             return Encoding.Convert(ebcdic, ascii, ebcdicData);
         }
+        #region Convert ASCII To EBCDIC
+        public static byte[] ConvertAsciiToEbcdic(byte[] asciiData)
+        {
+            // Create two different encodings.         
+            Encoding ascii = Encoding.ASCII;
+            Encoding ebcdic = Encoding.GetEncoding("IBM500");
+
+            //return EBCDIC Data
+            return Encoding.Convert(ascii, ebcdic, asciiData);
+        }
+        #endregion
         private static void printHex(byte[] argData, long argCount)
         {
             string sLog = "";

@@ -297,7 +297,7 @@ namespace VirtualDualHost
                 case DataType.Message:
                     {
                         byte[] msgByteArray = Encoding.ASCII.GetBytes(parsText);
-                        XDCMessage XDCmsg = XDCUnity.MessageFormat.Format(msgByteArray, parsText.Length);
+                        XDCMessage XDCmsg = XDCUnity.MessageFormat.Format(msgByteArray, parsText.Length, TcpHead.NoHead, true);
                         view = XDCUnity.MessageOperator.GetView(XDCmsg);
                     }
                     break;
@@ -317,10 +317,11 @@ namespace VirtualDualHost
         {
             if (SubFormEvent != null)
             {
-                SubFormEvent(rtb_Msg.Text.Trim());
+                SubFormEvent(rtb_Msg.Text);
                 IsSendBack = true;
                 //this.Close();
-                SubFormCloseEvent();
+                if (SubFormCloseEvent != null)
+                    SubFormCloseEvent();
             }
         }
 
