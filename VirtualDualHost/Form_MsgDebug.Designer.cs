@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_MsgDebug));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -47,10 +48,10 @@
             this.FieldName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FieldComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button_Paras = new System.Windows.Forms.Button();
-            this.button_Go = new System.Windows.Forms.Button();
             this.cms_GetMsgStructure = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.getMsgStructureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_Paras = new System.Windows.Forms.Button();
+            this.button_Go = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.cms_Save.SuspendLayout();
@@ -151,6 +152,7 @@
             this.rtb_Msg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtb_Msg.ContextMenuStrip = this.cms_Save;
+            this.rtb_Msg.EnableAutoDragDrop = true;
             this.rtb_Msg.Location = new System.Drawing.Point(12, 58);
             this.rtb_Msg.Name = "rtb_Msg";
             this.rtb_Msg.Size = new System.Drawing.Size(568, 96);
@@ -189,6 +191,14 @@
             this.FieldValue,
             this.FieldComment});
             this.dgv_Fileds.ContextMenuStrip = this.cms_GetMsgStructure;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Silver;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_Fileds.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgv_Fileds.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dgv_Fileds.Location = new System.Drawing.Point(12, 160);
             this.dgv_Fileds.Name = "dgv_Fileds";
@@ -209,6 +219,7 @@
             // 
             this.FieldName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.FieldName.DataPropertyName = "FieldName";
+            this.FieldName.FillWeight = 35F;
             this.FieldName.HeaderText = "Name";
             this.FieldName.Name = "FieldName";
             // 
@@ -216,8 +227,9 @@
             // 
             this.FieldValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.FieldValue.DataPropertyName = "FieldValue";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.FieldValue.DefaultCellStyle = dataGridViewCellStyle1;
+            this.FieldValue.FillWeight = 30F;
             this.FieldValue.HeaderText = "Value";
             this.FieldValue.Name = "FieldValue";
             // 
@@ -225,8 +237,23 @@
             // 
             this.FieldComment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.FieldComment.DataPropertyName = "FieldComment";
+            this.FieldComment.FillWeight = 35F;
             this.FieldComment.HeaderText = "Comment";
             this.FieldComment.Name = "FieldComment";
+            // 
+            // cms_GetMsgStructure
+            // 
+            this.cms_GetMsgStructure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.getMsgStructureToolStripMenuItem});
+            this.cms_GetMsgStructure.Name = "cms_GetMsgStructure";
+            this.cms_GetMsgStructure.Size = new System.Drawing.Size(173, 26);
+            // 
+            // getMsgStructureToolStripMenuItem
+            // 
+            this.getMsgStructureToolStripMenuItem.Name = "getMsgStructureToolStripMenuItem";
+            this.getMsgStructureToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.getMsgStructureToolStripMenuItem.Text = "GetMsgStructure";
+            this.getMsgStructureToolStripMenuItem.Click += new System.EventHandler(this.getMsgStructureToolStripMenuItem_Click);
             // 
             // button_Paras
             // 
@@ -247,20 +274,6 @@
             this.button_Go.Text = "Go";
             this.button_Go.UseVisualStyleBackColor = true;
             this.button_Go.Click += new System.EventHandler(this.button_Go_Click);
-            // 
-            // cms_GetMsgStructure
-            // 
-            this.cms_GetMsgStructure.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.getMsgStructureToolStripMenuItem});
-            this.cms_GetMsgStructure.Name = "cms_GetMsgStructure";
-            this.cms_GetMsgStructure.Size = new System.Drawing.Size(173, 48);
-            // 
-            // getMsgStructureToolStripMenuItem
-            // 
-            this.getMsgStructureToolStripMenuItem.Name = "getMsgStructureToolStripMenuItem";
-            this.getMsgStructureToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.getMsgStructureToolStripMenuItem.Text = "GetMsgStructure";
-            this.getMsgStructureToolStripMenuItem.Click += new System.EventHandler(this.getMsgStructureToolStripMenuItem_Click);
             // 
             // Form_MsgDebug
             // 
@@ -305,13 +318,13 @@
         private System.Windows.Forms.DataGridView dgv_Fileds;
         private System.Windows.Forms.Button button_Paras;
         private System.Windows.Forms.Button button_Go;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FieldName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FieldValue;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FieldComment;
         private System.Windows.Forms.ContextMenuStrip cms_Save;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getInteractiveMsgBufferToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip cms_GetMsgStructure;
         private System.Windows.Forms.ToolStripMenuItem getMsgStructureToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FieldName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FieldValue;
+        private System.Windows.Forms.DataGridViewTextBoxColumn FieldComment;
     }
 }

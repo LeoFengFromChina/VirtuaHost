@@ -1,11 +1,6 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Threading;
@@ -41,9 +36,15 @@ namespace VirtualDualHost
         public void ParsMessage(string msgPath)
         {
             comLogPath = msgPath;
-            //parsThread = new Thread(ParsFunc);
-            //parsThread.Start();
-            ParsFunc();
+            try
+            {
+                ParsFunc();
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(this.GetType().Name, "ParsMessage Error:" + ex.Message);
+                MessageBox.Show("ParsMessage Error.");
+            }
         }
 
         private static void ParsFunc()
@@ -106,6 +107,11 @@ namespace VirtualDualHost
             //MessageBox.Show(dataGridView1.CurrentRow.Cells[1].Value.ToString());
             msgContext = msgContext.Replace(MsgHeaderRecv, "").Replace(MsgHeaderTrans, "");
             SubFormEvent(msgContext, XDCProtocolType.DDCorNDC, DataType.Message);
+        }
+
+        private void Form_COMviewList_Load(object sender, EventArgs e)
+        {
+
         }
     }
 

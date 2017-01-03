@@ -1,12 +1,7 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -37,6 +32,12 @@ namespace VirtualDualHost
         System.Threading.Thread buildTreeThread;
         private void Form_ParsLeft_Load(object sender, EventArgs e)
         {
+            this.logToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
+            this.xDCDDCToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
+            this.xDCNDCToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
+            this.transactionFlowToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
+            this.resourceToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
+            this.configToolStripMenuItem.Click += checkAllStateToolStripMenuItem_Click;
             BuildTreeEvent += Form_ParsLeft_BuildTreeEvent;
             treeView1.MouseDoubleClick += TreeView1_MouseDoubleClick;
             treeView1.KeyDown += TreeView1_KeyDown;
@@ -138,6 +139,10 @@ namespace VirtualDualHost
 
         private void TreeView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            string currentResourceFloder = ((TreeView)sender).SelectedNode.Parent.Text;
+
+            XDCUnity.CurrentResourceIndex = currentResourceFloder.Substring(currentResourceFloder.Length - 1, 1) == "2" ? "2" : "";
+
             TreeViewSelectItemChange();
         }
 
@@ -200,7 +205,7 @@ namespace VirtualDualHost
 
                     #region 读取状态内的信息 20160330----DDC
                     string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
-                    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
+                    string stateFlag = stateContent.Contains(" ") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
                     if (stateFlag.Equals("d"))
                     {
 
@@ -235,41 +240,7 @@ namespace VirtualDualHost
                     && !fileItem.Name.StartsWith(onlyNode))
                     continue;
                 TreeNode tn = new TreeNode();
-                //if (currentNode.Name.EndsWith("ndc_state", StringComparison.OrdinalIgnoreCase))
-                //{
-                //    #region 读取状态内的信息 20160330----NDC
-                //    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
-                //    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
-                //    if (!stateScan_NDC.ContainsKey(stateFlag))
-                //    {
-                //        stateScan_NDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
-                //    }
-                //    else
-                //    {
-                //        if (!stateScan_NDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
-                //            stateScan_NDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
-                //    }
-                //    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
-                //    #endregion
-                //}
-                //else if (currentNode.Name.EndsWith("ddc_state", StringComparison.OrdinalIgnoreCase))
-                //{
-                //    #region 读取状态内的信息 20160330----DDC
-                //    string stateContent = XDCUnity.GetTxtFileText(fileItem.FullName);
-                //    string stateFlag = stateContent.StartsWith("@") ? stateContent.Substring(0, 2) : stateContent.Substring(0, 1);
-                //    if (!stateScan_DDC.ContainsKey(stateFlag))
-                //    {
-                //        stateScan_DDC.Add(stateFlag, new List<string> { fileItem.Name.Substring(0, fileItem.Name.Length - 4) });
-                //    }
-                //    else
-                //    {
-                //        if (!stateScan_DDC[stateFlag].Contains(fileItem.Name.Substring(0, fileItem.Name.Length - 4)))
-                //            stateScan_DDC[stateFlag].Add(fileItem.Name.Substring(0, fileItem.Name.Length - 4));
-                //    }
-                //    tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4) + "_" + stateFlag;
-                //    #endregion
-                //}
-                //else
+
                 tn.Text = fileItem.Name.Substring(0, fileItem.Name.Length - 4);
                 tn.Name = currentNode.Name + "_" + fileItem.Name;
                 tn.Tag = fileItem.FullName;
@@ -401,6 +372,16 @@ namespace VirtualDualHost
             tn_NDC.Nodes.Add(tn_ndc_state);
             GetFilesList(ref tn_ndc_state, ndc_state);
 
+            #region State2
+            ndc_state = ndc_Path + @"\State2\Host";
+            TreeNode tn_ndc_state2 = new TreeNode();
+            tn_ndc_state2.Text = "State2";
+            tn_ndc_state2.Name = "NDC_State";
+            tn_NDC.Nodes.Add(tn_ndc_state2);
+            GetFilesList(ref tn_ndc_state2, ndc_state);
+            #endregion
+
+
             //screen
             string ndc_screen = ndc_Path + @"\Screen\Host\000";
             TreeNode tn_ndc_screen = new TreeNode();
@@ -409,6 +390,16 @@ namespace VirtualDualHost
             tn_NDC.Nodes.Add(tn_ndc_screen);
             GetFilesList(ref tn_ndc_screen, ndc_screen);
 
+            #region Screen2
+            ndc_screen = ndc_Path + @"\Screen2\Host\000";
+            TreeNode tn_ndc_screen2 = new TreeNode();
+            tn_ndc_screen2.Text = "Screen2";
+            tn_ndc_screen2.Name = "NDC_Screen";
+            tn_NDC.Nodes.Add(tn_ndc_screen2);
+            GetFilesList(ref tn_ndc_screen2, ndc_screen);
+            #endregion
+
+
             //fit
             string ndc_fit = ndc_Path + @"\FIT";
             TreeNode tn_ndc_fit = new TreeNode();
@@ -416,6 +407,16 @@ namespace VirtualDualHost
             tn_ndc_fit.Name = "NDC_Fit";
             tn_NDC.Nodes.Add(tn_ndc_fit);
             GetFilesList(ref tn_ndc_fit, ndc_fit);
+
+            #region Fit2
+            ndc_fit = ndc_Path + @"\FIT2";
+            TreeNode tn_ndc_fit2 = new TreeNode();
+            tn_ndc_fit2.Text = "Fit2";
+            tn_ndc_fit2.Name = "NDC_Fit";
+            tn_NDC.Nodes.Add(tn_ndc_fit2);
+            GetFilesList(ref tn_ndc_fit2, ndc_fit);
+            #endregion
+
 
             lock (lockObj_ndc)
             {
@@ -467,7 +468,48 @@ namespace VirtualDualHost
 
         private void checkAllStateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new Form_StateCheck(stateScan_NDC, stateScan_DDC).Show();
+
+            ToolStripMenuItem tmi = (ToolStripMenuItem)sender;
+            switch (tmi.Text)
+            {
+                case "CheckAllState":
+                    {
+                        new Form_StateCheck(stateScan_NDC, stateScan_DDC).Show();
+                    }
+                    break;
+                case "Log":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\log");
+                    }
+                    break;
+                case "XDC\\NDC":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\XDC\\NDC\\Scripts");
+                    }
+                    break;
+                case "XDC\\DDC":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\XDC\\DDC\\Scripts");
+                    }
+                    break;
+                case "TransactionFlow":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\TransactionFlow\\XDC");
+                    }
+                    break;
+                case "Config":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\Config");
+                    }
+                    break;
+                case "Resource":
+                    {
+                        XDCUnity.OpenPath(XDCUnity.eCATPath + "\\Resource");
+                    }
+                    break;
+                default:
+                    break;
+            }
 
         }
     }

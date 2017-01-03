@@ -1,8 +1,6 @@
 ﻿using StandardFeature;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using XmlHelper;
 
@@ -462,7 +460,8 @@ namespace MessagePars_DDC
                     }
                     try
                     {
-                        if (tvItem.FieldSize <= 0)
+                        if (tvItem.FieldSize <= 0
+                                || msgCurrentFieldContent.Length < tvItem.FieldSize - currentContentIndex)
                         {
                             prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, msgCurrentFieldContent.Length - currentContentIndex);
                         }

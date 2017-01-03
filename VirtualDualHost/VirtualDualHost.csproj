@@ -149,6 +149,12 @@
     <Compile Include="Form_ErrorCodeSearch.Designer.cs">
       <DependentUpon>Form_ErrorCodeSearch.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_FentchConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_FentchConfig.Designer.cs">
+      <DependentUpon>Form_FentchConfig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_GetInteractiveMsgTextToShow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +166,12 @@
     </Compile>
     <Compile Include="Form_ImportLogs.Designer.cs">
       <DependentUpon>Form_ImportLogs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Managerment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Managerment.Designer.cs">
+      <DependentUpon>Form_Managerment.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_NDCServer_2.cs">
       <SubType>Form</SubType>
@@ -259,11 +271,17 @@
     <EmbeddedResource Include="Form_ErrorCodeSearch.resx">
       <DependentUpon>Form_ErrorCodeSearch.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_FentchConfig.resx">
+      <DependentUpon>Form_FentchConfig.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_GetInteractiveMsgTextToShow.resx">
       <DependentUpon>Form_GetInteractiveMsgTextToShow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_ImportLogs.resx">
       <DependentUpon>Form_ImportLogs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Managerment.resx">
+      <DependentUpon>Form_Managerment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_NDCServer_2.resx">
       <DependentUpon>Form_NDCServer_2.cs</DependentUpon>

@@ -1,8 +1,6 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using XmlHelper;
 
@@ -12,20 +10,28 @@ namespace MessagePars_NDC
     {
         public List<ParsRowView> GetView(XDCMessage XDCmsg)
         {
-            List<ParsRowView> mprvlist = new List<ParsRowView>();
-            OperatorHelper.CurrentNode = null;
-            OperatorHelper.GetXmlConfig(XDCmsg);
-            int tempXMLIndex = 0;
-            for (int i = 0; i < XDCmsg.MsgASCIIStringFields.Length; i++)
-            {
-                List<ParsRowView> ilist = OperatorHelper.GetViewList(XDCmsg, XDCmsg.MsgASCIIStringFields[i], i, ref tempXMLIndex);
-                if (ilist != null)
-                    mprvlist.AddRange(ilist);
 
-                if (i != XDCmsg.MsgASCIIStringFields.Length - 1)
+            List<ParsRowView> mprvlist = new List<ParsRowView>();
+            try
+            {
+                OperatorHelper.CurrentNode = null;
+                OperatorHelper.GetXmlConfig(XDCmsg);
+                int tempXMLIndex = 0;
+                for (int i = 0; i < XDCmsg.MsgASCIIStringFields.Length; i++)
                 {
-                    mprvlist.Add(new ParsRowView("FS", "", ""));
+                    List<ParsRowView> ilist = OperatorHelper.GetViewList(XDCmsg, XDCmsg.MsgASCIIStringFields[i], i, ref tempXMLIndex);
+                    if (ilist != null)
+                        mprvlist.AddRange(ilist);
+
+                    if (i != XDCmsg.MsgASCIIStringFields.Length - 1)
+                    {
+                        mprvlist.Add(new ParsRowView("FS", "", ""));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError(this.GetType().Name, "GetView Error:" + ex.Message);
             }
             return mprvlist;
         }
@@ -99,6 +105,9 @@ namespace MessagePars_NDC
                         #region 22||23_SolicitedMessage
                         attrID = tempArrary[0] + "FSFSFS";
                         int fsCount = 3;
+
+                        string miString = "";
+                    loop:
                         try
                         {
                             commandCode = tempArrary[sdIndex].Substring(0, 1);
@@ -107,30 +116,47 @@ namespace MessagePars_NDC
                         {
                             commandCode = "";
                         }
+
                         if (tempArrary.Length > sdIndex + 1)
                             MessageIdentifier = tempArrary[sdIndex + 1].Substring(0, 1);
-                        attrID += commandCode;
+
                         string tempXMLid = "";
-                        string miString = "";
                         if (commandCode == "8"
                             || commandCode == "C"
                             || commandCode == "F")
                         {
-                            miString = "FS" + MessageIdentifier;
+                            miString += commandCode+"FS" + MessageIdentifier;
                             fsCount++;
                         }
+                        else if (!string.IsNullOrEmpty(MessageIdentifier))
+                        {
+                            sdIndex = 4;
+                            attrID += "FS";
+                            goto loop;
+                        }
+                        
 
                         int maxFsCountRear = tempArrary.Length - fsCount - 1;
                         //最多的FS，并逐个递减
                         while (maxFsCountRear > -1)
                         {
-                            tempXMLid = attrID + miString + XDCUnity.GetFS(maxFsCountRear);
+                            tempXMLid = attrID+ miString + XDCUnity.GetFS(maxFsCountRear);
                             cur = XDCUnity.GetNodeDetail(root, tempXMLid, attrProtocolType, attrDataType);
                             if (null != cur)
                             {
                                 break;
                             }
                             maxFsCountRear--;
+                        }
+                        if (null == cur)
+                        {
+                            tempXMLid = attrID+commandCode;
+                            cur = XDCUnity.GetNodeDetail(root, tempXMLid, attrProtocolType, attrDataType);
+                            if (null == cur)
+                            {
+                                tempXMLid = tempArrary[0];
+                                cur = XDCUnity.GetNodeDetail(root, tempXMLid, attrProtocolType, attrDataType);
+                            }
                         }
                         //如果还未空，去掉MessageIdentifier
                         if (null == cur)
@@ -426,6 +452,11 @@ namespace MessagePars_NDC
                             }
                             tv.FieldValue = dic;
                         }
+                        else
+                        {
+                            //dic.Add(msgCurrentFieldContent, "Unknow");
+                            //tv.FieldValue = dic;
+                        }
                         TvList.Add(tv);
                         #endregion
                     }
@@ -556,12 +587,23 @@ namespace MessagePars_NDC
                         }
                         try
                         {
-                            if (tvItem.FieldSize <= 0)
+                            if (tvItem.FieldSize <= 0
+                                || msgCurrentFieldContent.Length < tvItem.FieldSize - currentContentIndex)
                             {
                                 prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, msgCurrentFieldContent.Length - currentContentIndex);
                             }
                             else
-                                prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, tvItem.FieldSize);
+                            {
+                                //有些5CAM后不是直接跟0004这类的，而是
+                                if (tvItem.FieldSize == 4 && msgCurrentFieldContent.StartsWith("5CAM")
+                                    && !msgCurrentFieldContent.StartsWith("5CAM0"))
+                                {
+                                    prv.FieldValue = "";
+                                }
+                                else
+                                    prv.FieldValue = msgCurrentFieldContent.Substring(currentContentIndex, tvItem.FieldSize);
+
+                            }
                         }
                         catch
                         {
@@ -618,7 +660,15 @@ namespace MessagePars_NDC
                             currentContentIndex += msgCurrentFieldContent.Length - currentContentIndex;
                         }
                         else
-                            currentContentIndex += tvItem.FieldSize;
+                        {
+                            if (tvItem.FieldSize == 4 && msgCurrentFieldContent.StartsWith("5CAM")
+                                && !msgCurrentFieldContent.StartsWith("5CAM0"))
+                            {
+
+                            }
+                            else
+                                currentContentIndex += tvItem.FieldSize;
+                        }
                         #endregion
                     }
                 }
@@ -644,7 +694,7 @@ namespace MessagePars_NDC
             int vtRepeatXMLnodeCount = 0;
             foreach (string gsDataItem in gsGroup)
             {
-                DDCdeviceID.CheckDeviceID(gsDataItem, out deviceID);
+                NDCdeviceID.CheckDeviceID(gsDataItem, out deviceID);
                 isFoundGS = false;
                 occurGS = false;
                 currentContextIndex = 0;
@@ -664,7 +714,7 @@ namespace MessagePars_NDC
                         vtRepeatXMLnodeCount = 0;
                         deviceID = "";
                         currentContextIndex = 0;
-                        DDCdeviceID.CheckDeviceID(vtDataItem, out deviceID);
+                        NDCdeviceID.CheckDeviceID(vtDataItem, out deviceID);
                         for (int i = xmlIndex; i < TvList.Count; i++)
                         {
                             if (vtDataItem.Length > 0 && (currentContextIndex > vtDataItem.Length - 1)
@@ -694,7 +744,7 @@ namespace MessagePars_NDC
                             {
                                 //遇到GS开头，记录出现GS_
                                 occurGS = true;
-                                if (TvList[i].FieldName == "GS**")
+                                if (TvList[i].FieldName == "GS")
                                 {
                                     isVTRepeat = true;
                                     //如果匹配

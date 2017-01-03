@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_NDCServer));
             this.gb_Server = new System.Windows.Forms.GroupBox();
             this.cmb_Header = new System.Windows.Forms.ComboBox();
@@ -72,6 +74,9 @@
             this.cmb_Header.FormattingEnabled = true;
             this.cmb_Header.Items.AddRange(new object[] {
             "L2L1",
+            "L4L3L2L1",
+            "L1L2",
+            "L4L3L2L1_ASCII",
             "No Header"});
             this.cmb_Header.Location = new System.Drawing.Point(89, 21);
             this.cmb_Header.Name = "cmb_Header";
@@ -114,11 +119,21 @@
             this.LoadCount,
             this.CStatus,
             this.Severity});
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Green;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgv_Cassette.DefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_Cassette.Location = new System.Drawing.Point(232, 21);
             this.dgv_Cassette.Name = "dgv_Cassette";
             this.dgv_Cassette.ReadOnly = true;
             this.dgv_Cassette.RowHeadersVisible = false;
             this.dgv_Cassette.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Silver;
+            this.dgv_Cassette.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dgv_Cassette.RowTemplate.Height = 20;
             this.dgv_Cassette.RowTemplate.ReadOnly = true;
             this.dgv_Cassette.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;

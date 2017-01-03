@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
@@ -16,9 +16,33 @@ namespace StandardFeature
         {
             get; set;
         }
+        private static Color _screenParseColor = Color.Blue;
+        public static Color ScreenParseStringColor
+        {
+            get
+            {
+                return _screenParseColor;
+            }
+            set
+            {
+                _screenParseColor = value;
+            }
+        }
         public static string eCATPath
         {
             get; set;
+        }
+        private static string _currentResourceIndex = "";
+        public static string CurrentResourceIndex
+        {
+            get
+            {
+                return _currentResourceIndex;
+            }
+            set
+            {
+                _currentResourceIndex = value;
+            }
         }
         public static string CurrentPath
         { get; set; }
@@ -325,7 +349,10 @@ namespace StandardFeature
                 _currentHosts = value;
             }
         }
-
+        static int L4 = 0;
+        static int L3 = 0;
+        static int L2 = 0;
+        static int L1 = 0;
         /// <summary>
         /// 打包消息
         /// </summary>
@@ -335,26 +362,67 @@ namespace StandardFeature
         {
             byte[] resultBytes = null;
             int baseCount = Encoding.ASCII.GetByteCount(msg);
+            int needAddLen = 0;
+            L4 = 0; L3 = 0; L2 = 0; L1 = 0;
             if (tcpHead == TcpHead.L2L1)
             {
-                char char_1 = new char();
-                char char_2 = new char();
+                needAddLen = 2;
                 headContext = baseCount.ToString().PadLeft(4, '0');
-
-                //1.长度L右移8位，等到A，
-                int A = baseCount >> 8;
-                //2char_1=A,.A左移8位，得到B，L-B=C,char_2=C                
-                char_1 = (char)A;
-                int B = A << 8;
-                int C = baseCount - B;
-                char_2 = (char)C;
-
+                L2 = baseCount >> 8;
+                L1 = baseCount;
                 resultBytes = Encoding.ASCII.GetBytes(msg);
-                byte[] bigBytes = new byte[resultBytes.Length + 2];
-                bigBytes[0] = (byte)A;
-                bigBytes[1] = (byte)C;
+                byte[] bigBytes = new byte[resultBytes.Length + needAddLen];
+                bigBytes[0] = (byte)L2;
+                bigBytes[1] = (byte)L1;
                 resultBytes.CopyTo(bigBytes, 2);
                 resultBytes = bigBytes;
+            }
+            else if (tcpHead == TcpHead.L1L2)
+            {
+                needAddLen = 2;
+                headContext = baseCount.ToString().PadLeft(4, '0');
+                L2 = baseCount >> 8;
+                L1 = baseCount;
+                resultBytes = Encoding.ASCII.GetBytes(msg);
+                byte[] bigBytes = new byte[resultBytes.Length + needAddLen];
+                bigBytes[0] = (byte)L1;
+                bigBytes[1] = (byte)L2;
+                resultBytes.CopyTo(bigBytes, 2);
+                resultBytes = bigBytes;
+            }
+            else if (tcpHead == TcpHead.L4L3L2L1)
+            {
+                #region L4L3L2L1
+                needAddLen = 4;
+                headContext = baseCount.ToString().PadLeft(4, '0');
+                L4 = baseCount >> 24;
+                L3 = baseCount >> 16;
+                L2 = baseCount >> 8;
+                L1 = baseCount;
+                resultBytes = Encoding.ASCII.GetBytes(msg);
+                byte[] bigBytes = new byte[resultBytes.Length + needAddLen];
+                bigBytes[0] = (byte)L4;
+                bigBytes[1] = (byte)L3;
+                bigBytes[2] = (byte)L2;
+                bigBytes[3] = (byte)L1;
+                resultBytes.CopyTo(bigBytes, needAddLen);
+                resultBytes = bigBytes;
+                #endregion
+            }
+            else if (tcpHead == TcpHead.L4L3L2L1_ASCII)
+            {
+                #region L4L3L2L1_ASCII
+                needAddLen = 4;
+                headContext = baseCount.ToString().PadLeft(4, '0');
+                byte[] bigBytes = new byte[resultBytes.Length + needAddLen];
+                byte[] m_head = Encoding.ASCII.GetBytes(baseCount.ToString("D4"));
+                bigBytes[0] = m_head[0];
+                bigBytes[1] = m_head[1];
+                bigBytes[2] = m_head[2];
+                bigBytes[3] = m_head[3];
+                resultBytes.CopyTo(bigBytes, needAddLen);
+                resultBytes = bigBytes;
+                #endregion
             }
             else
                 resultBytes = Encoding.ASCII.GetBytes(msg);
@@ -382,6 +450,12 @@ namespace StandardFeature
         [DllImport("kernel32")]//返回取得字符串缓冲区的长度
         private static extern long GetPrivateProfileString(string section, string key,
             string def, StringBuilder retVal, int size, string filePath);
+
+        [DllImport("kernel32")]
+        public static extern int GetPrivateProfileString(byte[] section, byte[] key, byte[] def, byte[] retVal, int size, string filePath);
+        [DllImport("kernel32")]
+        private static extern long GetPrivateProfileString(string section, string key,
+            string def, byte[] retVal, int size, string filePath);
 
 
         #endregion
@@ -434,7 +508,11 @@ namespace StandardFeature
         public static void RecordLastTransaction(XDCMessage msgContent, int changeAmount)
         {
             string availableBanlance = XDCUnity.ReadIniData(msgContent.PAN, "AvailableBalance", string.Empty, XDCUnity.UserInfoPath);
-
+            if (string.IsNullOrEmpty(availableBanlance))
+            {
+                LogHelper.LogError("XDCUnity", "RecordLastTransaction Error.maybe your card is not accept by XDC-Host");
+                return;
+            }
             double newBalance = double.Parse(availableBanlance);
             newBalance += changeAmount;
             XDCUnity.WriteIniData(msgContent.PAN, "AvailableBalance", newBalance.ToString(), XDCUnity.UserInfoPath);
@@ -507,6 +585,20 @@ namespace StandardFeature
         {
             Process.Start(fileName);
         }
+
+        public static void OpenTextFileWith(string toolName, string fileName)
+        {
+            try
+            {
+                Process.Start(toolName, fileName);
+            }
+            catch (Exception ex)
+            {
+                Process.Start(fileName);
+                LogHelper.LogError("XDCUnity.cs","OpenTextFileWith Error:" + ex.ToString());
+            }
+        }
+
         public static void StarteCAT()
         {
             if (string.IsNullOrEmpty(TrueBackPath))

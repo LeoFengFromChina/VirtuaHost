@@ -1,11 +1,7 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -18,6 +14,9 @@ namespace VirtualDualHost
     public partial class Form_DDCServer : DockContent
     {
         #region Field
+
+
+        static Thread ProcessMessageThread;
 
         private static Host CurrentHostServer = new Host();
         public Form_DDCServer()
@@ -32,6 +31,7 @@ namespace VirtualDualHost
 
         static Thread eCATThread;
         static Socket socket_eCAT;
+        static private Queue<XDCMessage> receiveMessageQueue = new Queue<XDCMessage>();
         static private Queue<string> currentFentch = new Queue<string>();
         static private Queue<string> currentFentchResponse = new Queue<string>();
         static private Queue<string> currentFullDownLoad = new Queue<string>();
@@ -81,7 +81,8 @@ namespace VirtualDualHost
 
             chb_ReceiveMsgDebug.CheckedChanged += Chb_ReceiveMsgDebug_CheckedChanged;
             chb_SendMsgDebug.CheckedChanged += Chb_ReceiveMsgDebug_CheckedChanged;
-
+            lsb_Log.KeyDown += Lsb_Log_KeyDown;
+            //LoadBaseConfigThread.Start();
         }
 
         private void Chb_ReceiveMsgDebug_CheckedChanged(object sender, EventArgs e)
@@ -139,6 +140,18 @@ namespace VirtualDualHost
                             {
                                 CurrentHostServer.TCPHead = TcpHead.L2L1;
                             }
+                           else if (cmb_Header.SelectedIndex == 1)
+                            {
+                                CurrentHostServer.TCPHead = TcpHead.L4L3L2L1;
+                            }
+                            else if (cmb_Header.SelectedIndex == 2)
+                            {
+                                CurrentHostServer.TCPHead = TcpHead.L1L2;
+                            }
+                            else if (cmb_Header.SelectedIndex == 3)
+                            {
+                                CurrentHostServer.TCPHead = TcpHead.L4L3L2L1_ASCII;
+                            }
                             else
                             {
                                 CurrentHostServer.TCPHead = TcpHead.NoHead;
@@ -146,12 +159,18 @@ namespace VirtualDualHost
                             lsb_Log.Items.Add("Start Server Port = " + txt_Port.Text);
                             //开启
                             ConnecteCAT();
+
+                            //----------------------------
+                            StartProcessingMessage();
+
                             BaseFunction.Intial(XDCProtocolType.DDC, DataType.Message);
                         }
                         else
                         {
                             //关闭
                             DisConnecteCAT();
+                            //----------------------------
+                            StopProcessingMessage();
                             lsb_Log.Items.Add("Close DisConnect.");
                         }
 
@@ -161,7 +180,8 @@ namespace VirtualDualHost
                     break;
                 case "btn_FetchConfig":
                     {
-
+                        Form_FentchConfig fentchConfig = new Form_FentchConfig("Host_1", XDCProtocolType.DDC);
+                        fentchConfig.Show();
                     }
                     break;
                 case "btn_FullDownLoad":
@@ -188,8 +208,8 @@ namespace VirtualDualHost
 
                         Form_ManuSendDataMain form_manuSendMain = new Form_ManuSendDataMain(XDCProtocolType.DDC);
                         form_manuSendMain.SubFormEvent += Form_debug_SubFormEvent;
-                        form_manuSendMain.ShowDialog();
-                        //ShowDebugWindows("", XDCProtocolType.DDC);
+                        form_manuSendMain.Show();
+                        //ShowDebugWindows("", XDCProtocolType.NDC);
                         #endregion
                     }
                     break;
@@ -211,9 +231,9 @@ namespace VirtualDualHost
         {
             isBack = true;
             FencthFoundUnknow = false;
+            BackMsg = dataContent.ToString();
             if (currentSendDebug || isManuSend)
             {
-                BackMsg = dataContent.ToString();
                 if (string.IsNullOrEmpty(BackMsg))
                     return;
                 if (isManuSend)
@@ -249,6 +269,19 @@ namespace VirtualDualHost
         }
 
         private void lsb_Log_DoubleClick(object sender, EventArgs e)
+        {
+            ShowLogDetail();
+        }
+
+        private void Lsb_Log_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                ShowLogDetail();
+            }
+        }
+
+        private void ShowLogDetail()
         {
             if (lsb_Log == null || lsb_Log.SelectedItem == null)
                 return;
@@ -336,6 +369,38 @@ namespace VirtualDualHost
             CurrentHostServer.State = ServerState.OffLine;
         }
 
+        static void StartProcessingMessage()
+        {
+            ProcessMessageThread = new Thread(ProcessMessage);
+            ProcessMessageThread.IsBackground = true;
+            ProcessMessageThread.Start();
+        }
+        static void StopProcessingMessage()
+        {
+            receiveMessageQueue.Clear();
+            if (ProcessMessageThread != null)
+            {
+                if (ProcessMessageThread != null && ProcessMessageThread.ThreadState == ThreadState.Background)
+                {
+                    ProcessMessageThread.Suspend();
+                    ProcessMessageThread = null;
+                    //eCATThread.Abort();
+                }
+            }
+        }
+        static void ProcessMessage()
+        {
+            while (true)
+            {
+                if (receiveMessageQueue.Count > 0)
+                {
+                    XDCMessage msg = receiveMessageQueue.Dequeue();
+                    if (msg != null)
+                        ProcessMessageInQueune(msg);
+                }
+                Thread.Sleep(50);
+            }
+        }
         /// <summary>
         /// 启动监听
         /// </summary>
@@ -376,16 +441,43 @@ namespace VirtualDualHost
         private static void ReceiveMessage(object clientSocket)
         {
             myClientSocket = (Socket)clientSocket;
+            int receiveNumber = 0;
             while (true)
             {
                 try
                 {
+                    result_eCAT = null;
                     result_eCAT = new byte[2048];
-                    int receiveNumber = 0;
+                    receiveNumber = 0;
                     receiveNumber = myClientSocket.Receive(result_eCAT);
+                    if (receiveNumber <= 0)
+                    {
+                        Thread.Sleep(50);
+                        continue;
+                    }
                     CurrentOperationCode = new OperationCode();
-                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, TcpHead.L2L1);
+                    XDCMessage msgContent = XDCUnity.MessageFormat.Format(result_eCAT, receiveNumber, CurrentHostServer.TCPHead);
+                    receiveMessageQueue.Enqueue(msgContent);
+                    //Log message
+                    LogHelper.LogDebug("Form_NDCServer", "Receive: " + msgContent.MsgASCIIString);
+                    //ProcessMessageInQueune(msgContent);
+                }
+                catch (Exception ex)
+                {
+                    break;
+                }
+                finally
+                {
+                    Thread.Sleep(50);
+                }
+            }
+        }
 
+        private static void ProcessMessageInQueune(XDCMessage msgContent)
+        {
+            try
+            {
+                #region MyRegion
                     if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchON)
                         CurrentHostServer.State = ServerState.Maintance;
                     else if (msgContent.MsgCommandType == MessageCommandType.SupervisorAndSupplySwitchOFF)
@@ -401,10 +493,10 @@ namespace VirtualDualHost
                     if (IsDebugRecvMsg && !isBack)
                     {
                         currentRecvDebug = true;
-                        //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC);
-                        //form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                        //form_debug.ShowDialog();
-                        ShowDebugWindows(msgContent.MsgASCIIString, XDCProtocolType.DDC);
+                        Form_MsgDebug form_debug = new Form_MsgDebug(msgContent.MsgASCIIString, XDCProtocolType.DDC,DataType.Message, "",true);
+                        form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                        form_debug.ShowDialog();
+                        //ShowDebugWindows(msgContent.MsgASCIIString, XDCProtocolType.DDC);
                     }
                     if (!string.IsNullOrEmpty(BackMsg))
                     {
@@ -441,7 +533,9 @@ namespace VirtualDualHost
                     if (isFullDownLoad)
                     {
                         if (msgContent.MsgCommandType != MessageCommandType.ReadyB)
-                            continue;
+                    {
+                        //continue;
+                    }
                         #region FullDownLoad
                         if (currentFullDownLoad.Count == 0)
                         {
@@ -459,9 +553,10 @@ namespace VirtualDualHost
                             }
                             if (!string.IsNullOrEmpty(FulldownLoadMsg))
                             {
-                                byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer.TCPHead, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
-                                myClientSocket.Send(msgBytes);
-                                ReceiveMsg("Send(" + headContext + ") : ", FulldownLoadMsg);
+                            //byte[] msgBytes = XDCUnity.EnPackageMsg(FulldownLoadMsg, CurrentHostServer.TCPHead, ref headContext);//Encoding.ASCII.GetBytes(FulldownLoadMsg);// 
+                            //myClientSocket.Send(msgBytes);
+                            //ReceiveMsg("Send(" + headContext + ") : ", FulldownLoadMsg);
+                            SingalSendMsg(FulldownLoadMsg);
                             }
                         }
                         #endregion
@@ -492,39 +587,43 @@ namespace VirtualDualHost
                                 isFencth = false;
                                 //ReBingCassette();
 
-                            }
-                            #endregion}
                         }
-                        else
-                        {
-                            FencthFoundUnknow = true;
-                        }
+                        #endregion}
                     }
-                    else if (!string.IsNullOrEmpty(msgContent.OperationCode))
+                    else if (msgContent.MsgType == MessageType.UnSolicitedMessage)
                     {
-                        string replyMsg = ProcessOperationCode(msgContent);
-                        if (!string.IsNullOrEmpty(replyMsg))
-                        {
-                            SingalSendMsg(replyMsg);
-                            Thread.Sleep(100);
-                        }
                     }
-                    else if (msgContent.MsgCommandType == MessageCommandType.Reversal)
+                    else
                     {
-                        //发充正过来了
-                        msgContent.OperationCode = "REVERSAL";
-                        string replyMsg = ProcessOperationCode(msgContent);
-                        if (!string.IsNullOrEmpty(replyMsg))
-                        {
-                            SingalSendMsg(replyMsg);
-                            Thread.Sleep(100);
-                        }
+                        FencthFoundUnknow = true;
                     }
                 }
-                catch (Exception ex)
+                else if (!string.IsNullOrEmpty(msgContent.OperationCode))
                 {
-                    break;
+                    string replyMsg = ProcessOperationCode(msgContent);
+                    if (!string.IsNullOrEmpty(replyMsg))
+                    {
+                        SingalSendMsg(replyMsg);
+                        Thread.Sleep(100);
+                    }
                 }
+                else if (msgContent.MsgCommandType == MessageCommandType.Reversal)
+                {
+                    //发充正过来了
+                    msgContent.OperationCode = "REVERSAL";
+                    string replyMsg = ProcessOperationCode(msgContent);
+                    if (!string.IsNullOrEmpty(replyMsg))
+                    {
+                        SingalSendMsg(replyMsg);
+                        Thread.Sleep(100);
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogDebug("Form_NDCServer", "ProcessMessageInQueune Error:" + ex.Message);
             }
         }
 
@@ -671,16 +770,16 @@ namespace VirtualDualHost
                 {
                     CurrentHostServer.IsCurrentInterActiveReply = true;
                     CurrentHostServer.LastOperationCode = msgContent.OperationCode;
-                    string DeadInterActiveMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadInterActiveMsg", string.Empty, path);
-                    return DeadInterActiveMsg;
+                    string FixedInterActiveMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "FixedInterActiveMsg", string.Empty, path);
+                    return FixedInterActiveMsg;
                 }
                 //第二次才来把开关关了
                 CurrentHostServer.IsCurrentInterActiveReply = false;
 
-                string deadMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "DeadMsg", string.Empty, path);
-                if (!string.IsNullOrEmpty(deadMsg))
+                string FixedMsg = XDCUnity.ReadIniData(msgContent.OperationCode, "FixedMsg", string.Empty, path);
+                if (!string.IsNullOrEmpty(FixedMsg))
                 {
-                    return deadMsg;
+                    return FixedMsg;
                 }
                 CurrentOperationCode.InteractiveReply = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.InteractiveReply, string.Empty, path);
                 CurrentOperationCode.FastCash = XDCUnity.ReadIniData(msgContent.OperationCode, ResponseMessage.FastCash, string.Empty, path);
@@ -786,11 +885,13 @@ namespace VirtualDualHost
 
             string path = XDCUnity.CurrentPath + @"\Config\Server\DDC\Host_1\OperationCodeConfig.ini";
             string decmalLenStr = XDCUnity.ReadIniData(msgContent.OperationCode, "DecimalLen", string.Empty, path);
-            int tempLen = -1;
-            int.TryParse(decmalLenStr, out tempLen);
-            if (tempLen > 0)
-                decimalLen = tempLen;
-
+            if (!string.IsNullOrEmpty(decmalLenStr))
+            {
+                int tempLen = -1;
+                int.TryParse(decmalLenStr, out tempLen);
+                if (tempLen >= 0)
+                    decimalLen = tempLen;
+            }
             int amount = int.Parse(msgContent.AmountField.Substring(0, msgContent.AmountField.Length - decimalLen));
             notesOutList.Clear();
             #region MyRegion
@@ -846,12 +947,24 @@ namespace VirtualDualHost
                     int.TryParse(DDCCVList[i].Denomination, out currentDeno);
                     //currenLoadCount = int.Parse(DDCCVList[i].LoadCount);
                     int.TryParse(DDCCVList[i].LoadCount, out currenLoadCount);
+                    if (currenLoadCount <= 0)
+                    {
+                        result = false;
+                        continue;
+                    }
                     noteCount = amount / currentDeno;
                     currentLeft = amount % currentDeno;
-                    if (currenLoadCount >= noteCount)
+                    if (noteCount >= 100)
+                    {
+                        //报文回复最多两位，也就是99最多。
+                        notesOutList[i] += 99;
+                        currentLeft = currentLeft + (noteCount - 99) * currentDeno;
+                    }
+                    else if (currenLoadCount >= noteCount)
                     {
                         notesOutList[i] += noteCount;
                     }
+                    //当余数不为0的时候才给到原来的。刘总提bug（只有最后一个强行有配置了，其他钱箱都没配）
                     if (currentLeft != 0)
                         amount = currentLeft;
                     else
@@ -1099,10 +1212,10 @@ namespace VirtualDualHost
                 if (IsDebugSendMsg && !isBack)
                 {
                     currentSendDebug = true;
-                    ShowDebugWindows(msgContent, XDCProtocolType.DDC);
-                    //Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC);
-                    //form_debug.SubFormEvent += Form_debug_SubFormEvent;
-                    //form_debug.ShowDialog();
+                    //ShowDebugWindows(msgContent, XDCProtocolType.DDC);
+                    Form_MsgDebug form_debug = new Form_MsgDebug(msgContent, XDCProtocolType.DDC, DataType.Message, "", true);
+                    form_debug.SubFormEvent += Form_debug_SubFormEvent;
+                    form_debug.ShowDialog();
                 }
                 else
                 {
@@ -1110,6 +1223,8 @@ namespace VirtualDualHost
                     byte[] msgBytes = XDCUnity.EnPackageMsg(msgContent, CurrentHostServer.TCPHead, ref headContext);
                     clientSocket.Send(msgBytes);
                     ReceiveMsg("Send(" + headContext + ") : ", msgContent);
+                    //Log message
+                    LogHelper.LogDebug("Form_NDCServer", "Send: " + msgContent);
                 }
             }
         }

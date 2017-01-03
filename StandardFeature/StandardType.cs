@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace StandardFeature
 {
@@ -358,6 +356,7 @@ namespace StandardFeature
         L1L2,
         L4L3L2L1,
         L1L2L3L4,
+        L4L3L2L1_ASCII,
         NoHead
     }
     /// <summary>
@@ -435,6 +434,25 @@ namespace StandardFeature
             foreach (string idItem in DeviceList)
             {
                 if (containDeviceIDText.Contains(idItem))
+                {
+                    deviceID = idItem;
+                    break;
+                }
+            }
+            return false;
+        }
+    }
+
+    public static class NDCdeviceID
+    {
+
+        private static List<string> DeviceList = new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "K", "L", "M", "N", "O", "Q", "V", "Y", @"\", "q", "w", "r", "p" };
+        public static bool CheckDeviceID(string containDeviceIDText, out string deviceID)
+        {
+            deviceID = null;
+            foreach (string idItem in DeviceList)
+            {
+                if (containDeviceIDText.StartsWith(idItem))
                 {
                     deviceID = idItem;
                     break;

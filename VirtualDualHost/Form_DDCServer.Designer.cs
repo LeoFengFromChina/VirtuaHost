@@ -71,6 +71,9 @@
             this.cmb_Header.FormattingEnabled = true;
             this.cmb_Header.Items.AddRange(new object[] {
             "L2L1",
+            "L4L3L2L1",
+            "L1L2",
+            "L4L3L2L1_ASCII",
             "No Header"});
             this.cmb_Header.Location = new System.Drawing.Point(89, 21);
             this.cmb_Header.Name = "cmb_Header";

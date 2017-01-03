@@ -45,6 +45,8 @@
             this.lbl_Notice = new System.Windows.Forms.Label();
             this.btn_Pre = new System.Windows.Forms.Button();
             this.btn_Next = new System.Windows.Forms.Button();
+            this.btn_FontColor = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -152,6 +154,7 @@
             // 
             // pnl_Screen
             // 
+            this.pnl_Screen.AllowDrop = true;
             this.pnl_Screen.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.pnl_Screen.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pnl_Screen.Location = new System.Drawing.Point(25, 79);
@@ -187,11 +190,22 @@
             this.btn_Next.UseVisualStyleBackColor = true;
             this.btn_Next.Click += new System.EventHandler(this.btn_Next_Click);
             // 
+            // btn_FontColor
+            // 
+            this.btn_FontColor.Location = new System.Drawing.Point(683, 54);
+            this.btn_FontColor.Name = "btn_FontColor";
+            this.btn_FontColor.Size = new System.Drawing.Size(67, 23);
+            this.btn_FontColor.TabIndex = 14;
+            this.btn_FontColor.Text = "FontColor";
+            this.btn_FontColor.UseVisualStyleBackColor = true;
+            this.btn_FontColor.Click += new System.EventHandler(this.btn_FontColor_Click);
+            // 
             // Form_ScreenParse
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 601);
+            this.Controls.Add(this.btn_FontColor);
             this.Controls.Add(this.btn_Next);
             this.Controls.Add(this.btn_Pre);
             this.Controls.Add(this.lbl_Notice);
@@ -233,5 +247,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.Button btn_Pre;
         private System.Windows.Forms.Button btn_Next;
+        private System.Windows.Forms.Button btn_FontColor;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }

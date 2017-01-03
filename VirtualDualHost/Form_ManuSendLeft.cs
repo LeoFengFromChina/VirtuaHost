@@ -1,12 +1,7 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -190,9 +185,9 @@ namespace VirtualDualHost
                     TreeNode tn_FullDownLoad_sub = new TreeNode();
                     tn_FullDownLoad_sub.Name = item.Name;
                     tn_FullDownLoad_sub.Text = item.Name;
-                    tn_FullDownLoad_sub.Expand();
+                    //tn_FullDownLoad_sub.Expand();
                     currentNode.Nodes.Add(tn_FullDownLoad_sub);
-                    currentNode.Expand();
+                    //currentNode.Expand();
                     GetFilesListEx(ref tn_FullDownLoad_sub, item.FullName);
                 }
             }

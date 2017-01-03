@@ -1,13 +1,8 @@
 ﻿using StandardFeature;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -85,6 +80,28 @@ namespace VirtualDualHost
             rb_DDC.CheckedChanged += Rb_DDC_CheckedChanged;
             rb_NDC.CheckedChanged += Rb_DDC_CheckedChanged;
             chb_GridLine.CheckedChanged += Chb_GridLine_CheckedChanged;
+            pnl_Screen.AllowDrop = true;
+            rtb_Text.AllowDrop = true;
+            pnl_Screen.DragDrop += Pnl_Screen_DragDrop;
+            rtb_Text.DragDrop += Pnl_Screen_DragDrop;
+        }
+
+        private void Pnl_Screen_DragDrop(object sender, DragEventArgs e)
+        {
+            
+            Array fileName = (Array)e.Data.GetData(DataFormats.FileDrop);
+            if (null != fileName)
+                rtb_Text.Text = XDCUnity.GetTxtFileText(fileName.GetValue(0).ToString());
+            else
+                rtb_Text.Text = e.Data.GetData(DataFormats.Text).ToString();
+            e.Effect = DragDropEffects.None;
+
+
+            DrawXDCScreen();
+            if (!string.IsNullOrEmpty(rtb_Text.Text.Trim()))
+            {
+                BegionScreenParse();
+            }
         }
 
         private void Chb_GridLine_CheckedChanged(object sender, EventArgs e)
@@ -253,7 +270,6 @@ namespace VirtualDualHost
                     rowDic.Add(columnsArray[i].ToString(), i);
             }
         }
-
         /// <summary>
         /// 绘制行标题
         /// </summary>
@@ -316,7 +332,7 @@ namespace VirtualDualHost
                             startColumn = cur_SI.StartColumn;
                             if (!string.IsNullOrEmpty(toPaintStr))
                             {
-                                DrawString(g, toPaintStr, startRow, startColumn, Color.Blue);
+                                DrawString(g, toPaintStr, startRow, startColumn, XDCUnity.ScreenParseStringColor);
                             }
 
                         }
@@ -505,6 +521,7 @@ namespace VirtualDualHost
                 case "btn_Next":
                     {
                         newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum + 1) + ".txt";
+                        
                     }
                     break;
                 default:
@@ -519,6 +536,17 @@ namespace VirtualDualHost
                 this.Text = "ScreenParse - [" + newPath + "]";
             }
 
+        }
+
+        private void btn_FontColor_Click(object sender, EventArgs e)
+        {
+            if (this.colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // 将先中的颜色设置为窗体的背景色
+                XDCUnity.ScreenParseStringColor = colorDialog1.Color;
+                this.Refresh();
+            }
+            
         }
     }
 }

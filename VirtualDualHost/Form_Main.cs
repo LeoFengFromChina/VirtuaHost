@@ -1,16 +1,11 @@
 ﻿using StandardFeature;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using WeifenLuo.WinFormsUI.Docking;
 using XmlHelper;
+using System.Collections.Generic;
 
 namespace VirtualDualHost
 {
@@ -20,39 +15,53 @@ namespace VirtualDualHost
         {
             InitializeComponent();
         }
-        ////Form_NDCServer form_NDCServer;
-        //Form_NDCServer form_NDCServer;
-        //Form_NDCServer_2 form_NDCServer_2;
-        //Form_DDCServer form_DDCServer;
-        //Form_DualHost form_DualHost;
+        Form_NDCServer_2 form_NDCServer2 = new Form_NDCServer_2();
+        Form_DDCServer form_DDCServer1 = new Form_DDCServer();
+        Form_NDCServer form_NDCServer1 = new Form_NDCServer();
+        Form_Managerment form_managerMentMain = new Form_Managerment();
         private void Form_Main_Load(object sender, EventArgs e)
         {
+
             XDCUnity.CurrentPath = System.Environment.CurrentDirectory;
             XDCUnity.UserInfoPath = XDCUnity.CurrentPath + XDCUnity.UserInfoPath;
+            XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+            XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/eCATPath");
+
+            XDCUnity.eCATPath = node.Attributes["value"].InnerText;
             //NDCserver
             //form_NDCServer = new Form_NDCServer();
             this.Text += XDCUnity.Version;
 
-            Form_NDCServer form_NDCServer1 = new Form_NDCServer();
             form_NDCServer1.Show(this.dockPanel1, DockState.Document);
 
+
+            //NDC Host 2            
+            form_NDCServer2.Show(this.dockPanel1, DockState.Document);
+
             //DDCserver
-            Form_DDCServer form_DDCServer1 = new Form_DDCServer();
             form_DDCServer1.Show(this.dockPanel1, DockState.Document);
 
-            ////双主机
-            //Form_DualHost form_DualHost = new Form_DualHost();
-            //form_DualHost.Show(this.dockPanel1, DockState.Document);
-
-            //NDC Host 2
-            Form_NDCServer_2 form_NDCServer2 = new Form_NDCServer_2();
-            form_NDCServer2.Show(this.dockPanel1, DockState.Document);
+            //ManagerMent
+            form_managerMentMain.Show(this.dockPanel1, DockState.Document);
 
             form_NDCServer1.Activate();
 
+            Dictionary<string, string> extensionTools = new Dictionary<string, string>();
+
+            extensionTools = GetExtensionTool();
+            if (extensionTools != null)
+            {
+                foreach (KeyValuePair<string, string> kp in extensionTools)
+                {
+                    ToolStripMenuItem tsmi = new ToolStripMenuItem(kp.Key);
+                    tsmi.ToolTipText = kp.Value;
+                    tsmi.Click += Form_Main_Click;
+                    tsddb_Extension.DropDownItems.Add(tsmi);
+                }
+            }
+            aTMToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             dDCServerToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             nDCServerToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
-            virtualDualHostToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             parseToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             screenParseToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
             errorCodeToolStripMenuItem.Click += DDCServerToolStripMenuItem_Click;
@@ -74,23 +83,48 @@ namespace VirtualDualHost
             GetCurrentFormatCode();
         }
 
+        private void Form_Main_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            string path = ((ToolStripMenuItem)sender).ToolTipText;
+            string currentPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            currentPath = currentPath.Substring(0, currentPath.LastIndexOf('\\'));
+            if (!string.IsNullOrEmpty(path)
+                && path.Length > 2
+                && path[1].ToString().Equals(":"))
+            {
+                //路径是类似c:\dd\..\..这样的绝对路径
+                XDCUnity.OpenPath(path);
+            }
+            else
+            {
+                //相对路径
+                XDCUnity.OpenPath(currentPath + path);
+            }
+        }
 
+        private void Tsi_Click(object sender, EventArgs e)
+        {
+
+        }
 
         bool isAlreadyNDC_1 = false;
         bool isAlreadyNDC_2 = false;
         bool isAlareadyDualHost = false;
         bool isAlreadyDDC_1 = false;
         bool isAlreadyDDC_2 = false;
+        bool isATMC = false;
         private void DDCServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             ToolStripMenuItem tmi = sender as ToolStripMenuItem;
             switch (tmi.Text)
             {
+                case "ATMC":
                 case "DDCServer":
-                case "DDCServer_2":
+                case "DDCServer-2":
                 case "NDCServer":
-                case "NDCServer_2":
+                case "NDCServer-2":
                 case "VirtualDualHost":
                     {
                         isAlreadyNDC_1 = false;
@@ -98,6 +132,7 @@ namespace VirtualDualHost
                         isAlareadyDualHost = false;
                         isAlreadyDDC_1 = false;
                         isAlreadyDDC_2 = false;
+                        isATMC = false;
                         foreach (DockContent dockContent in dockPanel1.Contents)
                         {
                             if (dockContent.Name.Equals("Form_NDCServer"))
@@ -110,8 +145,15 @@ namespace VirtualDualHost
                                 isAlreadyDDC_2 = true;
                             else if (dockContent.Name.Equals("Form_DualHost"))
                                 isAlareadyDualHost = true;
-                        }
+                            else if (dockContent.Name.Equals("Form_Managerment"))
+                                isATMC = true;
+                            if (tmi.Text.Equals(dockContent.Text))
+                            {
+                                dockContent.Select();
+                                break;
+                            }
 
+                        }
                         if (tmi.Text == "NDCServer_2" && !isAlreadyNDC_2)
                         {
                             Form_NDCServer_2 form_NDCServer2 = new Form_NDCServer_2();
@@ -135,6 +177,10 @@ namespace VirtualDualHost
                         {
                             Form_DualHost form_DualHost = new Form_DualHost();
                             form_DualHost.Show(this.dockPanel1, DockState.Document);
+                        }
+                        else if (tmi.Text == "ATMC" && !isATMC)
+                        {
+                            form_managerMentMain.Show(this.dockPanel1, DockState.Document);
                         }
                     }
                     break;
@@ -310,7 +356,25 @@ namespace VirtualDualHost
                     XDCUnity.TrueBackPath = node.Attributes["value"].InnerText;
             }
         }
+        /// <summary>
+        /// 扩展工具
+        /// </summary>
+        private static Dictionary<string, string> GetExtensionTool()
+        {
+            XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;
+            XmlNode node = doc.SelectSingleNode("BaseConfig/Settings/Extension");
+            if (node.HasChildNodes)
+            {
 
+                Dictionary<string, string> extensionTools = new Dictionary<string, string>();
+                foreach (XmlNode item in node.ChildNodes)
+                {
+                    extensionTools.Add(item.Attributes["name"].InnerText, item.Attributes["value"].InnerText);
+                }
+                return extensionTools;
+            }
+            return null;
+        }
         private static void GetCurrentFormatCode()
         {
             XmlDocument doc = XMLHelper.instance.XMLFiles["BaseConfig"].XmlDoc;

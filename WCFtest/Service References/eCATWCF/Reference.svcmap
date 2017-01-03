@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="ae9ab16e-1549-41b6-af27-80b57235cc5b" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8732/eCATInspector/" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="0bbc9437-b395-4a76-9545-e99d7ab47ddb" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?disco" />
+    <MetadataFile FileName="eCATInspectorSvrImp.wsdl" MetadataType="Wsdl" ID="a2f7d339-59d8-4496-be93-4ddb5420380f" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?wsdl" />
+    <MetadataFile FileName="item.wsdl" MetadataType="Wsdl" ID="69b55e52-aeb7-4a8c-a9fc-462e7173e697" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?wsdl=wsdl0" />
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="3713fdb0-8946-436a-8dd0-02ae703ae9d2" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?xsd=xsd0" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="452bf835-36d0-4b8d-ade3-c4221bdc8d20" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?xsd=xsd1" />
+    <MetadataFile FileName="item2.xsd" MetadataType="Schema" ID="50ce422b-f1db-455b-87f5-ac4890759603" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?xsd=xsd2" />
+    <MetadataFile FileName="item3.xsd" MetadataType="Schema" ID="9c6bbafc-552c-405e-8a5a-ac9fa3b69103" SourceId="1" SourceUrl="http://localhost:8732/eCATInspector/?xsd=xsd3" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://www.grgbanking.com/product/eCAT3R2" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.grgbanking.com/product/eCAT3R2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.grgbanking.com/product/eCAT3R2/Imports">
+      <xsd:import schemaLocation="http://localhost:8732/eCATInspector/?xsd=xsd0" namespace="http://www.grgbanking.com/product/eCAT3R2" />
+      <xsd:import schemaLocation="http://localhost:8732/eCATInspector/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8732/eCATInspector/?xsd=xsd2" namespace="http://www.grgbanking.com/product/eCAT3" />
+      <xsd:import schemaLocation="http://localhost:8732/eCATInspector/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/eCATInspectorSerivceProtocol" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IeCATInspectorService_LoginIn_InputMessage">
+    <wsdl:part name="parameters" element="tns:LoginIn" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_LoginIn_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LoginInResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_LoginOff_InputMessage">
+    <wsdl:part name="parameters" element="tns:LoginOff" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_LoginOff_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LoginOffResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_QuerySnapshotOfData_InputMessage">
+    <wsdl:part name="parameters" element="tns:QuerySnapshotOfData" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_QuerySnapshotOfData_OutputMessage">
+    <wsdl:part name="parameters" element="tns:QuerySnapshotOfDataResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_ListenDataChanged_InputMessage">
+    <wsdl:part name="parameters" element="tns:ListenDataChanged" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_ListenDataChanged_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ListenDataChangedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_UnlistenDataChanged_InputMessage">
+    <wsdl:part name="parameters" element="tns:UnlistenDataChanged" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_UnlistenDataChanged_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnlistenDataChangedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_Hearbeat_InputMessage">
+    <wsdl:part name="parameters" element="tns:Hearbeat" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_Hearbeat_OutputMessage">
+    <wsdl:part name="parameters" element="tns:HearbeatResponse" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_OnDataChanged_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnDataChanged" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_OnDataDeleted_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnDataDeleted" />
+  </wsdl:message>
+  <wsdl:message name="IeCATInspectorService_OnDataCacheClear_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OnDataCacheClear" />
+  </wsdl:message>
+  <wsdl:portType name="IeCATInspectorService">
+    <wsdl:operation name="LoginIn">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/LoginIn" message="tns:IeCATInspectorService_LoginIn_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/LoginInResponse" message="tns:IeCATInspectorService_LoginIn_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="LoginOff">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/LoginOff" message="tns:IeCATInspectorService_LoginOff_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/LoginOffResponse" message="tns:IeCATInspectorService_LoginOff_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="QuerySnapshotOfData">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/QuerySnapshotOfData" message="tns:IeCATInspectorService_QuerySnapshotOfData_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/QuerySnapshotOfDataResponse" message="tns:IeCATInspectorService_QuerySnapshotOfData_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ListenDataChanged">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/ListenDataChanged" message="tns:IeCATInspectorService_ListenDataChanged_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/ListenDataChangedResponse" message="tns:IeCATInspectorService_ListenDataChanged_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UnlistenDataChanged">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/UnlistenDataChanged" message="tns:IeCATInspectorService_UnlistenDataChanged_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/UnlistenDataChangedResponse" message="tns:IeCATInspectorService_UnlistenDataChanged_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Hearbeat">
+      <wsdl:input wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/Hearbeat" message="tns:IeCATInspectorService_Hearbeat_InputMessage" />
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/HearbeatResponse" message="tns:IeCATInspectorService_Hearbeat_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnDataChanged">
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/OnDataChanged" message="tns:IeCATInspectorService_OnDataChanged_OutputCallbackMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnDataDeleted">
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/OnDataDeleted" message="tns:IeCATInspectorService_OnDataDeleted_OutputCallbackMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OnDataCacheClear">
+      <wsdl:output wsaw:Action="http://www.grgbanking.com/product/eCAT3R2/IeCATInspectorService/OnDataCacheClear" message="tns:IeCATInspectorService_OnDataCacheClear_OutputCallbackMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

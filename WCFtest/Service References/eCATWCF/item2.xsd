@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://www.grgbanking.com/product/eCAT3" elementFormDefault="qualified" targetNamespace="http://www.grgbanking.com/product/eCAT3" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8732/eCATInspector/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/eCATInspectorSerivceProtocol" />
+  <xs:complexType name="DataSnapShot">
+    <xs:sequence>
+      <xs:element name="Items" nillable="true" type="tns:ArrayOfDataSnapShotItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DataSnapShot" nillable="true" type="tns:DataSnapShot" />
+  <xs:complexType name="ArrayOfDataSnapShotItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DataSnapShotItem" nillable="true" type="tns:DataSnapShotItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDataSnapShotItem" nillable="true" type="tns:ArrayOfDataSnapShotItem" />
+  <xs:complexType name="DataSnapShotItem">
+    <xs:sequence>
+      <xs:element name="Key" nillable="true" type="xs:string" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/eCATInspectorSerivceProtocol" minOccurs="0" name="Type" type="q1:DataCacheType" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DataSnapShotItem" nillable="true" type="tns:DataSnapShotItem" />
+</xs:schema>

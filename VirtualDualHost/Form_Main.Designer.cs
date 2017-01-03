@@ -40,7 +40,6 @@
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.nDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dDCServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.virtualDualHostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nDCServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.dDCServerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -52,14 +51,16 @@
             this.InteractiveBufferMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cryptToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importLogsToAutoReplyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.c09ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton6 = new System.Windows.Forms.ToolStripDropDownButton();
             this.killeCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.starteCATToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eCATConfigToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsddb_Extension = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.c09ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aTMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -82,6 +83,7 @@
             this.toolStripDropDownButton5,
             this.toolStripDropDownButton3,
             this.toolStripDropDownButton6,
+            this.tsddb_Extension,
             this.toolStripSeparator2,
             this.toolStripDropDownButton4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -143,11 +145,11 @@
             // 
             this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.nDCServerToolStripMenuItem,
-            this.dDCServerToolStripMenuItem,
-            this.virtualDualHostToolStripMenuItem,
             this.nDCServerToolStripMenuItem1,
-            this.dDCServerToolStripMenuItem1});
+            this.nDCServerToolStripMenuItem,
+            this.dDCServerToolStripMenuItem1,
+            this.dDCServerToolStripMenuItem,
+            this.aTMToolStripMenuItem});
             this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
             this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
@@ -157,33 +159,29 @@
             // nDCServerToolStripMenuItem
             // 
             this.nDCServerToolStripMenuItem.Name = "nDCServerToolStripMenuItem";
-            this.nDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.nDCServerToolStripMenuItem.Text = "NDCServer_2";
+            this.nDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
+            this.nDCServerToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.nDCServerToolStripMenuItem.Text = "NDCServer-2";
             // 
             // dDCServerToolStripMenuItem
             // 
             this.dDCServerToolStripMenuItem.Name = "dDCServerToolStripMenuItem";
-            this.dDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.dDCServerToolStripMenuItem.Text = "DDCServer_2";
-            // 
-            // virtualDualHostToolStripMenuItem
-            // 
-            this.virtualDualHostToolStripMenuItem.Name = "virtualDualHostToolStripMenuItem";
-            this.virtualDualHostToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.virtualDualHostToolStripMenuItem.Text = "VirtualDualHost";
+            this.dDCServerToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
+            this.dDCServerToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.dDCServerToolStripMenuItem.Text = "DDCServer-2";
             // 
             // nDCServerToolStripMenuItem1
             // 
             this.nDCServerToolStripMenuItem1.Name = "nDCServerToolStripMenuItem1";
-            this.nDCServerToolStripMenuItem1.Size = new System.Drawing.Size(196, 22);
+            this.nDCServerToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
+            this.nDCServerToolStripMenuItem1.Size = new System.Drawing.Size(194, 22);
             this.nDCServerToolStripMenuItem1.Text = "NDCServer";
             // 
             // dDCServerToolStripMenuItem1
             // 
             this.dDCServerToolStripMenuItem1.Name = "dDCServerToolStripMenuItem1";
-            this.dDCServerToolStripMenuItem1.Size = new System.Drawing.Size(196, 22);
+            this.dDCServerToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
+            this.dDCServerToolStripMenuItem1.Size = new System.Drawing.Size(193, 22);
             this.dDCServerToolStripMenuItem1.Text = "DDCServer";
             // 
             // toolStripDropDownButton5
@@ -259,6 +257,12 @@
             this.importLogsToAutoReplyToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
             this.importLogsToAutoReplyToolStripMenuItem.Text = "ImportLogsToAutoReply";
             // 
+            // c09ToolStripMenuItem
+            // 
+            this.c09ToolStripMenuItem.Name = "c09ToolStripMenuItem";
+            this.c09ToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.c09ToolStripMenuItem.Text = "C09";
+            // 
             // toolStripDropDownButton6
             // 
             this.toolStripDropDownButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -294,6 +298,15 @@
             this.eCATConfigToolToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.eCATConfigToolToolStripMenuItem.Text = "eCATConfigTool";
             // 
+            // tsddb_Extension
+            // 
+            this.tsddb_Extension.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsddb_Extension.Image = ((System.Drawing.Image)(resources.GetObject("tsddb_Extension.Image")));
+            this.tsddb_Extension.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsddb_Extension.Name = "tsddb_Extension";
+            this.tsddb_Extension.Size = new System.Drawing.Size(75, 22);
+            this.tsddb_Extension.Text = "Extension";
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -316,11 +329,12 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
-            // c09ToolStripMenuItem
+            // aTMToolStripMenuItem
             // 
-            this.c09ToolStripMenuItem.Name = "c09ToolStripMenuItem";
-            this.c09ToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.c09ToolStripMenuItem.Text = "C09";
+            this.aTMToolStripMenuItem.Name = "aTMToolStripMenuItem";
+            this.aTMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
+            this.aTMToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.aTMToolStripMenuItem.Text = "ATMC";
             // 
             // Form_Main
             // 
@@ -354,7 +368,6 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
         private System.Windows.Forms.ToolStripMenuItem dDCServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nDCServerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem virtualDualHostToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
         private System.Windows.Forms.ToolStripMenuItem parseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem screenParseToolStripMenuItem;
@@ -376,5 +389,7 @@
         private System.Windows.Forms.ToolStripMenuItem InteractiveBufferMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importLogsToAutoReplyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem c09ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton tsddb_Extension;
+        private System.Windows.Forms.ToolStripMenuItem aTMToolStripMenuItem;
     }
 }

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-using XmlHelper;
 using StandardFeature;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
@@ -17,18 +12,20 @@ namespace VirtualDualHost
     public partial class Form_MsgDebug : DockContent
     {
         public bool isAlreadyLoad = false;
+        public bool isDebug = false;
         public delegate void SubForm(object dataContent);
         public event SubForm SubFormEvent;
 
         public delegate void SubFormClose();
         public event SubFormClose SubFormCloseEvent;
         public string currentFilePath = string.Empty;
-        public Form_MsgDebug(string msgText, XDCProtocolType protocolType, DataType dataType = DataType.Message, string subTitle = "")
+        public Form_MsgDebug(string msgText, XDCProtocolType protocolType, DataType dataType = DataType.Message, string subTitle = "", bool isdebug = false)
         {
             InitializeComponent();
             XDCUnity.Initial();
             rtb_Msg.Text = msgText;
             currentProtocolType = protocolType;
+            isDebug = isdebug;
             if (!string.IsNullOrEmpty(subTitle))
             {
                 this.Text += " - [" + subTitle + "]";
@@ -159,6 +156,20 @@ namespace VirtualDualHost
             rb_Message.MouseClick += Rb_DDC_Click;
             saveToolStripMenuItem.Click += SaveToolStripMenuItem_Click;
             dgv_Fileds.KeyDown += Dgv_Fileds_KeyDown;
+            this.dgv_Fileds.Columns[1].HeaderCell.Style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.rtb_Msg.DragDrop += Rtb_Msg_DragDrop;
+            
+        }
+        
+        private void Rtb_Msg_DragDrop(object sender, DragEventArgs e)
+        {
+            Array fileName = (Array)e.Data.GetData(DataFormats.FileDrop);
+            if (null != fileName)
+                rtb_Msg.Text = XDCUnity.GetTxtFileText(fileName.GetValue(0).ToString());
+            else
+                rtb_Msg.Text = e.Data.GetData(DataFormats.Text).ToString();
+            e.Effect = DragDropEffects.None;
+            BeginPars();
         }
 
 
@@ -212,6 +223,12 @@ namespace VirtualDualHost
             dgv_Fileds.Columns[0].HeaderText = "Name";
             dgv_Fileds.Columns[1].HeaderText = "Value";
             dgv_Fileds.Columns[2].HeaderText = "Comment";
+            dgv_Fileds.Columns[0].FillWeight = 35;
+            dgv_Fileds.Columns[1].FillWeight = 30;
+            dgv_Fileds.Columns[2].FillWeight = 35;
+            dgv_Fileds.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+
         }
 
         private void dgv_Fileds_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
@@ -273,7 +290,7 @@ namespace VirtualDualHost
             XDCProtocolType pType = rb_NDC.Checked ? XDCProtocolType.NDC : XDCProtocolType.DDC;
             DataType dType = rb_State.Checked ? DataType.State : (rb_Screen.Checked ? DataType.Screen : (rb_Fit.Checked ? DataType.Fit : DataType.Message));
             BaseFunction.Intial(pType, dType);
-            string parsText = rtb_Msg.Text.Trim();
+            string parsText = rtb_Msg.Text;//.Trim();
             if (string.IsNullOrEmpty(parsText))
             {
                 ResetFields();
@@ -310,6 +327,11 @@ namespace VirtualDualHost
             {
                 ResetFields();
             }
+            dgv_Fileds.Columns[0].FillWeight = 35;
+            dgv_Fileds.Columns[1].FillWeight = 30;
+            dgv_Fileds.Columns[2].FillWeight = 35;
+            dgv_Fileds.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv_Fileds.Columns[1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv_Fileds.ClearSelection();
         }
 
@@ -319,9 +341,10 @@ namespace VirtualDualHost
             {
                 SubFormEvent(rtb_Msg.Text);
                 IsSendBack = true;
-                //this.Close();
-                if (SubFormCloseEvent != null)
-                    SubFormCloseEvent();
+                if (isDebug)
+                    this.Close();
+                //if (SubFormCloseEvent != null)
+                //    SubFormCloseEvent();
             }
         }
 
@@ -353,6 +376,7 @@ namespace VirtualDualHost
             List<ParsRowView> viewList = dgv_Fileds.DataSource as List<ParsRowView>;
 
             string MsgContent = string.Empty;
+
             foreach (ParsRowView prv in viewList)
             {
                 if (prv.FieldName == "FS")
@@ -366,8 +390,31 @@ namespace VirtualDualHost
                 else
                     MsgContent += prv.FieldValue;
             }
+            if (rb_Fit.Checked)
+            {
+                //fit 表要转换。Edit by frde 20160919
+                string tempContent = string.Empty; ;
+                int startIndex = 0;
+                bool isfailed = false;
+                while (startIndex <= MsgContent.Length - 2)
+                {
+                    if (MsgContent.Length % 2 != 0)
+                    {
+                        isfailed = true;
+                        MessageBox.Show("the Len is Wrong after your edit.");
+                        break;
+                    }
+                    tempContent += Convert.ToInt32(MsgContent.Substring(startIndex, 2), 16).ToString("D3");
+                    startIndex += 2;
+                }
 
-            rtb_Msg.Text = MsgContent;
+                if (!isfailed)
+                {
+                    rtb_Msg.Text = tempContent;
+                }
+            }
+            else
+                rtb_Msg.Text = MsgContent;
         }
 
         private void dgv_Fileds_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -392,7 +439,7 @@ namespace VirtualDualHost
         {
             if (FieldName.Contains("Screen"))
             {
-                string screenPath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\Screen\Host\000\" + FieldValue + ".txt";
+                string screenPath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\Screen" + XDCUnity.CurrentResourceIndex + @"\Host\000\" + FieldValue + ".txt";
                 if (File.Exists(screenPath))
                 {
                     string screenText = XDCUnity.GetTxtFileText(screenPath);
@@ -406,7 +453,7 @@ namespace VirtualDualHost
             }
             else if (FieldName.Contains("State"))
             {
-                string statePath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\State\Host\" + FieldValue + ".txt";
+                string statePath = XDCUnity.eCATPath + @"\XDC\" + folderName + @"\Scripts\State" + XDCUnity.CurrentResourceIndex + @"\Host\" + FieldValue + ".txt";
                 if (File.Exists(statePath))
                 {
                     string stateText = XDCUnity.GetTxtFileText(statePath);
