@@ -26,6 +26,23 @@ namespace TestingForm
 
 
         }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
+            int a = 100;
+            double b = 99;
+
+            if(a> b)
+            {
+
+            }
+            else
+            {
+
+            }
+
+        }
     }
 
     public interface IMyInterface

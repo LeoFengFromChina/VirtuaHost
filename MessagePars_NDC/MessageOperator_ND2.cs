@@ -125,22 +125,24 @@ namespace MessagePars_NDC
                             || commandCode == "C"
                             || commandCode == "F")
                         {
-                            miString += commandCode+"FS" + MessageIdentifier;
+                            miString += commandCode + "FS" + MessageIdentifier;
                             fsCount++;
                         }
-                        else if (!string.IsNullOrEmpty(MessageIdentifier))
+                        else if (MessageIdentifier == "8"
+                            || MessageIdentifier == "C"
+                            || MessageIdentifier == "F")
                         {
                             sdIndex = 4;
                             attrID += "FS";
                             goto loop;
                         }
-                        
+
 
                         int maxFsCountRear = tempArrary.Length - fsCount - 1;
                         //最多的FS，并逐个递减
                         while (maxFsCountRear > -1)
                         {
-                            tempXMLid = attrID+ miString + XDCUnity.GetFS(maxFsCountRear);
+                            tempXMLid = attrID + miString + XDCUnity.GetFS(maxFsCountRear);
                             cur = XDCUnity.GetNodeDetail(root, tempXMLid, attrProtocolType, attrDataType);
                             if (null != cur)
                             {
@@ -150,7 +152,7 @@ namespace MessagePars_NDC
                         }
                         if (null == cur)
                         {
-                            tempXMLid = attrID+commandCode;
+                            tempXMLid = attrID + commandCode;
                             cur = XDCUnity.GetNodeDetail(root, tempXMLid, attrProtocolType, attrDataType);
                             if (null == cur)
                             {

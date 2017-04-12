@@ -343,8 +343,8 @@ namespace VirtualDualHost
                 IsSendBack = true;
                 if (isDebug)
                     this.Close();
-                //if (SubFormCloseEvent != null)
-                //    SubFormCloseEvent();
+                if (SubFormCloseEvent != null)
+                    SubFormCloseEvent();
             }
         }
 

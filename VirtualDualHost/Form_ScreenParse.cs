@@ -88,7 +88,7 @@ namespace VirtualDualHost
 
         private void Pnl_Screen_DragDrop(object sender, DragEventArgs e)
         {
-            
+
             Array fileName = (Array)e.Data.GetData(DataFormats.FileDrop);
             if (null != fileName)
                 rtb_Text.Text = XDCUnity.GetTxtFileText(fileName.GetValue(0).ToString());
@@ -515,13 +515,14 @@ namespace VirtualDualHost
             {
                 case "btn_Pre":
                     {
-                        newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum - 1) + ".txt";
+                        //newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum - 1) + ".txt";
+                        newPath = GetNextScreenNum(currentScreenPath, flit_1, newScreenNum, true);
                     }
                     break;
                 case "btn_Next":
                     {
-                        newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum + 1) + ".txt";
-                        
+                        // newPath = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", newScreenNum + 1) + ".txt";
+                        newPath = GetNextScreenNum(currentScreenPath, flit_1, newScreenNum, false);
                     }
                     break;
                 default:
@@ -535,9 +536,22 @@ namespace VirtualDualHost
                 currentScreenPath = newPath;
                 this.Text = "ScreenParse - [" + newPath + "]";
             }
-
         }
 
+        private string GetNextScreenNum(string currentScreenPath, int flit_1, int currentScreenNum, bool isPre)
+        {
+            string result=string.Empty;
+
+            while (!File.Exists(result))
+            {
+                if (isPre)
+                    currentScreenNum -= 1;
+                else
+                    currentScreenNum += 1;
+                result = currentScreenPath.Substring(0, flit_1 + 1) + string.Format("{0:D3}", currentScreenNum) + ".txt";
+            }
+            return result;
+        }
         private void btn_FontColor_Click(object sender, EventArgs e)
         {
             if (this.colorDialog1.ShowDialog() == DialogResult.OK)
@@ -546,7 +560,7 @@ namespace VirtualDualHost
                 XDCUnity.ScreenParseStringColor = colorDialog1.Color;
                 this.Refresh();
             }
-            
+
         }
     }
 }
